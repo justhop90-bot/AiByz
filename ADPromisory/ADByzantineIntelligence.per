@@ -1,0 +1,405 @@
+; ============================================================================
+; AD BYZANTINE HAWK-EYE INTELLIGENCE ENGINE — V4
+; ============================================================================
+; Owns threat truth. Consumes Promisory threat/scout signals, derives bounded
+; beliefs, and exports strategic observation. It does NOT choose response mode,
+; optionality, state, or attack commands.
+; ============================================================================
+(defconst byz-intel-cycle-goal 640)
+(defconst byz-intel-observe 0)
+(defconst byz-intel-measure 1)
+(defconst byz-intel-believe 2)
+(defconst byz-intel-predict 3)
+(defconst byz-intel-alert 4)
+(defconst byz-intel-freshness-goal 641)
+(defconst byz-intel-last-seen-age-goal 642)
+(defconst byz-intel-signal-cavalry-goal 643)
+(defconst byz-intel-signal-ranged-goal 644)
+(defconst byz-intel-signal-infantry-goal 645)
+(defconst byz-intel-signal-cavarcher-goal 646)
+(defconst byz-intel-signal-gunpowder-goal 647)
+(defconst byz-intel-signal-siege-goal 648)
+(defconst byz-intel-signal-monk-goal 649)
+(defconst byz-intel-signal-mass-goal 651)
+(defconst byz-intel-signal-production-goal 652)
+(defconst byz-intel-signal-fortification-goal 653)
+(defconst byz-intel-signal-tech-goal 654)
+(defconst byz-intel-cavalry-belief-goal 656)
+(defconst byz-intel-ranged-belief-goal 657)
+(defconst byz-intel-infantry-belief-goal 658)
+(defconst byz-intel-siege-belief-goal 659)
+(defconst byz-intel-mobile-belief-goal 660)
+(defconst byz-intel-gunpowder-belief-goal 661)
+(defconst byz-intel-threat-momentum-goal 662)
+(defconst byz-intel-threat-diversity-goal 663)
+(defconst byz-intel-commit-pressure-goal 664)
+(defconst byz-intel-transition-candidate-goal 665)
+(defconst byz-intel-transition-confidence-goal 666)
+(defconst byz-intel-transition-deadline-goal 668)
+(defconst byz-intel-punish-window-goal 669)
+(defconst byz-intel-attack-exposure-goal 670)
+(defconst byz-intel-production-exposure-goal 671)
+(defconst byz-intel-overextension-goal 672)
+(defconst byz-intel-ambiguity-goal 673)
+(defconst byz-intel-model-stability-goal 674)
+(defconst byz-intel-hypothesis-a-goal 676)
+(defconst byz-intel-hypothesis-b-goal 677)
+(defconst byz-intel-observe-priority-goal 678)
+(defconst byz-intel-scout-risk-goal 679)
+(defconst byz-intel-scout-value-goal 681)
+(defconst byz-intel-fog-risk-goal 682)
+(defconst byz-intel-decision-confidence-goal 683)
+(defconst byz-intel-surprise-risk-goal 684)
+(defconst byz-intel-deadline-class-goal 685)
+(defconst byz-intel-alert-goal 687)
+(defconst byz-intel-model-snapshot-goal 2160)
+(defconst byz-intel-threat-score-band-goal 2161)
+(defconst byz-intel-previous-threat-score-goal 690)
+(defconst byz-intel-raw-observation-goal 691)
+(defconst byz-intel-scout-request-goal 692)
+(defconst byz-intel-observation-integrity-goal 693)
+
+(defrule
+    (true)
+=>
+    (set-goal byz-intel-cycle-goal byz-intel-observe)
+    (set-goal byz-intel-freshness-goal 0)
+    (set-goal byz-intel-last-seen-age-goal 999)
+    (set-goal byz-intel-model-snapshot-goal 0)
+    (set-goal byz-intel-threat-score-band-goal 0)
+    (set-goal byz-intel-previous-threat-score-goal 0)
+    (set-goal byz-intel-raw-observation-goal 0)
+    (set-goal byz-intel-scout-request-goal 0)
+    (set-goal byz-intel-observation-integrity-goal 100))
+(defrule
+    (true)
+=>
+    (set-goal byz-intel-signal-cavalry-goal 0)
+    (set-goal byz-intel-signal-ranged-goal 0)
+    (set-goal byz-intel-signal-infantry-goal 0)
+    (set-goal byz-intel-signal-cavarcher-goal 0)
+    (set-goal byz-intel-signal-gunpowder-goal 0)
+    (set-goal byz-intel-signal-siege-goal 0)
+    (set-goal byz-intel-signal-monk-goal 0)
+    (set-goal byz-intel-signal-mass-goal 0)
+    (set-goal byz-intel-signal-production-goal 0)
+    (set-goal byz-intel-signal-fortification-goal 0)
+    (set-goal byz-intel-signal-tech-goal 0))
+(defrule
+    (true)
+=>
+    (set-goal byz-intel-cavalry-belief-goal 0)
+    (set-goal byz-intel-ranged-belief-goal 0)
+    (set-goal byz-intel-infantry-belief-goal 0)
+    (set-goal byz-intel-siege-belief-goal 0)
+    (set-goal byz-intel-mobile-belief-goal 0)
+    (set-goal byz-intel-gunpowder-belief-goal 0)
+    (set-goal byz-intel-threat-momentum-goal 0)
+    (set-goal byz-intel-threat-diversity-goal 0)
+    (set-goal byz-intel-commit-pressure-goal 0))
+(defrule
+    (true)
+=>
+    (set-goal byz-intel-transition-candidate-goal byz-army-none)
+    (set-goal byz-intel-transition-confidence-goal 0)
+    (set-goal byz-intel-transition-deadline-goal 0)
+    (set-goal byz-intel-punish-window-goal 0)
+    (set-goal byz-intel-attack-exposure-goal 0)
+    (set-goal byz-intel-production-exposure-goal 0)
+    (set-goal byz-intel-overextension-goal 0)
+    (set-goal byz-intel-ambiguity-goal 0)
+    (set-goal byz-intel-model-stability-goal 0))
+(defrule
+    (true)
+=>
+    (set-goal byz-intel-hypothesis-a-goal byz-army-none)
+    (set-goal byz-intel-hypothesis-b-goal byz-army-none)
+    (set-goal byz-intel-observe-priority-goal byz-cap-scouting)
+    (set-goal byz-intel-scout-risk-goal 0)
+    (set-goal byz-intel-scout-value-goal 0)
+    (set-goal byz-intel-fog-risk-goal 0)
+    (set-goal byz-intel-decision-confidence-goal 0)
+    (set-goal byz-intel-surprise-risk-goal 0)
+    (set-goal byz-intel-deadline-class-goal byz-deadline-none)
+    (set-goal byz-intel-alert-goal byz-threat-none))
+
+; Capture existing weighted Promisory signals.
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (up-modify-goal byz-intel-signal-cavalry-goal s:= cavalry)
+    (up-modify-goal byz-intel-signal-ranged-goal s:= archers)
+    (up-modify-goal byz-intel-signal-infantry-goal s:= infantry)
+    (up-modify-goal byz-intel-signal-cavarcher-goal s:= cavarchers)
+    (up-modify-goal byz-intel-signal-gunpowder-goal s:= gunpowder)
+    (up-modify-goal byz-intel-signal-siege-goal s:= siege)
+    (up-modify-goal byz-intel-signal-monk-goal s:= moenche)
+    (up-modify-goal byz-intel-signal-mass-goal s:= target-mpop)
+    (set-goal byz-intel-raw-observation-goal 1))
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (set-goal byz-intel-signal-production-goal 0)
+    (up-get-focus-fact building-type-count barracks temporary-goal)
+    (up-modify-goal byz-intel-signal-production-goal g:+ temporary-goal)
+    (up-get-focus-fact building-type-count stable temporary-goal)
+    (up-modify-goal byz-intel-signal-production-goal g:+ temporary-goal)
+    (up-get-focus-fact building-type-count archery-range temporary-goal)
+    (up-modify-goal byz-intel-signal-production-goal g:+ temporary-goal)
+    (up-get-focus-fact building-type-count siege-workshop temporary-goal)
+    (up-modify-goal byz-intel-signal-production-goal g:+ temporary-goal))
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (set-goal byz-intel-signal-fortification-goal 0)
+    (up-get-focus-fact building-type-count castle temporary-goal)
+    (up-modify-goal byz-intel-signal-fortification-goal g:+ temporary-goal)
+    (up-get-focus-fact building-type-count town-center temporary-goal)
+    (up-modify-goal byz-intel-signal-fortification-goal g:+ temporary-goal))
+
+; Observation age is reset only by meaningful military evidence.
+(defrule
+    (timer-triggered fifteensec)
+    (up-compare-goal byz-intel-signal-mass-goal > c:0)
+=>
+    (set-goal byz-intel-last-seen-age-goal 0)
+    (set-goal byz-intel-freshness-goal 100))
+(defrule
+    (timer-triggered fifteensec)
+    (up-compare-goal byz-intel-signal-mass-goal <= c:0)
+=>
+    (up-modify-goal byz-intel-last-seen-age-goal c:+ 15)
+    (up-modify-goal byz-intel-freshness-goal c:- 15))
+
+; Smoothed beliefs are bands, not brittle one-shot unit orders.
+(defrule (up-compare-goal byz-intel-signal-cavalry-goal >= c:5) => (set-goal byz-intel-cavalry-belief-goal 25))
+(defrule (up-compare-goal byz-intel-signal-cavalry-goal >= c:10) => (set-goal byz-intel-cavalry-belief-goal 45))
+(defrule (up-compare-goal byz-intel-signal-cavalry-goal >= c:20) => (set-goal byz-intel-cavalry-belief-goal 70))
+(defrule (up-compare-goal byz-intel-signal-cavalry-goal >= c:35) => (set-goal byz-intel-cavalry-belief-goal 90))
+(defrule (up-compare-goal byz-intel-signal-ranged-goal >= c:5) => (set-goal byz-intel-ranged-belief-goal 25))
+(defrule (up-compare-goal byz-intel-signal-ranged-goal >= c:10) => (set-goal byz-intel-ranged-belief-goal 45))
+(defrule (up-compare-goal byz-intel-signal-ranged-goal >= c:20) => (set-goal byz-intel-ranged-belief-goal 70))
+(defrule (up-compare-goal byz-intel-signal-ranged-goal >= c:35) => (set-goal byz-intel-ranged-belief-goal 90))
+(defrule (up-compare-goal byz-intel-signal-infantry-goal >= c:5) => (set-goal byz-intel-infantry-belief-goal 25))
+(defrule (up-compare-goal byz-intel-signal-infantry-goal >= c:10) => (set-goal byz-intel-infantry-belief-goal 45))
+(defrule (up-compare-goal byz-intel-signal-infantry-goal >= c:20) => (set-goal byz-intel-infantry-belief-goal 70))
+(defrule (up-compare-goal byz-intel-signal-infantry-goal >= c:35) => (set-goal byz-intel-infantry-belief-goal 90))
+(defrule (up-compare-goal byz-intel-signal-cavarcher-goal >= c:8) => (set-goal byz-intel-mobile-belief-goal 40))
+(defrule (up-compare-goal byz-intel-signal-cavarcher-goal >= c:16) => (set-goal byz-intel-mobile-belief-goal 70))
+(defrule (up-compare-goal byz-intel-signal-cavarcher-goal >= c:25) => (set-goal byz-intel-mobile-belief-goal 90))
+(defrule (up-compare-goal byz-intel-signal-siege-goal >= c:3) => (set-goal byz-intel-siege-belief-goal 30))
+(defrule (up-compare-goal byz-intel-signal-siege-goal >= c:8) => (set-goal byz-intel-siege-belief-goal 60))
+(defrule (up-compare-goal byz-intel-signal-siege-goal >= c:15) => (set-goal byz-intel-siege-belief-goal 85))
+(defrule (up-compare-goal byz-intel-signal-gunpowder-goal >= c:3) => (set-goal byz-intel-gunpowder-belief-goal 30))
+(defrule (up-compare-goal byz-intel-signal-gunpowder-goal >= c:8) => (set-goal byz-intel-gunpowder-belief-goal 60))
+(defrule (up-compare-goal byz-intel-signal-gunpowder-goal >= c:15) => (set-goal byz-intel-gunpowder-belief-goal 85))
+
+; Derived threat pressure truth.
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (set-goal byz-threat-score-goal 25)
+    (set-goal byz-threat-confidence-goal 55)
+    (up-modify-goal byz-cavalry-score-goal g:= byz-intel-cavalry-belief-goal)
+    (up-modify-goal byz-ranged-score-goal g:= byz-intel-ranged-belief-goal)
+    (up-modify-goal byz-infantry-score-goal g:= byz-intel-infantry-belief-goal)
+    (up-modify-goal byz-siege-score-goal g:= byz-intel-siege-belief-goal)
+    (up-modify-goal byz-monk-score-goal g:= byz-intel-signal-monk-goal))
+(defrule
+    (up-compare-goal byz-intel-cavalry-belief-goal >= c:70)
+=>
+    (set-goal byz-threat-score-goal 70)
+    (set-goal byz-threat-class-goal byz-threat-high)
+    (set-goal byz-threat-domain-goal byz-threat-ground))
+(defrule
+    (up-compare-goal byz-intel-ranged-belief-goal >= c:70)
+=>
+    (set-goal byz-threat-score-goal 70)
+    (set-goal byz-threat-class-goal byz-threat-high)
+    (set-goal byz-threat-domain-goal byz-threat-ground))
+(defrule
+    (up-compare-goal byz-intel-infantry-belief-goal >= c:70)
+=>
+    (set-goal byz-threat-score-goal 70)
+    (set-goal byz-threat-class-goal byz-threat-high)
+    (set-goal byz-threat-domain-goal byz-threat-ground))
+(defrule
+    (up-compare-goal byz-intel-siege-belief-goal >= c:60)
+=>
+    (set-goal byz-threat-score-goal 80)
+    (set-goal byz-threat-class-goal byz-threat-high)
+    (set-goal byz-threat-domain-goal byz-threat-siege))
+(defrule
+    (up-compare-goal byz-intel-signal-mass-goal >= c:25)
+=>
+    (set-goal byz-threat-score-goal 85)
+    (set-goal byz-threat-class-goal byz-threat-critical))
+(defrule
+    (up-compare-goal byz-intel-signal-mass-goal <= c:6)
+    (up-compare-goal byz-intel-threat-diversity-goal < c:60)
+=>
+    (set-goal byz-threat-score-goal 25))
+(defrule
+    (up-compare-goal byz-intel-ambiguity-goal >= c:70)
+=>
+    (set-goal byz-threat-confidence-goal 45)
+    (set-goal byz-intel-observation-integrity-goal 70))
+(defrule
+    (up-compare-goal byz-intel-ambiguity-goal <= c:30)
+    (up-compare-goal byz-intel-freshness-goal >= c:70)
+=>
+    (set-goal byz-threat-confidence-goal 80)
+    (set-goal byz-intel-observation-integrity-goal 95))
+(defrule
+    (up-compare-goal byz-intel-last-seen-age-goal >= c:90)
+=>
+    (set-goal byz-threat-confidence-goal 25)
+    (set-goal byz-threat-score-goal 40)
+    (set-goal byz-intel-observation-integrity-goal 35))
+
+; Diversity / hypotheses.
+(defrule
+    (up-compare-goal byz-intel-cavalry-belief-goal >= c:60)
+    (up-compare-goal byz-intel-ranged-belief-goal >= c:60)
+    (up-compare-goal byz-intel-infantry-belief-goal >= c:40)
+=>
+    (set-goal byz-intel-threat-diversity-goal 80)
+    (set-goal byz-intel-hypothesis-a-goal byz-army-mixed))
+(defrule
+    (up-compare-goal byz-intel-cavalry-belief-goal < c:60)
+    (up-compare-goal byz-intel-ranged-belief-goal < c:60)
+    (up-compare-goal byz-intel-infantry-belief-goal < c:60)
+=>
+    (set-goal byz-intel-threat-diversity-goal 25))
+(defrule (up-compare-goal byz-intel-cavalry-belief-goal >= c:70) => (set-goal byz-intel-hypothesis-a-goal byz-army-cavalry))
+(defrule (up-compare-goal byz-intel-ranged-belief-goal >= c:70) => (set-goal byz-intel-hypothesis-a-goal byz-army-ranged))
+(defrule (up-compare-goal byz-intel-infantry-belief-goal >= c:70) => (set-goal byz-intel-hypothesis-a-goal byz-army-infantry))
+(defrule (up-compare-goal byz-intel-siege-belief-goal >= c:60) => (set-goal byz-intel-hypothesis-b-goal byz-army-siege))
+
+; Pivot prediction.
+(defrule
+    (up-compare-goal byz-intel-cavalry-belief-goal >= c:70)
+    (up-compare-goal byz-intel-signal-production-goal >= c:3)
+=>
+    (set-goal byz-intel-transition-candidate-goal byz-army-ranged)
+    (set-goal byz-intel-transition-confidence-goal 55))
+(defrule
+    (up-compare-goal byz-intel-ranged-belief-goal >= c:70)
+    (up-compare-goal byz-intel-signal-siege-goal >= c:3)
+=>
+    (set-goal byz-intel-transition-candidate-goal byz-army-siege)
+    (set-goal byz-intel-transition-confidence-goal 65))
+(defrule
+    (up-compare-goal byz-intel-infantry-belief-goal >= c:70)
+=>
+    (set-goal byz-intel-transition-candidate-goal byz-army-gunpowder)
+    (set-goal byz-intel-transition-confidence-goal 50))
+(defrule
+    (up-compare-goal byz-intel-threat-diversity-goal >= c:70)
+=>
+    (set-goal byz-intel-transition-confidence-goal 60)
+    (set-goal byz-intel-ambiguity-goal 75))
+(defrule
+    (up-compare-goal byz-intel-transition-confidence-goal >= c:60)
+=>
+    (set-goal byz-enemy-transition-goal 70)
+    (set-goal byz-transition-stage-goal byz-transition-suspected))
+
+; Enemy strategic memory exports.
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (set-goal byz-enemy-mass-goal 25)
+    (set-goal byz-enemy-quality-goal 50)
+    (set-goal byz-enemy-reinforcement-speed-goal 50)
+    (set-goal byz-enemy-war-sustainability-goal 60)
+    (set-goal byz-enemy-map-freedom-goal 50))
+(defrule (up-compare-goal byz-intel-signal-mass-goal >= c:20) => (set-goal byz-enemy-mass-goal 80))
+(defrule (up-compare-goal byz-intel-signal-mass-goal >= c:35) => (set-goal byz-enemy-mass-goal 95))
+(defrule (up-compare-goal byz-intel-threat-diversity-goal >= c:70) => (set-goal byz-enemy-quality-goal 75))
+(defrule (up-compare-goal byz-intel-signal-production-goal >= c:6) => (set-goal byz-enemy-war-sustainability-goal 80))
+(defrule (up-compare-goal byz-intel-signal-production-goal <= c:2) => (set-goal byz-enemy-war-sustainability-goal 35))
+(defrule (up-compare-goal byz-intel-signal-fortification-goal >= c:3) => (set-goal byz-enemy-map-freedom-goal 40))
+(defrule (up-compare-goal byz-intel-signal-fortification-goal <= c:1) => (set-goal byz-enemy-map-freedom-goal 70))
+(defrule (up-compare-goal byz-intel-mobile-belief-goal >= c:70) => (set-goal byz-enemy-reinforcement-speed-goal 75))
+(defrule (up-compare-goal byz-enemy-war-sustainability-goal <= c:35) => (set-goal byz-enemy-recovery-capacity-goal 30))
+(defrule (up-compare-goal byz-enemy-war-sustainability-goal >= c:75) => (set-goal byz-enemy-recovery-capacity-goal 75))
+
+; Own map / initiative are bounded interpretations of visibility and enemy freedom.
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (set-goal byz-map-control-goal 50)
+    (set-goal byz-initiative-goal 50)
+    (up-modify-goal byz-cavalry-pressure-goal g:= byz-intel-cavalry-belief-goal)
+    (up-modify-goal byz-ranged-pressure-goal g:= byz-intel-ranged-belief-goal)
+    (up-modify-goal byz-infantry-pressure-goal g:= byz-intel-infantry-belief-goal)
+    (up-modify-goal byz-siege-pressure-goal g:= byz-intel-siege-belief-goal))
+(defrule (up-compare-goal byz-enemy-map-freedom-goal <= c:40) => (set-goal byz-map-control-goal 75))
+(defrule (up-compare-goal byz-enemy-map-freedom-goal >= c:70) => (set-goal byz-map-control-goal 30))
+(defrule (up-compare-goal byz-intel-mobile-belief-goal >= c:60) => (set-goal byz-initiative-goal 65))
+(defrule (up-compare-goal byz-intel-overextension-goal >= c:70) => (set-goal byz-initiative-goal 75))
+
+; Information valuation. These are requests, not scout execution.
+(defrule
+    (up-compare-goal byz-intel-ambiguity-goal >= c:60)
+=>
+    (set-goal byz-intel-observe-priority-goal byz-cap-scouting)
+    (set-goal byz-intel-scout-value-goal 85)
+    (set-goal byz-intel-fog-risk-goal 80)
+    (set-goal byz-intel-scout-request-goal 90))
+(defrule
+    (up-compare-goal byz-intel-last-seen-age-goal >= c:45)
+=>
+    (set-goal byz-intel-scout-value-goal 90)
+    (set-goal byz-intel-scout-request-goal 95))
+
+; Alert/deadline.
+(defrule
+    (up-compare-goal byz-intel-signal-cavalry-goal >= c:20)
+    (up-compare-goal byz-intel-last-seen-age-goal <= c:30)
+=>
+    (set-goal byz-intel-deadline-class-goal byz-deadline-immediate)
+    (set-goal byz-intel-alert-goal byz-threat-high))
+(defrule
+    (up-compare-goal byz-intel-signal-siege-goal >= c:8)
+=>
+    (set-goal byz-intel-deadline-class-goal byz-deadline-tight)
+    (set-goal byz-intel-alert-goal byz-threat-high))
+(defrule
+    (up-compare-goal byz-threat-score-goal >= c:85)
+=>
+    (set-goal byz-intel-alert-goal byz-threat-critical))
+
+; Confidence/stability output is intelligence-owned truth.
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (up-modify-goal byz-enemy-transition-pressure-goal g:= byz-intel-transition-confidence-goal)
+    (up-modify-goal byz-enemy-production-depth-goal g:= byz-intel-signal-production-goal)
+    (up-modify-goal byz-rx-hypothesis-goal g:= byz-intel-hypothesis-a-goal)
+    (up-modify-goal byz-intel-previous-threat-score-goal g:= byz-intel-model-snapshot-goal)
+    (up-modify-goal byz-intel-model-snapshot-goal g:= byz-threat-score-goal)
+    (set-goal byz-intel-decision-confidence-goal 55))
+(defrule
+    (up-compare-goal byz-intel-previous-threat-score-goal g:== byz-threat-score-goal)
+    (up-compare-goal byz-intel-freshness-goal >= c:70)
+=>
+    (set-goal byz-intel-model-stability-goal 80)
+    (set-goal byz-intel-decision-confidence-goal 80))
+(defrule
+    (up-compare-goal byz-intel-previous-threat-score-goal g:!= byz-threat-score-goal)
+=>
+    (set-goal byz-intel-model-stability-goal 35)
+    (set-goal byz-intel-decision-confidence-goal 45))
+(defrule
+    (up-compare-goal byz-intel-last-seen-age-goal >= c:90)
+=>
+    (set-goal byz-intel-model-stability-goal 20)
+    (set-goal byz-intel-decision-confidence-goal 25))
+
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (set-goal byz-intel-cycle-goal byz-intel-observe)
+    (set-goal byz-intel-freshness-goal 100))

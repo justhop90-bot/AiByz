@@ -1,0 +1,701 @@
+; ============================================================================
+; AD BYZANTINE DEFICIT & PRODUCTION DIRECTOR
+; ============================================================================
+; The factory commander.
+;
+; Purpose:
+;   Convert the winning composition selected by the Composition Optimizer into
+;   exact deficits, resource posture, production capacity pressure, and timing
+;   requirements.
+;
+; Core doctrine:
+;   "Do not build what the army does not need."
+;   "Do not buy a counter twice."
+;   "Do not starve the next strategic conversion to feed the current queue."
+;
+; This module deliberately separates:
+;   1) WHAT the optimizer wants,
+;   2) WHAT we already have,
+;   3) WHAT is actually missing,
+;   4) WHAT resource bottleneck blocks the plan,
+;   5) WHAT production infrastructure is needed,
+;   6) WHEN changing the plan is worth its transition cost.
+;
+; IMPORTANT:
+;   The Director does NOT assume it can safely override units.per's reset/
+;   priority machinery. It computes authoritative AD deficits and economic
+;   priorities first. A later integration pass will give these deficits command
+;   authority at the correct location in the execution order.
+;
+; It explicitly enables the uploaded Promisory intelligent-gathering mode because
+; the stock AI exposes that mode through sn-intelligent-gathering.
+;
+; Design basis:
+;   - minimum effective mass
+;   - resource-exchange asymmetry
+;   - production inefficiency as an enemy failure state
+;   - transition costs
+;   - Imperial timing conversion
+;   - cheap counter -> enemy pivot -> new counter -> conversion loop
+; ============================================================================
+
+(defconst byz-prod-cycle-goal 802) ; production director cycle
+(defconst byz-prod-plan-state-goal 803) ; production plan state
+(defconst byz-prod-confidence-goal 804) ; confidence in production plan
+(defconst byz-prod-urgency-goal 806) ; production urgency
+(defconst byz-prod-deficit-total-goal 807) ; total military deficit
+(defconst byz-prod-deficit-food-goal 808) ; food-heavy production deficit
+(defconst byz-prod-deficit-wood-goal 809) ; wood-heavy production deficit
+(defconst byz-prod-deficit-gold-goal 810) ; gold-heavy production deficit
+(defconst byz-prod-deficit-siege-goal 811) ; siege production deficit
+(defconst byz-prod-spears-current-goal 812) ; current spear count
+(defconst byz-prod-skirm-current-goal 813) ; current skirmisher count
+(defconst byz-prod-camel-current-goal 814) ; current camel count
+(defconst byz-prod-hussar-current-goal 815) ; current hussar count
+(defconst byz-prod-champ-current-goal 816) ; current champion count
+(defconst byz-prod-cataph-current-goal 817) ; current Cataphract count
+(defconst byz-prod-hc-current-goal 818) ; current Hand Cannoneer count
+(defconst byz-prod-monk-current-goal 819) ; current monk count
+(defconst byz-prod-mango-current-goal 820) ; current mangonel count
+(defconst byz-prod-ram-current-goal 821) ; current ram count
+(defconst byz-prod-treb-current-goal 822) ; current trebuchet count
+(defconst byz-prod-bbc-current-goal 823) ; current bombard count
+(defconst byz-prod-spears-deficit-goal 824) ; missing spear-line units
+(defconst byz-prod-skirm-deficit-goal 825) ; missing skirmisher-line units
+(defconst byz-prod-camel-deficit-goal 826) ; missing camels
+(defconst byz-prod-hussar-deficit-goal 827) ; missing hussars
+(defconst byz-prod-champ-deficit-goal 828) ; missing champions
+(defconst byz-prod-cataph-deficit-goal 829) ; missing Cataphracts
+(defconst byz-prod-hc-deficit-goal 831) ; missing Hand Cannoneers
+(defconst byz-prod-monk-deficit-goal 832) ; missing monks
+(defconst byz-prod-mango-deficit-goal 833) ; missing mangonels
+(defconst byz-prod-ram-deficit-goal 834) ; missing rams
+(defconst byz-prod-treb-deficit-goal 835) ; missing trebuchets
+(defconst byz-prod-bbc-deficit-goal 836) ; missing Bombard Cannons
+(defconst byz-prod-queue-pressure-goal 837) ; production queue pressure
+(defconst byz-prod-capacity-pressure-goal 838) ; production capacity pressure
+(defconst byz-prod-building-pressure-goal 839) ; production-building need
+(defconst byz-prod-tech-pressure-goal 840) ; technology prerequisite pressure
+(defconst byz-prod-resource-posture-goal 841) ; resource posture
+(defconst byz-prod-food-priority-goal 842) ; food priority
+(defconst byz-prod-wood-priority-goal 843) ; wood priority
+(defconst byz-prod-gold-priority-goal 844) ; gold priority
+(defconst byz-prod-stone-priority-goal 845) ; stone priority
+(defconst byz-prod-reserve-priority-goal 846) ; reserve/optionality priority
+(defconst byz-prod-imperial-pressure-goal 847) ; Imperial timing pressure
+(defconst byz-prod-siege-conversion-goal 848) ; siege conversion pressure
+(defconst byz-prod-trash-conversion-goal 849) ; trash conversion pressure
+(defconst byz-prod-gold-denial-goal 851) ; gold denial economic priority
+(defconst byz-prod-forward-production-goal 852) ; forward production value
+(defconst byz-prod-production-lock-goal 853) ; production lock state
+(defconst byz-prod-switch-cost-goal 854) ; cost of changing production
+
+; --------------------------- STATE ENUMS ----------------------------------
+(defconst byz-prod-observe 0)
+(defconst byz-prod-measure 1)
+(defconst byz-prod-deficit 2)
+(defconst byz-prod-resource 3)
+(defconst byz-prod-capacity 4)
+(defconst byz-prod-authorize 5)
+
+; --------------------------- INITIALIZATION -------------------------------
+(defrule
+    (true)
+=>
+    (set-goal byz-prod-cycle-goal byz-prod-observe)
+    (set-goal byz-prod-plan-state-goal 0)
+    (set-goal byz-prod-confidence-goal 0)
+    (set-goal byz-prod-urgency-goal 0)
+    (set-goal byz-prod-deficit-total-goal 0)
+    (set-goal byz-prod-deficit-food-goal 0)
+    (set-goal byz-prod-deficit-wood-goal 0)
+    (set-goal byz-prod-deficit-gold-goal 0)
+    (set-goal byz-prod-deficit-siege-goal 0)
+    (set-goal byz-prod-spears-current-goal 0)
+    (set-goal byz-prod-skirm-current-goal 0)
+    (disable-self))
+(defrule
+    (true)
+=>
+    (set-goal byz-prod-camel-current-goal 0)
+    (set-goal byz-prod-hussar-current-goal 0)
+    (set-goal byz-prod-champ-current-goal 0)
+    (set-goal byz-prod-cataph-current-goal 0)
+    (set-goal byz-prod-hc-current-goal 0)
+    (set-goal byz-prod-monk-current-goal 0)
+    (set-goal byz-prod-mango-current-goal 0)
+    (set-goal byz-prod-ram-current-goal 0)
+    (set-goal byz-prod-treb-current-goal 0)
+    (set-goal byz-prod-bbc-current-goal 0)
+    (set-goal byz-prod-spears-deficit-goal 0)
+    (disable-self))
+(defrule
+    (true)
+=>
+    (set-goal byz-prod-skirm-deficit-goal 0)
+    (set-goal byz-prod-camel-deficit-goal 0)
+    (set-goal byz-prod-hussar-deficit-goal 0)
+    (set-goal byz-prod-champ-deficit-goal 0)
+    (set-goal byz-prod-cataph-deficit-goal 0)
+    (set-goal byz-prod-hc-deficit-goal 0)
+    (set-goal byz-prod-monk-deficit-goal 0)
+    (set-goal byz-prod-mango-deficit-goal 0)
+    (set-goal byz-prod-ram-deficit-goal 0)
+    (set-goal byz-prod-treb-deficit-goal 0)
+    (set-goal byz-prod-bbc-deficit-goal 0)
+    (disable-self))
+(defrule
+    (true)
+=>
+    (set-goal byz-prod-queue-pressure-goal 0)
+    (set-goal byz-prod-capacity-pressure-goal 0)
+    (set-goal byz-prod-building-pressure-goal 0)
+    (set-goal byz-prod-tech-pressure-goal 0)
+    (set-goal byz-prod-resource-posture-goal 0)
+    (set-goal byz-prod-food-priority-goal 0)
+    (set-goal byz-prod-wood-priority-goal 0)
+    (set-goal byz-prod-gold-priority-goal 0)
+    (set-goal byz-prod-stone-priority-goal 0)
+    (set-goal byz-prod-reserve-priority-goal 0)
+    (set-goal byz-prod-imperial-pressure-goal 0)
+    (disable-self))
+(defrule
+    (true)
+=>
+    (set-goal byz-prod-siege-conversion-goal 0)
+    (set-goal byz-prod-trash-conversion-goal 0)
+    (set-goal byz-prod-gold-denial-goal 0)
+    (set-goal byz-prod-forward-production-goal 0)
+    (set-goal byz-prod-production-lock-goal 0)
+    (set-goal byz-prod-switch-cost-goal 0)
+    (set-strategic-number sn-intelligent-gathering 1)
+    (disable-self))
+
+; ============================================================================
+; PHASE 1 — SNAPSHOT THE SELECTED PLAN'S ACTUAL ARMY
+; ============================================================================
+; We read the same strategic-number families the uploaded Promisory units system
+; already uses for production decisions. This keeps AD planning aligned with the
+; existing engine rather than inventing a second unit-count universe.
+
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (up-modify-goal byz-prod-spears-current-goal s:= spears))
+
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (up-modify-goal byz-prod-skirm-current-goal s:= skirms))
+
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (up-modify-goal byz-prod-camel-current-goal s:= camels))
+
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (up-modify-goal byz-prod-hussar-current-goal s:= husks))
+
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (up-get-fact unit-type-count-total militiaman-line byz-prod-champ-current-goal))
+
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (up-get-fact unit-type-count-total cataphract-line byz-prod-cataph-current-goal)
+    (up-get-fact unit-type-count-total hand-cannoneer byz-prod-hc-current-goal)
+    (up-get-fact unit-type-count-total monk byz-prod-monk-current-goal)
+    (up-get-fact unit-type-count-total mangonel-line byz-prod-mango-current-goal)
+    (up-get-fact unit-type-count-total battering-ram-line byz-prod-ram-current-goal)
+    (up-get-fact unit-type-count-total trebuchet-set byz-prod-treb-current-goal)
+    (up-get-fact unit-type-count-total bombard-cannon byz-prod-bbc-current-goal))
+
+; ============================================================================
+; PHASE 2 — EXACT DEFICIT CALCULATION
+; ============================================================================
+; A deficit is a command to create missing capability, NOT a command to create
+; a unit for its own sake.
+
+(defrule
+    (up-compare-goal byz-force-spears-demand-goal > g:byz-prod-spears-current-goal)
+=>
+    (up-modify-goal byz-prod-spears-deficit-goal g:= byz-force-spears-demand-goal)
+    (up-modify-goal byz-prod-spears-deficit-goal g:- byz-prod-spears-current-goal))
+(defrule
+    (up-compare-goal byz-force-spears-demand-goal <= g:byz-prod-spears-current-goal)
+=>
+    (set-goal byz-prod-spears-deficit-goal 0))
+
+(defrule
+    (up-compare-goal byz-force-skirm-demand-goal > g:byz-prod-skirm-current-goal)
+=>
+    (up-modify-goal byz-prod-skirm-deficit-goal g:= byz-force-skirm-demand-goal)
+    (up-modify-goal byz-prod-skirm-deficit-goal g:- byz-prod-skirm-current-goal))
+(defrule
+    (up-compare-goal byz-force-skirm-demand-goal <= g:byz-prod-skirm-current-goal)
+=>
+    (set-goal byz-prod-skirm-deficit-goal 0))
+
+(defrule
+    (up-compare-goal byz-force-camel-demand-goal > g:byz-prod-camel-current-goal)
+=>
+    (up-modify-goal byz-prod-camel-deficit-goal g:= byz-force-camel-demand-goal)
+    (up-modify-goal byz-prod-camel-deficit-goal g:- byz-prod-camel-current-goal))
+(defrule
+    (up-compare-goal byz-force-camel-demand-goal <= g:byz-prod-camel-current-goal)
+=>
+    (set-goal byz-prod-camel-deficit-goal 0))
+
+(defrule
+    (up-compare-goal byz-force-hussar-demand-goal > g:byz-prod-hussar-current-goal)
+=>
+    (up-modify-goal byz-prod-hussar-deficit-goal g:= byz-force-hussar-demand-goal)
+    (up-modify-goal byz-prod-hussar-deficit-goal g:- byz-prod-hussar-current-goal))
+(defrule
+    (up-compare-goal byz-force-hussar-demand-goal <= g:byz-prod-hussar-current-goal)
+=>
+    (set-goal byz-prod-hussar-deficit-goal 0))
+
+(defrule
+    (up-compare-goal byz-force-champ-demand-goal > g:byz-prod-champ-current-goal)
+=>
+    (up-modify-goal byz-prod-champ-deficit-goal g:= byz-force-champ-demand-goal)
+    (up-modify-goal byz-prod-champ-deficit-goal g:- byz-prod-champ-current-goal))
+(defrule
+    (up-compare-goal byz-force-champ-demand-goal <= g:byz-prod-champ-current-goal)
+=>
+    (set-goal byz-prod-champ-deficit-goal 0))
+
+(defrule
+    (up-compare-goal byz-force-cataph-demand-goal > g:byz-prod-cataph-current-goal)
+=>
+    (up-modify-goal byz-prod-cataph-deficit-goal g:= byz-force-cataph-demand-goal)
+    (up-modify-goal byz-prod-cataph-deficit-goal g:- byz-prod-cataph-current-goal))
+(defrule
+    (up-compare-goal byz-force-cataph-demand-goal <= g:byz-prod-cataph-current-goal)
+=>
+    (set-goal byz-prod-cataph-deficit-goal 0))
+
+(defrule
+    (up-compare-goal byz-force-hc-demand-goal > g:byz-prod-hc-current-goal)
+=>
+    (up-modify-goal byz-prod-hc-deficit-goal g:= byz-force-hc-demand-goal)
+    (up-modify-goal byz-prod-hc-deficit-goal g:- byz-prod-hc-current-goal))
+(defrule
+    (up-compare-goal byz-force-hc-demand-goal <= g:byz-prod-hc-current-goal)
+=>
+    (set-goal byz-prod-hc-deficit-goal 0))
+
+(defrule
+    (up-compare-goal byz-force-monk-demand-goal > g:byz-prod-monk-current-goal)
+=>
+    (up-modify-goal byz-prod-monk-deficit-goal g:= byz-force-monk-demand-goal)
+    (up-modify-goal byz-prod-monk-deficit-goal g:- byz-prod-monk-current-goal))
+(defrule
+    (up-compare-goal byz-force-monk-demand-goal <= g:byz-prod-monk-current-goal)
+=>
+    (set-goal byz-prod-monk-deficit-goal 0))
+
+(defrule
+    (up-compare-goal byz-force-mango-demand-goal > g:byz-prod-mango-current-goal)
+=>
+    (up-modify-goal byz-prod-mango-deficit-goal g:= byz-force-mango-demand-goal)
+    (up-modify-goal byz-prod-mango-deficit-goal g:- byz-prod-mango-current-goal))
+(defrule
+    (up-compare-goal byz-force-mango-demand-goal <= g:byz-prod-mango-current-goal)
+=>
+    (set-goal byz-prod-mango-deficit-goal 0))
+
+(defrule
+    (up-compare-goal byz-force-ram-demand-goal > g:byz-prod-ram-current-goal)
+=>
+    (up-modify-goal byz-prod-ram-deficit-goal g:= byz-force-ram-demand-goal)
+    (up-modify-goal byz-prod-ram-deficit-goal g:- byz-prod-ram-current-goal))
+(defrule
+    (up-compare-goal byz-force-ram-demand-goal <= g:byz-prod-ram-current-goal)
+=>
+    (set-goal byz-prod-ram-deficit-goal 0))
+
+(defrule
+    (up-compare-goal byz-force-treb-demand-goal > g:byz-prod-treb-current-goal)
+=>
+    (up-modify-goal byz-prod-treb-deficit-goal g:= byz-force-treb-demand-goal)
+    (up-modify-goal byz-prod-treb-deficit-goal g:- byz-prod-treb-current-goal))
+(defrule
+    (up-compare-goal byz-force-treb-demand-goal <= g:byz-prod-treb-current-goal)
+=>
+    (set-goal byz-prod-treb-deficit-goal 0))
+
+(defrule
+    (up-compare-goal byz-force-bbc-demand-goal > g:byz-prod-bbc-current-goal)
+=>
+    (up-modify-goal byz-prod-bbc-deficit-goal g:= byz-force-bbc-demand-goal)
+    (up-modify-goal byz-prod-bbc-deficit-goal g:- byz-prod-bbc-current-goal))
+(defrule
+    (up-compare-goal byz-force-bbc-demand-goal <= g:byz-prod-bbc-current-goal)
+=>
+    (set-goal byz-prod-bbc-deficit-goal 0))
+
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (set-goal byz-prod-deficit-total-goal 0)
+    (up-modify-goal byz-prod-deficit-total-goal g:+ byz-prod-spears-deficit-goal)
+    (up-modify-goal byz-prod-deficit-total-goal g:+ byz-prod-skirm-deficit-goal)
+    (up-modify-goal byz-prod-deficit-total-goal g:+ byz-prod-camel-deficit-goal)
+    (up-modify-goal byz-prod-deficit-total-goal g:+ byz-prod-hussar-deficit-goal)
+    (up-modify-goal byz-prod-deficit-total-goal g:+ byz-prod-champ-deficit-goal)
+    (up-modify-goal byz-prod-deficit-total-goal g:+ byz-prod-cataph-deficit-goal)
+    (up-modify-goal byz-prod-deficit-total-goal g:+ byz-prod-hc-deficit-goal)
+    (up-modify-goal byz-prod-deficit-total-goal g:+ byz-prod-monk-deficit-goal)
+    (up-modify-goal byz-prod-deficit-total-goal g:+ byz-prod-mango-deficit-goal)
+    (up-modify-goal byz-prod-deficit-total-goal g:+ byz-prod-ram-deficit-goal)
+    )
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (up-modify-goal byz-prod-deficit-total-goal g:+ byz-prod-treb-deficit-goal)
+    (up-modify-goal byz-prod-deficit-total-goal g:+ byz-prod-bbc-deficit-goal)
+    (set-goal byz-prod-cycle-goal byz-prod-resource)
+    )
+
+; ============================================================================
+; PHASE 3 — RESOURCE POSTURE
+; ============================================================================
+; We do not invent resource percentages. We set a strategic posture and let the
+; uploaded Promisory gathering engine perform the actual villager reassignment.
+; Existing source code explicitly exposes sn-intelligent-gathering and
+; sn-retask-gather-amount, but we only touch the well-verified intelligent-gathering
+; mode here; exact gather percentages belong in the later Economy War Director.
+;
+; Resource posture philosophy:
+;   food = sustained cheap counter production / villagers
+;   wood = skirms / spears / siege infrastructure
+;   gold = Cataphracts / gunpowder / monks / Imperial conversion
+;   stone = forward anchor / defensive tempo / strategic castle
+
+(defrule
+    (up-compare-goal byz-prod-spears-deficit-goal >= c:10)
+    (up-compare-goal byz-prod-skirm-deficit-goal >= c:10)
+=>
+    (set-goal byz-prod-resource-posture-goal byz-eco-balanced)
+    (set-goal byz-prod-food-priority-goal 70)
+    (set-goal byz-prod-wood-priority-goal 85)
+    (set-goal byz-prod-gold-priority-goal 35))
+
+(defrule
+    (up-compare-goal byz-prod-cataph-deficit-goal >= c:6)
+    (up-compare-goal byz-prod-hc-deficit-goal >= c:6)
+=>
+    (set-goal byz-prod-resource-posture-goal byz-eco-gold-priority)
+    (set-goal byz-prod-food-priority-goal 60)
+    (set-goal byz-prod-wood-priority-goal 45)
+    (set-goal byz-prod-gold-priority-goal 90))
+
+(defrule
+    (up-compare-goal byz-prod-mango-deficit-goal >= c:2)
+    (up-compare-goal byz-prod-ram-deficit-goal >= c:1)
+=>
+    (set-goal byz-prod-resource-posture-goal byz-eco-siege)
+    (set-goal byz-prod-food-priority-goal 50)
+    (set-goal byz-prod-wood-priority-goal 90)
+    (set-goal byz-prod-gold-priority-goal 70))
+
+(defrule
+    (up-compare-goal byz-force-conversion-demand-goal >= c:80)
+    (up-compare-goal byz-eco-security-goal >= c:60)
+=>
+    (set-goal byz-prod-resource-posture-goal byz-eco-imperial)
+    (set-goal byz-prod-food-priority-goal 80)
+    (set-goal byz-prod-gold-priority-goal 85)
+    (set-goal byz-prod-wood-priority-goal 60))
+
+(defrule
+    (up-compare-goal byz-optionality-goal <= c:30)
+=>
+    (set-goal byz-prod-reserve-priority-goal 90)
+    (set-goal byz-prod-switch-cost-goal 80))
+
+(defrule
+    (up-compare-goal byz-eco-security-goal <= c:30)
+=>
+    (set-goal byz-prod-reserve-priority-goal 95)
+    (set-goal byz-prod-urgency-goal 80))
+
+(defrule
+    (up-compare-goal byz-optionality-goal >= c:70)
+    (up-compare-goal byz-win-pressure-goal >= c:70)
+=>
+    (set-goal byz-prod-reserve-priority-goal 40))
+
+; ============================================================================
+; PHASE 4 — TIMING AND CONVERSION
+; ============================================================================
+; A production plan is allowed to sacrifice short-term army throughput when the
+; Byzantine Imperial timing window is worth more than one extra counter unit.
+
+(defrule
+    (up-compare-goal byz-conversion-value-goal >= c:70)
+    (up-compare-goal byz-threat-score-goal >= c:50)
+=>
+    (set-goal byz-prod-imperial-pressure-goal 90)
+    (set-goal byz-prod-gold-priority-goal 85)
+    (set-goal byz-prod-food-priority-goal 80)
+    (set-goal byz-prod-switch-cost-goal 70))
+
+(defrule
+    (up-compare-goal byz-transition-stage-goal == byz-transition-punishable)
+=>
+    (set-goal byz-prod-urgency-goal 90)
+    (set-goal byz-prod-siege-conversion-goal 85))
+
+(defrule
+    (up-compare-goal byz-state-goal == c:byz-state-deny-recovery)
+=>
+    (set-goal byz-prod-gold-denial-goal 90)
+    (set-goal byz-prod-siege-conversion-goal 90))
+
+; ============================================================================
+; PHASE 5 — PRODUCTION CAPACITY / BOTTLENECKS
+; ============================================================================
+; We measure visible production infrastructure. If the plan demands units from
+; a family whose production depth is too shallow, the Director raises capacity
+; pressure rather than simply screaming for more units.
+
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (set-goal byz-prod-building-pressure-goal 0)
+    (up-get-focus-fact building-type-count barracks temporary-goal)
+    (up-get-focus-fact building-type-count archery-range temporary-goal2)
+    (up-get-focus-fact building-type-count stable temporary-goal3)
+    (up-get-focus-fact building-type-count siege-workshop temporary-goal4)
+    (up-modify-goal byz-prod-building-pressure-goal g:+ temporary-goal)
+    (up-modify-goal byz-prod-building-pressure-goal g:+ temporary-goal2)
+    (up-modify-goal byz-prod-building-pressure-goal g:+ temporary-goal3)
+    (up-modify-goal byz-prod-building-pressure-goal g:+ temporary-goal4))
+
+(defrule
+    (up-compare-goal byz-prod-deficit-total-goal >= c:20)
+    (up-compare-goal byz-prod-building-pressure-goal < c:4)
+=>
+    (set-goal byz-prod-capacity-pressure-goal 90)
+    (set-goal byz-prod-production-lock-goal 1))
+
+(defrule
+    (up-compare-goal byz-force-siege-demand-goal >= c:60)
+    (up-compare-goal byz-prod-building-pressure-goal < c:6)
+=>
+    (set-goal byz-prod-siege-conversion-goal 80)
+    (set-goal byz-prod-capacity-pressure-goal 75))
+
+; ============================================================================
+; PHASE 6 — PLAN STABILITY / SWITCH COST
+; ============================================================================
+; Production changes have costs: idle production buildings, missing upgrades,
+; resource imbalance, and composition whiplash. The Director resists needless
+; switching unless urgency or conversion value overwhelms the switch cost.
+
+(defrule
+    (up-compare-goal byz-rx-regret-goal < c:40)
+    (up-compare-goal byz-prod-deficit-total-goal < c:8)
+=>
+    (set-goal byz-prod-switch-cost-goal 85)
+    (set-goal byz-prod-urgency-goal 30))
+
+(defrule
+    (up-compare-goal byz-rx-regret-goal >= c:80)
+=>
+    (set-goal byz-prod-switch-cost-goal 20)
+    (set-goal byz-prod-urgency-goal 95))
+
+(defrule
+    (up-compare-goal byz-intel-model-stability-goal <= c:30)
+    (up-compare-goal byz-prod-deficit-total-goal <= c:12)
+=>
+    (set-goal byz-prod-switch-cost-goal 90)
+    (set-goal byz-prod-reserve-priority-goal 90))
+
+; ============================================================================
+; PHASE 7 — BYZANTINE ATTRITION MODE
+; ============================================================================
+; The economy is not merely trying to sustain our army. It is trying to sustain
+; the ECONOMIC MISMATCH the dissertation describes.
+
+(defrule
+    (up-compare-goal byz-conversion-value-goal >= c:70)
+    (up-compare-goal byz-transition-stage-goal == byz-transition-punishable)
+=>
+    (set-goal byz-prod-gold-denial-goal 90)
+    (set-goal byz-prod-trash-conversion-goal 85))
+
+(defrule
+    (up-compare-goal byz-prod-trash-conversion-goal >= c:70)
+    (up-compare-goal byz-optionality-goal >= c:50)
+=>
+    (set-goal byz-prod-food-priority-goal 85)
+    (set-goal byz-prod-wood-priority-goal 85)
+    (set-goal byz-prod-gold-priority-goal 45))
+
+(defrule
+    (up-compare-goal byz-prod-gold-denial-goal >= c:80)
+    (up-compare-goal byz-win-pressure-goal >= c:70)
+=>
+    (set-goal byz-prod-production-lock-goal 2)
+    (set-goal byz-prod-forward-production-goal 75))
+
+; ============================================================================
+; PHASE 8 — FORWARD PRODUCTION
+; ============================================================================
+; The dissertation treats Byzantine building HP as time-production and explicitly
+; values durable forward production. We record that value here; the Building
+; Director will later decide the exact placement/build action.
+
+(defrule
+    (up-compare-goal byz-prod-forward-production-goal >= c:70)
+    (up-compare-goal byz-map-control-goal >= c:60)
+    (up-compare-goal byz-production-capacity-goal <= c:60)
+=>
+    (set-goal byz-prod-building-pressure-goal 80))
+
+; ============================================================================
+; PHASE 9 — FINAL EXPORT
+; ============================================================================
+; These values are the hand-off contract to the coming Economy War Director,
+; Building Director, and Production Execution layer.
+
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (set-goal byz-prod-deficit-food-goal 0)
+    (set-goal byz-prod-deficit-wood-goal 0)
+    (set-goal byz-prod-deficit-gold-goal 0)
+    (set-goal byz-prod-deficit-siege-goal 0)
+    (up-modify-goal byz-prod-deficit-food-goal g:+ byz-prod-spears-deficit-goal)
+    (up-modify-goal byz-prod-deficit-food-goal g:+ byz-prod-camel-deficit-goal)
+    (up-modify-goal byz-prod-deficit-food-goal g:+ byz-prod-hussar-deficit-goal)
+    (up-modify-goal byz-prod-deficit-food-goal g:+ byz-prod-champ-deficit-goal)
+    (up-modify-goal byz-prod-deficit-food-goal g:+ byz-prod-cataph-deficit-goal)
+    (up-modify-goal byz-prod-deficit-food-goal g:+ byz-prod-monk-deficit-goal)
+    (up-modify-goal byz-prod-deficit-wood-goal g:+ byz-prod-spears-deficit-goal)
+    )
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (up-modify-goal byz-prod-deficit-wood-goal g:+ byz-prod-skirm-deficit-goal)
+    (up-modify-goal byz-prod-deficit-wood-goal g:+ byz-prod-mango-deficit-goal)
+    (up-modify-goal byz-prod-deficit-wood-goal g:+ byz-prod-ram-deficit-goal)
+    (up-modify-goal byz-prod-deficit-gold-goal g:+ byz-prod-camel-deficit-goal)
+    (up-modify-goal byz-prod-deficit-gold-goal g:+ byz-prod-cataph-deficit-goal)
+    (up-modify-goal byz-prod-deficit-gold-goal g:+ byz-prod-hc-deficit-goal)
+    (up-modify-goal byz-prod-deficit-gold-goal g:+ byz-prod-monk-deficit-goal)
+    (up-modify-goal byz-prod-deficit-gold-goal g:+ byz-prod-treb-deficit-goal)
+    (up-modify-goal byz-prod-deficit-gold-goal g:+ byz-prod-bbc-deficit-goal)
+    (up-modify-goal byz-prod-deficit-siege-goal g:+ byz-prod-mango-deficit-goal)
+    (up-modify-goal byz-prod-deficit-siege-goal g:+ byz-prod-ram-deficit-goal)
+    )
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (up-modify-goal byz-prod-deficit-siege-goal g:+ byz-prod-treb-deficit-goal)
+    (up-modify-goal byz-prod-deficit-siege-goal g:+ byz-prod-bbc-deficit-goal)
+    (set-goal byz-prod-cycle-goal byz-prod-measure)
+    )
+
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (set-goal byz-prod-cycle-goal byz-prod-observe))
+
+; ============================================================================
+; V4 CORE MEMORY EXPORT
+; Production owns production/economy-derived shared readiness metrics.
+; These are observational exports, not strategic-state decisions.
+; ============================================================================
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (set-goal byz-production-capacity-goal 50)
+    (set-goal byz-army-value-goal 0)
+    (set-goal byz-eco-security-goal 50)
+    (set-goal byz-reinforcement-gap-goal 50))
+
+(defrule
+    (up-compare-goal byz-prod-capacity-pressure-goal >= c:70)
+=>
+    (set-goal byz-production-capacity-goal 35))
+(defrule
+    (up-compare-goal byz-prod-capacity-pressure-goal <= c:30)
+=>
+    (set-goal byz-production-capacity-goal 80))
+(defrule
+    (up-compare-goal byz-prod-capacity-pressure-goal <= c:15)
+    (building-type-count-total barracks >= 2)
+    (building-type-count-total stable >= 1)
+=>
+    (set-goal byz-production-capacity-goal 95))
+
+(defrule
+    (up-compare-goal byz-prod-reserve-priority-goal >= c:80)
+    (up-compare-goal byz-prod-deficit-total-goal <= c:15)
+=>
+    (set-goal byz-eco-security-goal 85))
+(defrule
+    (up-compare-goal byz-prod-reserve-priority-goal <= c:30)
+=>
+    (set-goal byz-eco-security-goal 30))
+(defrule
+    (up-compare-goal byz-prod-deficit-total-goal >= c:30)
+=>
+    (set-goal byz-eco-security-goal 35))
+
+(defrule
+    (up-compare-goal byz-prod-capacity-pressure-goal >= c:70)
+    (up-compare-goal byz-prod-deficit-total-goal >= c:20)
+=>
+    (set-goal byz-reinforcement-gap-goal 30))
+(defrule
+    (up-compare-goal byz-prod-capacity-pressure-goal <= c:35)
+    (up-compare-goal byz-prod-deficit-total-goal <= c:15)
+=>
+    (set-goal byz-reinforcement-gap-goal 75))
+
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (set-goal temporary-goal5 0)
+    (up-modify-goal temporary-goal5 g:+ byz-prod-spears-current-goal)
+    (up-modify-goal temporary-goal5 g:+ byz-prod-skirm-current-goal)
+    (up-modify-goal temporary-goal5 c:* 2)
+    (up-modify-goal temporary-goal5 g:+ byz-prod-camel-current-goal)
+    (up-modify-goal temporary-goal5 g:+ byz-prod-hussar-current-goal)
+    (up-modify-goal temporary-goal5 c:* 2)
+    (up-modify-goal temporary-goal5 g:+ byz-prod-champ-current-goal)
+    (up-modify-goal temporary-goal5 g:+ byz-prod-cataph-current-goal)
+    (up-modify-goal temporary-goal5 c:* 2)
+    (up-modify-goal temporary-goal5 g:+ byz-prod-hc-current-goal)
+    (up-modify-goal temporary-goal5 g:+ byz-prod-monk-current-goal)
+    (up-modify-goal temporary-goal5 g:+ byz-prod-mango-current-goal)
+    (up-modify-goal temporary-goal5 g:+ byz-prod-ram-current-goal)
+    (up-modify-goal temporary-goal5 g:+ byz-prod-treb-current-goal)
+    (up-modify-goal temporary-goal5 g:+ byz-prod-bbc-current-goal))
+(defrule
+    (up-compare-goal temporary-goal5 >= c:50)
+=>
+    (set-goal byz-army-value-goal 70))
+(defrule
+    (up-compare-goal temporary-goal5 >= c:100)
+=>
+    (set-goal byz-army-value-goal 90))
+(defrule
+    (up-compare-goal temporary-goal5 < c:20)
+=>
+    (set-goal byz-army-value-goal 30))
+
+; ============================================================================
+; END OF AD BYZANTINE DEFICIT & PRODUCTION DIRECTOR
+; ============================================================================

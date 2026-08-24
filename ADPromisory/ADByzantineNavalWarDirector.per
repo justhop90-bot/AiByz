@@ -1,0 +1,474 @@
+; ============================================================================
+; AD BYZANTINE NAVAL WAR DIRECTOR
+; ============================================================================
+; The Admiral.
+;
+; Doctrine derived from the dissertation:
+;   - Water is an economic theater, not a side-show.
+;   - Naval control protects fishing/economic production and denies the enemy
+;     the same resource.
+;   - Byzantine Fire Ships are a timing and attrition weapon; Greek Fire
+;     increases the value of the transition window.
+;   - Fight only when the water exchange is favorable; preserve the fleet when
+;     a bad engagement would destroy the economic advantage.
+;   - Use the native Promisory water-control system rather than replacing it.
+;   - Convert naval control into dock denial, fishing denial, shore pressure,
+;     transport control, and eventually land-side conversion.
+;
+; IMPORTANT: This module is a strategic naval commander. It steers the existing
+; watercontrol.per machinery through water-action, water-micro, training goals,
+; and naval technology requests. It does not invent a parallel naval engine.
+; ============================================================================
+
+(defconst byz-navy-cycle-goal 2020) ; naval cycle
+(defconst byz-navy-state-goal 2021) ; naval state
+(defconst byz-navy-confidence-goal 2022) ; naval confidence
+(defconst byz-navy-urgency-goal 2023) ; naval urgency
+(defconst byz-navy-water-value-goal 2024) ; strategic water value
+(defconst byz-navy-economic-value-goal 2025) ; water economic value
+(defconst byz-navy-fishing-value-goal 2026) ; fishing economy value
+(defconst byz-navy-denial-value-goal 2027) ; enemy water denial value
+(defconst byz-navy-transport-value-goal 2028) ; transport value
+(defconst byz-navy-shore-conversion-goal 2029) ; shore conversion value
+(defconst byz-navy-target-priority-goal 2030) ; naval target priority
+(defconst byz-navy-target-type-goal 2031) ; naval target type
+(defconst byz-navy-local-advantage-goal 2032) ; local naval advantage
+(defconst byz-navy-enemy-strength-goal 2033) ; enemy naval strength
+(defconst byz-navy-own-strength-goal 2034) ; own naval strength
+(defconst byz-navy-attrition-goal 2035) ; naval attrition value
+(defconst byz-navy-fire-demand-goal 2036) ; Fire Ship demand
+(defconst byz-navy-galley-demand-goal 2037) ; galley line demand
+(defconst byz-navy-demo-demand-goal 2038) ; demolition ship demand
+(defconst byz-navy-galleon-demand-goal 2039) ; galleon demand
+(defconst byz-navy-fishing-ship-demand-goal 2040) ; fishing ship demand
+(defconst byz-navy-transport-demand-goal 2041) ; transport ship demand
+(defconst byz-navy-escort-demand-goal 2042) ; escort demand
+(defconst byz-navy-raider-demand-goal 2043) ; naval raider demand
+(defconst byz-navy-repair-demand-goal 2044) ; repair/withdraw demand
+(defconst byz-navy-retreat-goal 2045) ; retreat state
+(defconst byz-navy-pursuit-goal 2046) ; pursuit state
+(defconst byz-navy-dock-attack-goal 2047) ; dock attack state
+(defconst byz-navy-fishing-denial-goal 2048) ; fishing denial state
+(defconst byz-navy-water-control-goal 2049) ; water control state
+(defconst byz-navy-shore-pressure-goal 2050) ; shore pressure state
+(defconst byz-navy-conversion-ready-goal 2051) ; naval conversion readiness
+(defconst byz-navy-risk-goal 2052) ; naval risk
+(defconst byz-navy-overextension-goal 2053) ; naval overextension
+(defconst byz-navy-reinforcement-gap-goal 2054) ; reinforcement gap
+(defconst byz-navy-recovery-gap-goal 2055) ; naval recovery gap
+(defconst byz-navy-tech-pressure-goal 2056) ; naval tech pressure
+(defconst byz-navy-dock-capacity-goal 2057) ; dock capacity pressure
+(defconst byz-navy-fleet-switch-cost-goal 2058) ; fleet switch cost
+(defconst byz-navy-reserve-goal 2059) ; naval reserve
+(defconst byz-navy-economic-check-goal 2060) ; economic check
+(defconst byz-navy-battle-check-goal 2061) ; battlefield check
+(defconst byz-navy-comm-check-goal 2062) ; command check
+(defconst byz-navy-intel-check-goal 2063) ; intelligence check
+(defconst byz-navy-authorize-goal 2064) ; naval authorization
+(defconst byz-navy-command-goal 2065) ; naval command
+(defconst byz-navy-last-command-goal 2066) ; last naval command
+(defconst byz-navy-lock-goal 2067) ; naval plan lock
+(defconst byz-navy-water-micro-goal 2068) ; water micro override
+(defconst byz-navy-primary-fd-goal 2069) ; primary naval unit FD
+(defconst byz-navy-enemy-target-id-goal 2070) ; naval enemy target id
+(defconst byz-navy-enemy-target-distance-goal 2071) ; naval enemy target distance
+
+(defconst byz-navy-hulk-threat-goal 2072) ; Hulk-line threat
+(defconst byz-navy-hulk-counter-goal 2073) ; anti-Hulk response demand
+(defconst byz-navy-long-range-goal 2074) ; long-range ship demand
+(defconst byz-navy-shore-siege-goal 2075) ; shoreline siege demand
+
+; --------------------------- STATE ENUMS ----------------------------------
+(defconst byz-navy-idle 0)
+(defconst byz-navy-defend 1)
+(defconst byz-navy-control 2)
+(defconst byz-navy-deny 3)
+(defconst byz-navy-convert 4)
+(defconst byz-navy-retreat 5)
+(defconst byz-navy-exploit 6)
+
+; --------------------------- INITIALIZATION -------------------------------
+(defrule
+    (true)
+=>
+    (set-goal byz-navy-cycle-goal 0)
+    (set-goal byz-navy-state-goal 0)
+    (set-goal byz-navy-confidence-goal 0)
+    (set-goal byz-navy-urgency-goal 0)
+    (set-goal byz-navy-water-value-goal 0)
+    (set-goal byz-navy-economic-value-goal 0)
+    (set-goal byz-navy-fishing-value-goal 0)
+    (set-goal byz-navy-denial-value-goal 0)
+    (set-goal byz-navy-transport-value-goal 0)
+    (set-goal byz-navy-shore-conversion-goal 0)
+    (set-goal byz-navy-target-priority-goal 0)
+    (disable-self))
+(defrule
+    (true)
+=>
+    (set-goal byz-navy-target-type-goal 0)
+    (set-goal byz-navy-local-advantage-goal 0)
+    (set-goal byz-navy-enemy-strength-goal 0)
+    (set-goal byz-navy-own-strength-goal 0)
+    (set-goal byz-navy-attrition-goal 0)
+    (set-goal byz-navy-fire-demand-goal 0)
+    (set-goal byz-navy-galley-demand-goal 0)
+    (set-goal byz-navy-demo-demand-goal 0)
+    (set-goal byz-navy-galleon-demand-goal 0)
+    (set-goal byz-navy-fishing-ship-demand-goal 0)
+    (set-goal byz-navy-transport-demand-goal 0)
+    (disable-self))
+(defrule
+    (true)
+=>
+    (set-goal byz-navy-escort-demand-goal 0)
+    (set-goal byz-navy-raider-demand-goal 0)
+    (set-goal byz-navy-repair-demand-goal 0)
+    (set-goal byz-navy-retreat-goal 0)
+    (set-goal byz-navy-pursuit-goal 0)
+    (set-goal byz-navy-dock-attack-goal 0)
+    (set-goal byz-navy-fishing-denial-goal 0)
+    (set-goal byz-navy-water-control-goal 0)
+    (set-goal byz-navy-shore-pressure-goal 0)
+    (set-goal byz-navy-conversion-ready-goal 0)
+    (set-goal byz-navy-risk-goal 0)
+    (disable-self))
+(defrule
+    (true)
+=>
+    (set-goal byz-navy-overextension-goal 0)
+    (set-goal byz-navy-reinforcement-gap-goal 0)
+    (set-goal byz-navy-recovery-gap-goal 0)
+    (set-goal byz-navy-tech-pressure-goal 0)
+    (set-goal byz-navy-dock-capacity-goal 0)
+    (set-goal byz-navy-fleet-switch-cost-goal 0)
+    (set-goal byz-navy-reserve-goal 0)
+    (set-goal byz-navy-economic-check-goal 0)
+    (set-goal byz-navy-battle-check-goal 0)
+    (set-goal byz-navy-comm-check-goal 0)
+    (set-goal byz-navy-intel-check-goal 0)
+    (disable-self))
+(defrule
+    (true)
+=>
+    (set-goal byz-navy-authorize-goal 0)
+    (set-goal byz-navy-command-goal 0)
+    (set-goal byz-navy-last-command-goal 0)
+    (set-goal byz-navy-lock-goal 0)
+    (set-goal byz-navy-water-micro-goal 0)
+    (set-goal byz-navy-primary-fd-goal 0)
+    (set-goal byz-navy-enemy-target-id-goal 0)
+    (set-goal byz-navy-enemy-target-distance-goal 0)
+    (set-goal byz-navy-state-goal byz-navy-idle)
+    (set-goal byz-navy-water-micro-goal yes)
+    (set-goal byz-navy-authorize-goal 1)
+    (disable-self))
+(defrule
+    (true)
+=>
+    (set-goal byz-navy-hulk-threat-goal 0)
+    (set-goal byz-navy-hulk-counter-goal 0)
+    (set-goal byz-navy-long-range-goal 0)
+    (set-goal byz-navy-shore-siege-goal 0)
+    (disable-self))
+
+; =========================================================================
+; PHASE 1 — RECOGNIZE WHETHER WATER IS A STRATEGIC THEATER
+; =========================================================================
+; Water is worth investment when it protects income, denies enemy income,
+; controls transport, or creates a conversion path onto the shoreline.
+
+(defrule
+    (strategic-number sn-minimum-water-body-size-for-dock == water-mixed)
+=>
+    (set-goal byz-navy-water-value-goal 45))
+
+(defrule
+    (strategic-number sn-minimum-water-body-size-for-dock == water-islands)
+=>
+    (set-goal byz-navy-water-value-goal 90))
+
+(defrule
+    (building-type-count dock > 0)
+    (unit-type-count-total fishing-ship > 0)
+=>
+    (set-goal byz-navy-fishing-value-goal 75))
+
+(defrule
+    (players-building-type-count target-player dock > 0)
+    (up-compare-goal byz-navy-water-value-goal >= c:40)
+=>
+    (set-goal byz-navy-denial-value-goal 70))
+
+(defrule
+    (building-type-count dock > 0)
+    (players-building-type-count target-player dock > 0)
+    (up-compare-goal byz-navy-fishing-value-goal >= c:60)
+=>
+    (set-goal byz-navy-economic-value-goal 80))
+
+(defrule
+    (up-compare-goal byz-force-conversion-demand-goal >= c:60)
+    (up-compare-goal byz-map-control-goal >= c:60)
+=>
+    (set-goal byz-navy-shore-conversion-goal 75))
+
+; =========================================================================
+; PHASE 2 — MEASURE THE REAL FLEET
+; =========================================================================
+
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (up-get-fact warboat-count 0 byz-navy-own-strength-goal)
+    (up-get-player-fact target-player unit-type-count galley-line temporary-goal)
+    (up-get-player-fact target-player unit-type-count fire-ship-line temporary-goal2)
+    (up-get-player-fact target-player unit-type-count demolition-ship-line temporary-goal3)
+    (up-modify-goal temporary-goal2 c:* 2)
+    (up-modify-goal temporary-goal3 c:/ 2)
+    (up-modify-goal temporary-goal g:+ temporary-goal2)
+    (up-modify-goal temporary-goal g:+ temporary-goal3)
+    (up-modify-goal byz-navy-enemy-strength-goal g:= temporary-goal))
+
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (up-modify-goal byz-navy-local-advantage-goal s:= water-advantage)
+    (up-modify-goal byz-navy-primary-fd-goal s:= water-primary-unit-fd)
+    (up-modify-goal byz-navy-enemy-target-id-goal s:= water-enemy-target-id)
+    (up-modify-goal byz-navy-enemy-target-distance-goal s:= water-enemy-target-distance))
+
+; =========================================================================
+; PHASE 3 — THE ADMIRAL'S DOCTRINE
+; =========================================================================
+; Do not seek a fair fight. Seek the fight that protects the economy and
+; destroys the enemy's ability to contest the sea.
+
+(defrule
+    (up-compare-goal byz-navy-water-value-goal >= c:60)
+    (up-compare-goal byz-navy-local-advantage-goal >= c:10)
+=>
+    (set-goal byz-navy-state-goal byz-navy-control)
+    (set-goal byz-navy-water-control-goal 85)
+    (set-goal byz-navy-authorize-goal 1))
+
+(defrule
+    (up-compare-goal byz-navy-denial-value-goal >= c:60)
+    (up-compare-goal byz-navy-local-advantage-goal >= c:5)
+    (players-building-type-count target-player dock > 0)
+=>
+    (set-goal byz-navy-state-goal byz-navy-deny)
+    (set-goal byz-navy-dock-attack-goal 80))
+
+(defrule
+    (up-compare-goal byz-navy-fishing-value-goal >= c:60)
+    (up-compare-goal byz-navy-local-advantage-goal >= c:0)
+=>
+    (set-goal byz-navy-fishing-denial-goal 85)
+    (set-goal byz-navy-target-priority-goal 80))
+
+(defrule
+    (up-compare-goal byz-navy-shore-conversion-goal >= c:65)
+    (up-compare-goal byz-navy-local-advantage-goal >= c:15)
+=>
+    (set-goal byz-navy-state-goal byz-navy-convert)
+    (set-goal byz-navy-shore-pressure-goal 85)
+    (set-goal byz-navy-conversion-ready-goal 80))
+
+(defrule
+    (up-compare-goal byz-navy-local-advantage-goal <= c:-8)
+=>
+    (set-goal byz-navy-state-goal byz-navy-retreat)
+    (set-goal byz-navy-retreat-goal 90)
+    (set-goal byz-navy-authorize-goal 1))
+
+(defrule
+    (up-compare-goal byz-navy-primary-fd-goal < water-fd-value)
+    (up-compare-goal byz-navy-local-advantage-goal < c:5)
+=>
+    (set-goal byz-navy-repair-demand-goal 85)
+    (set-goal byz-navy-retreat-goal 70))
+
+(defrule
+    (up-compare-goal byz-navy-local-advantage-goal > c:15)
+    (up-compare-goal byz-navy-enemy-target-id-goal > c:0)
+    (up-compare-goal byz-navy-overextension-goal < c:60)
+=>
+    (set-goal byz-navy-pursuit-goal 80))
+
+; Current naval overhaul: Hulks/War Hulks/Carracks are a Fire Ship counter;
+; Galleys are the intended ranged answer to Hulks.
+(defrule
+    (players-unit-type-count any-enemy hulk-line >= 2)
+=>
+    (set-goal byz-navy-hulk-threat-goal 80)
+    (set-goal byz-navy-hulk-counter-goal 80)
+    (set-goal byz-navy-galley-demand-goal 6))
+
+(defrule
+    (players-unit-type-count any-enemy arrow-ship-line >= 3)
+=>
+    (set-goal byz-navy-long-range-goal 80)
+    (set-goal byz-navy-galley-demand-goal 8))
+
+(defrule
+    (players-unit-type-count any-enemy ramming-ship-line >= 3)
+=>
+    (set-goal byz-navy-demo-demand-goal 2)
+    (set-goal byz-navy-fire-demand-goal 10))
+
+; =========================================================================
+; PHASE 4 — FLEET COMPOSITION
+; =========================================================================
+; Byzantine Fire Ships are the strategic center on water, but not a single-unit
+; answer: demolition ships punish dense fire-ship/galley groups, galleys provide
+; ranged pressure where appropriate, and reserves protect against bad trades.
+
+(defrule
+    (up-compare-goal byz-navy-water-value-goal >= c:55)
+    (up-compare-goal byz-navy-fishing-value-goal >= c:50)
+=>
+    (set-goal byz-navy-fire-demand-goal 12)
+    (set-goal byz-navy-fishing-ship-demand-goal 1))
+
+(defrule
+    (players-unit-type-count any-enemy fire-ship-line >= 4)
+=>
+    (set-goal byz-navy-demo-demand-goal 2))
+
+(defrule
+    (players-unit-type-count any-enemy galley-line >= 4)
+    (up-compare-goal byz-navy-water-value-goal >= c:55)
+=>
+    (set-goal byz-navy-fire-demand-goal 12))
+
+(defrule
+    (up-compare-goal byz-navy-denial-value-goal >= c:70)
+    (up-compare-goal byz-navy-local-advantage-goal >= c:10)
+=>
+    (set-goal byz-navy-raider-demand-goal 60)
+    (set-goal byz-navy-escort-demand-goal 60))
+
+; =========================================================================
+; PHASE 5 — NAVAL TECHNOLOGY REQUESTS
+; =========================================================================
+
+(defrule
+    (up-compare-goal byz-navy-water-value-goal >= c:60)
+    (up-compare-goal byz-navy-fire-demand-goal >= c:8)
+=>
+    (set-goal byz-tech-greek-fire-goal 90))
+
+(defrule
+    (up-compare-goal byz-navy-water-value-goal >= c:55)
+    (up-compare-goal byz-navy-local-advantage-goal < c:15)
+=>
+    (set-goal byz-tech-bracer-goal 85))
+
+; =========================================================================
+; PHASE 6 — NATIVE ENGINE COMMAND BRIDGE
+; =========================================================================
+; The native water-control system already understands water-action:
+;   3 pursue/attack, 4 temporary retreat, 5 perpendicular movement,
+;   6 retreat, 7 direct attack, 8 dock attack, 9 move/exploit.
+
+(defrule
+    (up-compare-goal byz-navy-state-goal == byz-navy-control)
+    (up-compare-goal byz-navy-local-advantage-goal >= c:0)
+    (up-compare-goal byz-sov-military-authority-goal != c:byz-sov-authority-quarantine)
+=>
+    (set-goal water-micro yes)
+    (set-goal water-action 3)
+    (set-goal byz-navy-command-goal 3))
+
+(defrule
+    (up-compare-goal byz-navy-state-goal == byz-navy-deny)
+    (up-compare-goal byz-navy-dock-attack-goal >= c:70)
+    (up-compare-goal byz-sov-military-authority-goal != c:byz-sov-authority-quarantine)
+=>
+    (set-goal water-micro yes)
+    (set-goal water-action 8)
+    (set-goal byz-navy-command-goal 8))
+
+(defrule
+    (up-compare-goal byz-navy-state-goal == byz-navy-convert)
+    (up-compare-goal byz-sov-military-authority-goal != c:byz-sov-authority-quarantine)
+=>
+    (set-goal water-micro yes)
+    (set-goal water-action 9)
+    (set-goal byz-navy-command-goal 9))
+
+(defrule
+    (up-compare-goal byz-navy-retreat-goal >= c:70)
+    (up-compare-goal byz-sov-military-authority-goal != c:byz-sov-authority-quarantine)
+=>
+    (set-goal water-micro yes)
+    (set-goal water-action 6)
+    (set-goal byz-navy-command-goal 6))
+
+(defrule
+    (up-compare-goal byz-navy-pursuit-goal >= c:70)
+    (up-compare-goal byz-navy-local-advantage-goal > c:15)
+    (up-compare-goal byz-sov-military-authority-goal != c:byz-sov-authority-quarantine)
+=>
+    
+    (set-goal water-action 7)
+    (set-goal byz-navy-command-goal 7))
+
+; Production authority is deliberately conditional: existing units.per already
+; owns traingalley/trainfire/traindemo execution, so this layer sets them only
+; when naval strategic value is high enough.
+
+(defrule
+    (up-compare-goal byz-navy-fire-demand-goal >= c:8)
+    (up-compare-goal byz-navy-water-value-goal >= c:55)
+    (up-compare-goal byz-sov-production-authority-goal != c:byz-sov-authority-quarantine)
+=>
+    (set-goal trainfire yes))
+
+(defrule
+    (up-compare-goal byz-navy-demo-demand-goal >= c:1)
+    (up-compare-goal byz-navy-denial-value-goal >= c:60)
+    (up-compare-goal byz-sov-production-authority-goal != c:byz-sov-authority-quarantine)
+=>
+    (set-goal traindemo yes))
+
+(defrule
+    (up-compare-goal byz-navy-galley-demand-goal >= c:3)
+    (up-compare-goal byz-navy-water-value-goal >= c:55)
+    (up-compare-goal byz-sov-production-authority-goal != c:byz-sov-authority-quarantine)
+=>
+    (set-goal traingalley yes))
+
+; =========================================================================
+; PHASE 7 — SAFETY, LOCKS, FEEDBACK
+; =========================================================================
+
+(defrule
+    (up-compare-goal byz-navy-risk-goal >= c:75)
+    (up-compare-goal byz-navy-local-advantage-goal < c:10)
+    (up-compare-goal byz-sov-military-authority-goal != c:byz-sov-authority-quarantine)
+=>
+    (set-goal byz-navy-retreat-goal 95)
+    (set-goal byz-navy-lock-goal 1)
+    (set-goal water-action 6))
+
+(defrule
+    (up-compare-goal byz-navy-economic-check-goal >= c:80)
+    (up-compare-goal byz-navy-local-advantage-goal < c:0)
+    (up-compare-goal byz-sov-military-authority-goal != c:byz-sov-authority-quarantine)
+=>
+    (set-goal byz-navy-retreat-goal 90)
+    (set-goal water-action 6))
+
+(defrule
+    (up-compare-goal byz-navy-conversion-ready-goal >= c:80)
+    (up-compare-goal byz-navy-water-control-goal >= c:70)
+=>
+    (set-goal byz-navy-state-goal byz-navy-convert)
+    (set-goal byz-navy-lock-goal 2))
+
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (set-goal byz-navy-cycle-goal 0))

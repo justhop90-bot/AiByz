@@ -1,0 +1,354 @@
+; ============================================================================
+; AD BYZANTINE ECONOMIC WAR DIRECTOR
+; ============================================================================
+; Strategic commander of the economic theater.
+;
+; Mission: make OUR war sustainable and THEIR war unsustainable.
+;
+; Owns: attrition, gold/resource denial, lock forcing, transition-cost pressure,
+; production starvation, Imperial timing economics, reserve protection, and
+; authorization of the Market Warfare Officer.
+; ============================================================================
+(defconst byz-eco-cycle-goal 1350) ; economic state
+(defconst byz-eco-posture-goal 1351) ; economic state
+(defconst byz-eco-urgency-goal 1352) ; economic state
+(defconst byz-eco-confidence-goal 1353) ; economic state
+(defconst byz-eco-attrition-index-goal 1354) ; economic state
+(defconst byz-eco-attrition-trend-goal 1355) ; economic state
+(defconst byz-eco-enemy-liquidity-goal 1356) ; economic state
+(defconst byz-eco-enemy-gold-liquidity-goal 1357) ; economic state
+(defconst byz-eco-enemy-food-liquidity-goal 1358) ; economic state
+(defconst byz-eco-enemy-wood-liquidity-goal 1359) ; economic state
+(defconst byz-eco-enemy-stone-liquidity-goal 1360) ; economic state
+(defconst byz-eco-enemy-gold-dependence-goal 1361) ; economic state
+(defconst byz-eco-enemy-food-dependence-goal 1362) ; economic state
+(defconst byz-eco-enemy-wood-dependence-goal 1363) ; economic state
+(defconst byz-eco-enemy-production-dependence-goal 1364) ; economic state
+(defconst byz-eco-enemy-trade-dependence-goal 1365) ; economic state
+(defconst byz-eco-gold-denial-pressure-goal 1366) ; economic state
+(defconst byz-eco-resource-target-goal 1367) ; economic state
+(defconst byz-eco-map-starvation-goal 1368) ; economic state
+(defconst byz-eco-production-starvation-goal 1369) ; economic state
+(defconst byz-eco-transition-cost-pressure-goal 1370) ; economic state
+(defconst byz-eco-trash-transition-pressure-goal 1371) ; economic state
+(defconst byz-eco-imperial-window-goal 1372) ; economic state
+(defconst byz-eco-time-value-goal 1373) ; economic state
+(defconst byz-eco-army-maintenance-pressure-goal 1374) ; economic state
+(defconst byz-eco-villager-priority-goal 1375) ; economic state
+(defconst byz-eco-farm-pressure-goal 1376) ; economic state
+(defconst byz-eco-fishing-pressure-goal 1377) ; economic state
+(defconst byz-eco-trade-pressure-goal 1378) ; economic state
+(defconst byz-eco-forward-production-value-goal 1379) ; economic state
+(defconst byz-eco-reserve-floor-goal 1380) ; economic state
+(defconst byz-eco-recovery-capacity-goal 1381) ; economic state
+(defconst byz-eco-opportunity-cost-goal 1382) ; economic state
+(defconst byz-eco-switch-cost-goal 1383) ; economic state
+(defconst byz-eco-conversion-funding-goal 1384) ; economic state
+(defconst byz-eco-siege-funding-goal 1385) ; economic state
+(defconst byz-eco-cataph-funding-goal 1386) ; economic state
+(defconst byz-eco-trash-funding-goal 1387) ; economic state
+(defconst byz-eco-information-value-goal 1388) ; economic state
+(defconst byz-eco-denial-confidence-goal 1389) ; economic state
+(defconst byz-eco-starve-score-goal 1390) ; economic state
+(defconst byz-eco-choke-score-goal 1391) ; economic state
+(defconst byz-eco-endgame-mode-goal 1392) ; economic state
+(defconst byz-eco-market-request-goal 1393) ; economic state
+(defconst byz-eco-market-approval-goal 1394) ; economic state
+(defconst byz-eco-market-risk-goal 1395) ; economic state
+(defconst byz-eco-market-benefit-goal 1396) ; economic state
+(defconst byz-eco-market-net-value-goal 1397) ; economic state
+(defconst byz-eco-econ-feedback-goal 1398) ; economic state
+(defconst ad-eco-neutral 0)
+(defconst ad-eco-neutralize 1)
+(defconst ad-eco-contain 2)
+(defconst ad-eco-starve 3)
+(defconst ad-eco-convert 4)
+(defconst ad-eco-choke 5)
+(defconst ad-eco-recover 6)
+(defconst ad-eco-gold 0)
+(defconst ad-eco-food 1)
+(defconst ad-eco-wood 2)
+(defconst ad-eco-stone 3)
+(defconst ad-eco-production 4)
+(defconst ad-eco-time 5)
+(defconst ad-eco-information 6)
+(defconst ad-eco-no-market 0)
+(defconst ad-eco-market-consider 1)
+(defconst ad-eco-market-approved 2)
+(defconst ad-eco-market-veto 3)
+
+
+(defrule
+    (true)
+=>
+    (set-goal byz-eco-cycle-goal 0)
+    (set-goal byz-eco-posture-goal ad-eco-neutral)
+    (set-goal byz-eco-urgency-goal 0)
+    (set-goal byz-eco-confidence-goal 50)
+    (set-goal byz-eco-attrition-index-goal 0)
+    (set-goal byz-eco-attrition-trend-goal 0)
+    (set-goal byz-eco-enemy-liquidity-goal 0)
+    (set-goal byz-eco-enemy-gold-liquidity-goal 0)
+    (set-goal byz-eco-enemy-food-liquidity-goal 0)
+    (set-goal byz-eco-enemy-wood-liquidity-goal 0)
+    (set-goal byz-eco-enemy-stone-liquidity-goal 0)
+    (disable-self))
+(defrule
+    (true)
+=>
+    (set-goal byz-eco-enemy-gold-dependence-goal 0)
+    (set-goal byz-eco-enemy-food-dependence-goal 0)
+    (set-goal byz-eco-enemy-wood-dependence-goal 0)
+    (set-goal byz-eco-enemy-production-dependence-goal 0)
+    (set-goal byz-eco-enemy-trade-dependence-goal 0)
+    (set-goal byz-eco-gold-denial-pressure-goal 0)
+    (set-goal byz-eco-resource-target-goal ad-eco-gold)
+    (set-goal byz-eco-map-starvation-goal 0)
+    (set-goal byz-eco-production-starvation-goal 0)
+    (set-goal byz-eco-transition-cost-pressure-goal 0)
+    (set-goal byz-eco-trash-transition-pressure-goal 0)
+    (disable-self))
+(defrule
+    (true)
+=>
+    (set-goal byz-eco-imperial-window-goal 0)
+    (set-goal byz-eco-time-value-goal 0)
+    (set-goal byz-eco-army-maintenance-pressure-goal 0)
+    (set-goal byz-eco-villager-priority-goal 50)
+    (set-goal byz-eco-farm-pressure-goal 50)
+    (set-goal byz-eco-fishing-pressure-goal 0)
+    (set-goal byz-eco-trade-pressure-goal 0)
+    (set-goal byz-eco-forward-production-value-goal 0)
+    (set-goal byz-eco-reserve-floor-goal 70)
+    (set-goal byz-eco-recovery-capacity-goal 60)
+    (set-goal byz-eco-opportunity-cost-goal 0)
+    (disable-self))
+(defrule
+    (true)
+=>
+    (set-goal byz-eco-switch-cost-goal 50)
+    (set-goal byz-eco-conversion-funding-goal 0)
+    (set-goal byz-eco-siege-funding-goal 0)
+    (set-goal byz-eco-cataph-funding-goal 0)
+    (set-goal byz-eco-trash-funding-goal 0)
+    (set-goal byz-eco-information-value-goal 0)
+    (set-goal byz-eco-denial-confidence-goal 0)
+    (set-goal byz-eco-starve-score-goal 0)
+    (set-goal byz-eco-choke-score-goal 0)
+    (set-goal byz-eco-endgame-mode-goal ad-eco-neutral)
+    (set-goal byz-eco-market-request-goal 0)
+    (disable-self))
+(defrule
+    (true)
+=>
+    (set-goal byz-eco-market-approval-goal 0)
+    (set-goal byz-eco-market-risk-goal 0)
+    (set-goal byz-eco-market-benefit-goal 0)
+    (set-goal byz-eco-market-net-value-goal 0)
+    (set-goal byz-eco-econ-feedback-goal 0)
+    (disable-self))
+
+; The dissertation's five-stage economic doctrine.
+(defrule
+    (up-compare-goal byz-threat-score-goal >= c:70)
+    (up-compare-goal byz-eco-security-goal <= c:40)
+=>
+    (set-goal byz-eco-posture-goal ad-eco-neutralize))
+(defrule
+    (up-compare-goal byz-map-control-goal <= c:45)
+    (up-compare-goal byz-threat-score-goal < c:70)
+=>
+    (set-goal byz-eco-posture-goal ad-eco-contain))
+(defrule
+    (up-compare-goal byz-eco-gold-denial-pressure-goal >= c:60)
+    (up-compare-goal byz-enemy-recovery-capacity-goal <= c:55)
+=>
+    (set-goal byz-eco-posture-goal ad-eco-starve))
+(defrule
+    (goal byz-state-goal byz-state-convert)
+=>
+    (set-goal byz-eco-posture-goal ad-eco-convert))
+(defrule
+    (goal byz-state-goal byz-state-deny-recovery)
+=>
+    (set-goal byz-eco-posture-goal ad-eco-choke))
+
+; Infer enemy economic pressure only from signals the AI can actually possess.
+(defrule
+    (up-compare-goal byz-enemy-gold-dependence-goal >= c:70)
+=>
+    (set-goal byz-eco-enemy-gold-dependence-goal 80)
+    (set-goal byz-eco-gold-denial-pressure-goal 80))
+(defrule
+    (up-compare-goal byz-enemy-production-depth-goal >= c:5)
+=>
+    (set-goal byz-eco-enemy-production-dependence-goal 75)
+    (set-goal byz-eco-production-starvation-goal 70))
+(defrule
+    (up-compare-goal byz-enemy-transition-pressure-goal >= c:60)
+=>
+    (set-goal byz-eco-transition-cost-pressure-goal 75))
+(defrule
+    (up-compare-goal byz-enemy-recovery-capacity-goal <= c:35)
+=>
+    (set-goal byz-eco-starve-score-goal 80)
+    (set-goal byz-eco-choke-score-goal 70))
+(defrule
+    (up-compare-goal byz-enemy-gold-dependence-goal >= c:70)
+    (up-compare-goal byz-map-control-goal >= c:55)
+=>
+    (set-goal byz-eco-resource-target-goal ad-eco-gold)
+    (set-goal byz-eco-map-starvation-goal 80))
+
+; Attrition Index: a persistent measure of whether the economic war is working.
+(defrule
+    (up-compare-goal byz-cavalry-score-goal >= c:60)
+    (up-compare-goal byz-desired-spears-goal > c:0)
+=>
+    (up-modify-goal byz-eco-attrition-index-goal c:+ 15))
+(defrule
+    (up-compare-goal byz-ranged-score-goal >= c:60)
+    (up-compare-goal byz-desired-skirmishers-goal > c:0)
+=>
+    (up-modify-goal byz-eco-attrition-index-goal c:+ 15))
+(defrule
+    (up-compare-goal byz-prod-deficit-total-goal > c:20)
+=>
+    (up-modify-goal byz-eco-attrition-index-goal c:- 10))
+(defrule
+    (up-compare-goal byz-battle-risk-goal >= c:70)
+=>
+    (up-modify-goal byz-eco-attrition-index-goal c:- 20))
+(defrule
+    (up-compare-goal byz-conversion-value-goal >= c:70)
+=>
+    (up-modify-goal byz-eco-attrition-index-goal c:+ 20))
+
+; Imperial is a TIME weapon, not merely a technology goal.
+(defrule
+    (strategic-number sn-current-age >= imperial)
+    (up-compare-goal byz-conversion-value-goal >= c:60)
+=>
+    (set-goal byz-eco-imperial-window-goal 80)
+    (set-goal byz-eco-time-value-goal 85)
+    (set-goal byz-eco-villager-priority-goal 75))
+(defrule
+    (up-compare-goal byz-eco-imperial-window-goal >= c:70)
+    (up-compare-goal byz-conversion-value-goal >= c:60)
+=>
+    (set-goal byz-eco-posture-goal ad-eco-convert)
+    (set-goal byz-eco-conversion-funding-goal 90))
+
+; Protect optionality and recovery capacity.
+(defrule
+    (up-compare-goal byz-optionality-goal <= c:30)
+=>
+    (set-goal byz-eco-reserve-floor-goal 90)
+    (set-goal byz-eco-switch-cost-goal 90))
+(defrule
+    (up-compare-goal byz-eco-security-goal <= c:30)
+=>
+    (set-goal byz-eco-reserve-floor-goal 95)
+    (set-goal byz-eco-opportunity-cost-goal 80))
+(defrule
+    (up-compare-goal byz-win-pressure-goal >= c:75)
+    (up-compare-goal byz-enemy-recovery-capacity-goal <= c:30)
+=>
+    (set-goal byz-eco-reserve-floor-goal 55)
+    (set-goal byz-eco-conversion-funding-goal 95))
+
+; Market governance: request -> specialist analysis -> approval/veto.
+(defrule
+    (up-compare-goal byz-eco-time-value-goal >= c:70)
+    (up-compare-goal byz-prod-deficit-food-goal >= c:4)
+=>
+    (set-goal byz-eco-market-request-goal 1)
+    (set-goal byz-eco-market-benefit-goal 80)
+    (set-goal byz-eco-market-risk-goal 30))
+(defrule
+    (up-compare-goal byz-optionality-goal <= c:25)
+=>
+    (set-goal byz-eco-market-approval-goal ad-eco-market-veto)
+    (set-goal byz-eco-market-risk-goal 95))
+(defrule
+    (up-compare-goal byz-net-emergency-goal >= c:70)
+=>
+    (set-goal byz-eco-market-approval-goal ad-eco-market-veto)
+    (set-goal byz-eco-market-risk-goal 100))
+
+; Price manipulation is a rare CHOKE operation, never ordinary balancing.
+(defrule
+    (up-compare-goal byz-eco-posture-goal >= c:3)
+    (up-compare-goal byz-eco-gold-denial-pressure-goal >= c:80)
+    (up-compare-goal byz-eco-denial-confidence-goal >= c:60)
+    (up-compare-goal byz-optionality-goal >= c:50)
+=>
+    (set-goal byz-eco-market-request-goal 1)
+    (set-goal byz-eco-market-approval-goal ad-eco-market-approved)
+    (set-goal byz-eco-market-benefit-goal 75)
+    (set-goal byz-eco-market-risk-goal 25))
+
+; Once the enemy is economically constrained, shift from expensive army growth
+; toward the cheapest permanent conversion available.
+(defrule
+    (up-compare-goal byz-eco-gold-denial-pressure-goal >= c:75)
+    (up-compare-goal byz-enemy-recovery-capacity-goal <= c:30)
+=>
+    (set-goal byz-eco-endgame-mode-goal ad-eco-choke)
+    (set-goal byz-eco-choke-score-goal 90)
+    (set-goal byz-eco-trash-transition-pressure-goal 85)
+    (set-goal byz-eco-trash-funding-goal 90))
+
+; ============================================================================
+; V4 CONVERSION READINESS EXPORT
+; Economic War owns conversion feasibility/permanence and strategic conversion
+; potential. It does not own the national state or response mode.
+; ============================================================================
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (set-goal byz-conversion-feasibility-goal 50)
+    (set-goal byz-conversion-permanence-goal 50)
+    (set-goal byz-strategic-conversion-potential-goal 50))
+
+(defrule
+    (up-compare-goal byz-eco-security-goal >= c:60)
+    (up-compare-goal byz-eco-conversion-funding-goal >= c:65)
+    (up-compare-goal byz-eco-siege-funding-goal >= c:55)
+    (up-compare-goal byz-battle-risk-goal < c:70)
+=>
+    (set-goal byz-conversion-feasibility-goal 85))
+(defrule
+    (up-compare-goal byz-eco-security-goal <= c:30)
+=>
+    (set-goal byz-conversion-feasibility-goal 25))
+
+(defrule
+    (up-compare-goal byz-enemy-recovery-capacity-goal <= c:30)
+    (up-compare-goal byz-eco-production-starvation-goal >= c:60)
+=>
+    (set-goal byz-conversion-permanence-goal 90))
+(defrule
+    (up-compare-goal byz-enemy-recovery-capacity-goal <= c:45)
+    (up-compare-goal byz-eco-gold-denial-pressure-goal >= c:60)
+=>
+    (set-goal byz-conversion-permanence-goal 75))
+
+(defrule
+    (up-compare-goal byz-conversion-feasibility-goal >= c:75)
+    (up-compare-goal byz-conversion-permanence-goal >= c:75)
+    (up-compare-goal byz-eco-denial-confidence-goal >= c:50)
+=>
+    (set-goal byz-strategic-conversion-potential-goal 90))
+(defrule
+    (up-compare-goal byz-conversion-feasibility-goal <= c:35)
+=>
+    (set-goal byz-strategic-conversion-potential-goal 30))
+
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (up-modify-goal byz-net-economic-feedback-goal g:= byz-eco-attrition-index-goal)
+    (up-modify-goal byz-net-economy-commit-goal g:= byz-eco-posture-goal)
+    (up-modify-goal byz-net-resource-priority-goal g:= byz-resource-pressure-goal)
+    (set-goal byz-eco-cycle-goal 0))

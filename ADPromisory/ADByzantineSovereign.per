@@ -1,0 +1,256 @@
+; ============================================================================
+; AD BYZANTINE SOVEREIGN — BASILEUS THEOPHANES, THE IRON FOX
+; ============================================================================
+; A fictional Byzantine personality for the constitutional layer:
+; patient, suspicious of stale evidence, conservative with own lives, ruthless
+; with enemy recovery systems, and allergic to last-writer command races.
+;
+; Five new upgrades beyond the prior architecture:
+;   1. Command leases / revocation tokens.
+;   2. Red-team shadow plan.
+;   3. Resource firewall + catastrophic quorum.
+;   4. Doctrine-drift watchdog.
+;   5. Legacy quarantine with graceful fallback.
+; ============================================================================
+
+; HEARTBEAT / FRESHNESS
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (up-modify-goal byz-sov-evidence-age-goal c:+ 15)
+    (up-modify-goal byz-sov-state-age-goal c:+ 15)
+    (up-modify-goal byz-sov-command-lease-goal c:- 15))
+(defrule
+    (up-compare-goal byz-intel-freshness-goal < c:35)
+=>
+    (set-goal byz-sov-stale-veto-goal 70)
+    (set-goal byz-sov-evidence-confidence-goal 35))
+(defrule
+    (up-compare-goal byz-intel-freshness-goal >= c:70)
+=>
+    (set-goal byz-sov-stale-veto-goal 0)
+    (up-modify-goal byz-sov-evidence-confidence-goal g:= byz-threat-confidence-goal))
+
+; STATE -> NATIONAL OBJECTIVE
+(defrule
+    (goal byz-state-goal byz-state-stabilize)
+=>
+    (set-goal byz-sov-primary-objective-goal byz-sov-objective-neutralize)
+    (set-goal byz-sov-strategic-state-goal byz-state-stabilize))
+(defrule
+    (goal byz-state-goal byz-state-constrain)
+=>
+    (set-goal byz-sov-primary-objective-goal byz-sov-objective-contain)
+    (set-goal byz-sov-strategic-state-goal byz-state-constrain))
+(defrule
+    (goal byz-state-goal byz-state-exploit)
+=>
+    (set-goal byz-sov-primary-objective-goal byz-sov-objective-starve)
+    (set-goal byz-sov-strategic-state-goal byz-state-exploit))
+(defrule
+    (goal byz-state-goal byz-state-convert)
+=>
+    (set-goal byz-sov-primary-objective-goal byz-sov-objective-convert)
+    (set-goal byz-sov-strategic-state-goal byz-state-convert))
+(defrule
+    (goal byz-state-goal byz-state-deny-recovery)
+=>
+    (set-goal byz-sov-primary-objective-goal byz-sov-objective-choke)
+    (set-goal byz-sov-strategic-state-goal byz-state-deny-recovery))
+
+; HYSTERESIS: high entry threshold, lower release threshold.
+(defrule
+    (up-compare-goal byz-strategic-conversion-potential-goal >= c:80)
+    (up-compare-goal byz-optionality-goal >= c:35)
+=>
+    (set-goal byz-sov-commitment-goal byz-sov-commit-heavy)
+    (set-goal byz-sov-attack-lock-goal 1))
+(defrule
+    (up-compare-goal byz-sov-commitment-goal >= c:byz-sov-commit-heavy)
+    (up-compare-goal byz-strategic-conversion-potential-goal >= c:55)
+    (up-compare-goal byz-optionality-goal >= c:25)
+=>
+    (set-goal byz-sov-attack-lock-goal 1)
+    (set-goal byz-sov-command-lease-goal 15))
+(defrule
+    (up-compare-goal byz-battle-risk-goal >= c:85)
+=>
+    (set-goal byz-sov-commitment-goal byz-sov-commit-light)
+    (set-goal byz-sov-attack-lock-goal 0)
+    (set-goal byz-sov-veto-goal 80))
+
+; RED-TEAM SHADOW PLAN
+(defrule
+    (up-compare-goal byz-state-goal == byz-state-convert)
+    (up-compare-goal byz-battle-risk-goal >= c:65)
+=>
+    (set-goal byz-sov-shadow-recommendation-goal byz-sov-objective-contain)
+    (set-goal byz-sov-red-team-score-goal 80))
+(defrule
+    (up-compare-goal byz-state-goal == byz-state-exploit)
+    (up-compare-goal byz-threat-confidence-goal < c:60)
+=>
+    (set-goal byz-sov-shadow-recommendation-goal byz-sov-objective-contain)
+    (set-goal byz-sov-red-team-score-goal 85))
+(defrule
+    (up-compare-goal byz-strategic-conversion-potential-goal >= c:85)
+    (up-compare-goal byz-battle-risk-goal <= c:55)
+=>
+    (set-goal byz-sov-red-team-score-goal 35))
+
+; RESOURCE FIREWALL + CATASTROPHIC QUORUM
+(defrule
+    (up-compare-goal byz-eco-security-goal <= c:25)
+=>
+    (set-goal byz-sov-reserve-floor-goal 60)
+    (set-goal byz-sov-production-lock-goal 1)
+    (set-goal byz-sov-market-lock-goal 1))
+(defrule
+    (up-compare-goal byz-eco-security-goal >= c:70)
+=>
+    (set-goal byz-sov-reserve-floor-goal 30)
+    (set-goal byz-sov-production-lock-goal 0))
+(defrule
+    (up-compare-goal byz-strategic-conversion-potential-goal >= c:90)
+    (up-compare-goal byz-optionality-goal >= c:35)
+    (up-compare-goal byz-sov-stale-veto-goal < c:50)
+=>
+    (set-goal byz-sov-quorum-goal 2)
+    (set-goal byz-sov-catastrophic-risk-goal 20))
+(defrule
+    (up-compare-goal byz-battle-risk-goal >= c:80)
+=>
+    (set-goal byz-sov-quorum-goal 0)
+    (set-goal byz-sov-catastrophic-risk-goal 90))
+
+; DOCTRINE DRIFT WATCHDOG
+(defrule
+    (goal byz-state-goal byz-state-stabilize)
+    (up-compare-goal byz-strategic-conversion-potential-goal >= c:80)
+=>
+    (set-goal byz-sov-doctrine-drift-goal 70)
+    (set-goal byz-sov-doctrine-alignment-goal 55))
+(defrule
+    (goal byz-state-goal byz-state-convert)
+    (up-compare-goal byz-strategic-conversion-potential-goal >= c:75)
+=>
+    (set-goal byz-sov-doctrine-drift-goal 10)
+    (set-goal byz-sov-doctrine-alignment-goal 90))
+
+; COMMAND LEASES / REVOCATION TOKENS
+(defrule
+    (up-compare-goal byz-net-command-goal != c:byz-cmd-hold)
+    (up-compare-goal byz-sov-stale-veto-goal < c:60)
+=>
+    (set-goal byz-sov-command-lease-goal 15))
+(defrule
+    (up-compare-goal byz-sov-command-lease-goal <= c:0)
+=>
+    (set-goal byz-sov-veto-goal 60)
+    (set-goal byz-sov-legacy-attack-gate-goal byz-sov-gate-byzantine))
+
+; LEGACY QUARANTINE / FALLBACK
+(defrule
+    (up-compare-goal byz-sov-stale-veto-goal < c:50)
+    (up-compare-goal byz-net-conflict-goal <= c:0)
+=>
+    (set-goal byz-sov-authority-goal byz-sov-authority-active)
+    (set-goal byz-sov-legacy-quarantine-goal 1))
+(defrule
+    (up-compare-goal byz-net-failure-mode-goal >= c:2)
+=>
+    (set-goal byz-sov-authority-goal byz-sov-authority-quarantine)
+    (set-goal byz-sov-legacy-quarantine-goal 0))
+(defrule
+    (up-compare-goal byz-battle-risk-goal >= c:90)
+=>
+    (set-goal byz-sov-emergency-override-goal 100)
+    (set-goal byz-sov-military-authority-goal byz-sov-authority-emergency))
+
+; CONFLICT ARBITRATION
+(defrule
+    (up-compare-goal byz-net-conflict-goal >= c:1)
+=>
+    (set-goal byz-sov-council-conflict-goal 1)
+    (set-goal byz-sov-veto-goal 70))
+(defrule
+    (up-compare-goal byz-net-conflict-goal <= c:0)
+=>
+    (set-goal byz-sov-council-conflict-goal 0)
+    (set-goal byz-sov-veto-goal 0))
+
+; CONTEXT-SENSITIVE STRATEGIC VALUE: avoids giant additive BattleValue saturation.
+(defrule
+    (up-compare-goal byz-cmd-battle-value-goal >= c:70)
+    (up-compare-goal byz-enemy-war-sustainability-goal <= c:45)
+=>
+    (set-goal byz-sov-strategic-value-goal 85))
+(defrule
+    (up-compare-goal byz-cmd-battle-value-goal <= c:35)
+    (up-compare-goal byz-battle-risk-goal >= c:70)
+=>
+    (set-goal byz-sov-strategic-value-goal 25))
+(defrule
+    (up-compare-goal byz-strategic-conversion-potential-goal >= c:80)
+    (up-compare-goal byz-enemy-recovery-capacity-goal <= c:40)
+=>
+    (set-goal byz-sov-strategic-value-goal 95))
+
+; WAR COLLEGE POLICY GATE — only the Sovereign converts lessons into policy.
+(defrule
+    (up-compare-goal byz-learn-policy-validity-goal >= c:50)
+    (up-compare-goal byz-learn-policy-caution-goal >= c:75)
+=>
+    (set-goal byz-sov-reserve-floor-goal 55)
+    (set-goal byz-sov-commitment-abort-goal 60)
+    (set-goal byz-sov-stale-veto-goal 45))
+(defrule
+    (up-compare-goal byz-learn-policy-validity-goal >= c:50)
+    (up-compare-goal byz-learn-policy-preserve-goal >= c:75)
+=>
+    (set-goal byz-sov-commitment-abort-goal 65)
+    (set-goal byz-sov-legacy-attack-gate-goal byz-sov-gate-byzantine))
+(defrule
+    (up-compare-goal byz-learn-policy-validity-goal >= c:50)
+    (up-compare-goal byz-learn-policy-confidence-delta-goal <= c:-6)
+=>
+    (set-goal byz-sov-evidence-confidence-goal 40)
+    (set-goal byz-sov-stale-veto-goal 55))
+(defrule
+    (up-compare-goal byz-learn-policy-validity-goal >= c:50)
+    (up-compare-goal byz-learn-policy-scout-delta-goal >= c:6)
+=>
+    (set-goal byz-sov-stale-veto-goal 40)
+    (set-goal byz-sov-evidence-confidence-goal 45))
+(defrule
+    (up-compare-goal byz-learn-policy-validity-goal >= c:50)
+    (up-compare-goal byz-learn-policy-commitment-bias-goal >= c:70)
+    (up-compare-goal byz-sov-stale-veto-goal < c:50)
+=>
+    (set-goal byz-sov-commitment-enter-goal 75))
+
+; HEALTH / FINAL SAFETY
+(defrule
+    (up-compare-goal byz-sov-stale-veto-goal >= c:70)
+=>
+    (set-goal byz-sov-veto-goal 90)
+    (set-goal byz-sov-health-goal 35))
+(defrule
+    (up-compare-goal byz-sov-council-conflict-goal >= c:1)
+=>
+    (set-goal byz-sov-veto-goal 80)
+    (set-goal byz-sov-health-goal 45))
+(defrule
+    (up-compare-goal byz-sov-stale-veto-goal < c:50)
+    (up-compare-goal byz-sov-council-conflict-goal == c:0)
+=>
+    (set-goal byz-sov-veto-goal 0)
+    (set-goal byz-sov-health-goal 95))
+
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (up-modify-goal byz-sov-decision-checksum-goal g:= byz-sov-primary-objective-goal)
+    (up-modify-goal byz-sov-last-state-goal g:= byz-state-goal)
+    (set-goal byz-sov-state-age-goal 0)
+    (up-modify-goal byz-sov-evidence-source-goal g:= byz-intel-hypothesis-a-goal))

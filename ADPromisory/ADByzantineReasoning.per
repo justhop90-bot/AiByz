@@ -1,0 +1,334 @@
+; ============================================================================
+; AD BYZANTINE REASONING ENGINE — MASTER / CROSS-MODULE PATCH
+; ============================================================================
+; The decision-maker built on ADByzantineConstants + ADByzantineMemory.
+;
+; Doctrine:
+;   OBSERVE -> CLASSIFY -> ESTIMATE -> PREDICT -> PRICE -> CHOOSE ->
+;   COMMIT -> EVALUATE -> CONVERT -> DENY RECOVERY -> OBSERVE
+;
+; This is intentionally capability-first rather than unit-first.
+; It does not hard-code "enemy X => unit Y". It maintains a strategic decision
+; layer that later Threat, Scout, Unit, Economy, Research and Micro modules feed.
+;
+; Safe design:
+;   - Private reasoning goals occupy 601-639.
+;   - Shared reasoning outputs are owned by ADByzantineMemory and are only written here.
+;   - No new Strategic Number IDs are introduced.
+;   - No production, movement, research, or engine SN commands are issued here.
+;   - Deadline pressure comes from the populated Intelligence deadline class,
+;     never from the unpopulated millisecond deadline storage goal.
+; ============================================================================
+
+(defconst byz-rx-cycle-goal 601) ; reasoning cycle stage
+(defconst byz-rx-observation-goal 603) ; observation freshness
+(defconst byz-rx-hypothesis-goal 604) ; current enemy hypothesis
+(defconst byz-rx-counterfactual-goal 605) ; best counterfactual
+(defconst byz-rx-action-score-goal 606) ; best action score
+(defconst byz-rx-action-alt-score-goal 607) ; alternative action score
+(defconst byz-rx-action-risk-goal 609) ; best action risk
+(defconst byz-rx-action-reward-goal 610) ; best action reward
+(defconst byz-rx-action-cost-goal 611) ; best action cost
+(defconst byz-rx-regret-goal 612) ; regret from delaying
+(defconst byz-rx-information-value-goal 613) ; value of information
+(defconst byz-rx-information-gap-goal 614) ; current information deficit
+(defconst byz-rx-enemy-pivot-goal 616) ; enemy pivot likelihood
+(defconst byz-rx-self-pivot-goal 618) ; our pivot readiness
+(defconst byz-rx-force-ratio-goal 620) ; effective force ratio
+(defconst byz-rx-position-ratio-goal 630) ; positional advantage ratio
+(defconst byz-rx-eco-ratio-goal 632) ; economic efficiency ratio
+(defconst byz-rx-time-ratio-goal 633) ; timing advantage ratio
+(defconst byz-rx-sustainability-goal 634) ; army sustainability
+(defconst byz-rx-recovery-gap-goal 635) ; enemy recovery gap
+(defconst byz-rx-lock-state-goal 636) ; composition lock state
+(defconst byz-rx-lock-score-goal 637) ; lock strength
+(defconst byz-rx-overextension-goal 638) ; enemy overextension
+(defconst byz-rx-conversion-ready-goal 639) ; conversion readiness
+
+; Reasoning-cycle values
+(defconst byz-rx-observe 0)
+(defconst byz-rx-classify 1)
+(defconst byz-rx-estimate 2)
+(defconst byz-rx-predict 3)
+(defconst byz-rx-price 4)
+(defconst byz-rx-choose 5)
+(defconst byz-rx-commit 6)
+(defconst byz-rx-evaluate 7)
+(defconst byz-rx-convert 8)
+(defconst byz-rx-recover 9)
+
+; ------------------------- INITIALIZATION ------------------------------
+(defrule
+    (true)
+=>
+    (set-goal byz-rx-cycle-goal byz-rx-observe)
+    (set-goal byz-rx-observation-goal 0)
+    (set-goal byz-rx-hypothesis-goal byz-enemy-unknown)
+    (set-goal byz-rx-counterfactual-goal byz-response-monitor)
+    (set-goal byz-rx-action-score-goal 0)
+    (set-goal byz-rx-action-alt-score-goal 0)
+    (set-goal byz-rx-action-risk-goal 0)
+    (set-goal byz-rx-action-reward-goal 0)
+    (set-goal byz-rx-action-cost-goal 0)
+    (set-goal byz-rx-regret-goal 0)
+    (set-goal byz-rx-information-value-goal 0)
+    (set-goal byz-rx-information-gap-goal 100)
+    (set-goal byz-rx-enemy-pivot-goal 0)
+    (set-goal byz-rx-self-pivot-goal 0)
+    (set-goal byz-rx-force-ratio-goal 50)
+    (set-goal byz-rx-position-ratio-goal 50)
+    (set-goal byz-rx-eco-ratio-goal 50)
+    (set-goal byz-rx-time-ratio-goal 50)
+    (set-goal byz-rx-sustainability-goal 50)
+    (set-goal byz-rx-recovery-gap-goal 0)
+    (set-goal byz-rx-lock-state-goal 0)
+    (set-goal byz-rx-lock-score-goal 0)
+    (set-goal byz-rx-overextension-goal 0)
+    (set-goal byz-rx-conversion-ready-goal 0)
+    (set-goal byz-rx-damage-now-goal 0)
+    (set-goal byz-rx-damage-persistent-goal 0)
+    (set-goal byz-rx-branch-goal byz-response-monitor)
+    (disable-self))
+
+; ------------------------- CLASSIFICATION ------------------------------
+; Critical threats get immediate defensive attention.
+(defrule
+    (goal byz-threat-class-goal byz-threat-critical)
+=>
+    (set-goal byz-rx-hypothesis-goal byz-enemy-allin)
+    (set-goal byz-rx-branch-goal byz-response-defend))
+
+; Multi-front pressure is treated as a distinct strategic problem.
+(defrule
+    (goal byz-threat-domain-goal byz-threat-multi-front)
+    (up-compare-goal byz-threat-score-goal >= c:60)
+=>
+    (set-goal byz-rx-hypothesis-goal byz-enemy-pressure)
+    (set-goal byz-rx-branch-goal byz-response-defend))
+
+; Siege is not treated as an ordinary army-composition issue.
+(defrule
+    (goal byz-threat-domain-goal byz-threat-siege)
+    (up-compare-goal byz-threat-score-goal >= c:50)
+=>
+    (set-goal byz-rx-hypothesis-goal byz-enemy-siege)
+    (set-goal byz-rx-branch-goal byz-response-siege))
+
+(defrule
+    (goal byz-enemy-posture-goal byz-enemy-transition)
+=>
+    (set-goal byz-rx-hypothesis-goal byz-enemy-transition)
+    (set-goal byz-rx-branch-goal byz-response-punish-transition))
+
+; ------------------------- ESTIMATION ---------------------------------
+; High danger + high confidence = act now.
+(defrule
+    (up-compare-goal byz-threat-score-goal >= c:70)
+    (up-compare-goal byz-threat-confidence-goal >= c:70)
+=>
+    (set-goal byz-rx-action-risk-goal 80)
+    (set-goal byz-rx-information-gap-goal 20)
+    (set-goal byz-response-mode-goal byz-response-defend))
+
+; High danger + low confidence = information before overcommitment.
+(defrule
+    (up-compare-goal byz-threat-score-goal >= c:70)
+    (up-compare-goal byz-threat-confidence-goal < c:70)
+=>
+    (set-goal byz-rx-action-risk-goal 60)
+    (set-goal byz-rx-information-gap-goal 70)
+    (set-goal byz-rx-branch-goal byz-response-monitor))
+
+; Low threat + initiative = opportunity.
+(defrule
+    (up-compare-goal byz-threat-score-goal < c:40)
+    (up-compare-goal byz-initiative-goal >= c:60)
+=>
+    (set-goal byz-rx-action-risk-goal 30)
+    (set-goal byz-rx-branch-goal byz-response-counterattack))
+
+; ------------------------- PREDICTION ---------------------------------
+; We care about what the opponent is about to become, not just what is visible.
+(defrule
+    (up-compare-goal byz-enemy-transition-pressure-goal >= c:70)
+    (up-compare-goal byz-transition-cost-goal >= c:40)
+=>
+    (set-goal byz-rx-enemy-pivot-goal 70)
+    (set-goal byz-rx-conversion-ready-goal 60)
+    (set-goal byz-rx-branch-goal byz-response-punish-transition))
+
+(defrule
+    (up-compare-goal byz-enemy-transition-pressure-goal >= c:70)
+    (up-compare-goal byz-transition-cost-goal < c:40)
+=>
+    (set-goal byz-rx-enemy-pivot-goal 80)
+    (set-goal byz-rx-conversion-ready-goal 40))
+
+; ------------------------- PRICING ------------------------------------
+; The masterwork evaluates action cost, immediate reward, persistent reward,
+; and regret from waiting.
+(defrule
+    (up-compare-goal byz-battle-exchange-goal >= c:60)
+    (up-compare-goal byz-position-value-goal >= c:byz-position-useful)
+=>
+    (set-goal byz-rx-action-reward-goal 70))
+
+(defrule
+    (up-compare-goal byz-conversion-value-goal >= c:60)
+    (up-compare-goal byz-conversion-feasibility-goal >= c:50)
+    (up-compare-goal byz-conversion-permanence-goal >= c:50)
+=>
+    (set-goal byz-rx-damage-persistent-goal 80)
+    (set-goal byz-rx-conversion-ready-goal 80))
+
+; Intelligence publishes a populated deadline class. Use that instead of
+; comparing the millisecond storage goal directly; a default zero deadline is
+; not treated as an emergency.
+(defrule
+    (up-compare-goal byz-intel-deadline-class-goal == c:byz-deadline-immediate)
+=>
+    (set-goal byz-rx-regret-goal 90)
+    (set-goal byz-rx-time-ratio-goal 90))
+
+(defrule
+    (up-compare-goal byz-intel-deadline-class-goal == c:byz-deadline-tight)
+=>
+    (set-goal byz-rx-regret-goal 75)
+    (set-goal byz-rx-time-ratio-goal 80))
+
+(defrule
+    (up-compare-goal byz-intel-deadline-class-goal == c:byz-deadline-missed)
+=>
+    (set-goal byz-rx-regret-goal 100)
+    (set-goal byz-rx-time-ratio-goal 95))
+
+; ------------------------- CHOICE -------------------------------------
+; Prevent catastrophe before seeking optional profit.
+(defrule
+    (up-compare-goal byz-threat-score-goal >= c:75)
+    (up-compare-goal byz-rx-regret-goal >= c:70)
+=>
+    (set-goal byz-rx-branch-goal byz-response-defend)
+    (set-goal byz-commitment-level-goal byz-commit-heavy))
+
+(defrule
+    (up-compare-goal byz-threat-score-goal < c:50)
+    (up-compare-goal byz-rx-conversion-ready-goal >= c:70)
+    (up-compare-goal byz-rx-damage-persistent-goal >= c:70)
+=>
+    (set-goal byz-rx-branch-goal byz-response-siege)
+    (set-goal byz-commitment-level-goal byz-commit-medium)
+    (set-goal byz-state-goal byz-state-convert))
+
+(defrule
+    (up-compare-goal byz-rx-enemy-pivot-goal >= c:70)
+    (up-compare-goal byz-rx-damage-persistent-goal >= c:60)
+=>
+    (set-goal byz-rx-branch-goal byz-response-punish-transition)
+    (set-goal byz-state-goal byz-state-exploit))
+
+; ------------------------- COMMITMENT ---------------------------------
+; Preserve optionality unless urgency justifies commitment.
+(defrule
+    (up-compare-goal byz-optionality-goal <= c:30)
+=>
+    (set-goal byz-commitment-level-goal byz-commit-light))
+
+(defrule
+    (up-compare-goal byz-optionality-goal >= c:70)
+    (up-compare-goal byz-rx-regret-goal >= c:70)
+=>
+    (set-goal byz-commitment-level-goal byz-commit-heavy))
+
+(defrule
+    (up-compare-goal byz-eco-security-goal <= c:25)
+=>
+    (set-goal byz-commitment-level-goal byz-commit-light)
+    (set-goal byz-state-goal byz-state-stabilize))
+
+; ------------------------- EVALUATION ---------------------------------
+; Bad fights trigger preservation/retreat logic; sustainability can override
+; otherwise attractive attacks.
+(defrule
+    (up-compare-goal byz-battle-risk-goal >= c:75)
+    (up-compare-goal byz-battle-exchange-goal < c:50)
+=>
+    (set-goal byz-rx-branch-goal byz-response-retreat)
+    (set-goal byz-state-goal byz-state-stabilize))
+
+(defrule
+    (up-compare-goal byz-rx-sustainability-goal <= c:25)
+    (up-compare-goal byz-rx-recovery-gap-goal >= c:50)
+=>
+    (set-goal byz-rx-branch-goal byz-response-recover)
+    (set-goal byz-state-goal byz-state-recover))
+
+; ------------------------- CONVERSION ---------------------------------
+; Temporary efficiency becomes a strategic win only when value, feasibility,
+; and permanence are all sufficient.
+(defrule
+    (up-compare-goal byz-conversion-ready-goal >= c:75)
+    (up-compare-goal byz-conversion-permanence-goal >= c:60)
+    (up-compare-goal byz-conversion-feasibility-goal >= c:60)
+=>
+    (set-goal byz-state-goal byz-state-convert)
+    (set-goal byz-response-mode-goal byz-response-siege))
+
+(defrule
+    (up-compare-goal byz-enemy-recovery-capacity-goal <= c:30)
+    (up-compare-goal byz-win-pressure-goal >= c:70)
+=>
+    (set-goal byz-state-goal byz-state-deny-recovery))
+
+; ------------------------- DENY RECOVERY ------------------------------
+(defrule
+    (goal byz-state-goal byz-state-deny-recovery)
+    (up-compare-goal byz-enemy-production-depth-goal >= c:40)
+=>
+    (set-goal byz-conversion-target-goal byz-convert-production)
+    (set-goal byz-rx-branch-goal byz-response-deny-recovery))
+
+(defrule
+    (goal byz-state-goal byz-state-deny-recovery)
+    (up-compare-goal byz-enemy-gold-dependence-goal >= c:60)
+=>
+    (set-goal byz-conversion-target-goal byz-convert-resources)
+    (set-goal byz-gold-denial-cap-goal 80))
+
+; ------------------------- OBSERVE AGAIN ------------------------------
+; Specialized modules populate the memory between reasoning passes.
+(defrule
+    (true)
+=>
+    (set-goal byz-rx-cycle-goal byz-rx-observe))
+
+; ============================================================================
+; END OF AD BYZANTINE REASONING ENGINE
+; ============================================================================
+
+; ============================================================================
+; FINAL DOCTRINE — STRATEGIC STATE AUTHORITY
+; Reasoning owns the strategic war state. Specialists supply evidence; they do not
+; compete to redefine the whole war. This mirrors the dissertation's five-state
+; control loop: neutralize -> contain -> starve -> convert -> choke.
+; ============================================================================
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (set-goal byz-strategic-state-authority-goal byz-state-goal)
+    (set-goal byz-strategic-state-urgency-goal byz-rx-action-risk-goal))
+
+(defrule
+    (up-compare-goal byz-state-goal == byz-state-convert)
+=>
+    (set-goal byz-strategic-conversion-potential-goal 80))
+
+(defrule
+    (up-compare-goal byz-state-goal == byz-state-deny-recovery)
+=>
+    (set-goal byz-strategic-conversion-potential-goal 90))
+
+(defrule
+    (up-compare-goal byz-state-goal == byz-state-stabilize)
+=>
+    (set-goal byz-strategic-conversion-potential-goal 35))

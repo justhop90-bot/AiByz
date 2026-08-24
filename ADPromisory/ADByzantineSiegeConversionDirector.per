@@ -1,0 +1,503 @@
+; ============================================================================
+; AD BYZANTINE SIEGE & CONVERSION DIRECTOR
+; ============================================================================
+; The architect of irreversible victory.
+;
+; Mission:
+;   Convert temporary battlefield stability into permanent strategic damage.
+;
+; Dissertation doctrine implemented here:
+;   1. Siege is a CONVERSION TOOL, not a generic damage upgrade.
+;   2. Cheap counters create the stability that lets siege operate.
+;   3. Siege must be selected by ROLE: anti-mass, anti-building, anti-Castle,
+;      anti-siege, or support.
+;   4. The target is not always the enemy army. Production, gold access,
+;      Castles, Town Centers, reinforcement routes and recovery infrastructure
+;      can be worth more than a few military kills.
+;   5. Conversion must be timed to a window in which the enemy cannot respond.
+;   6. When the enemy's recovery capacity is collapsing, chase less and destroy
+;      more.  The goal is to make the war impossible to continue.
+;   7. If siege cannot be protected, do not create an expensive liability.
+;
+; This module is a subordinate strategic director:
+;   Battlefield Commander -> operational permission
+;   Composition Optimizer  -> chosen force
+;   Production Director    -> production feasibility
+;   Technology Director    -> required research
+;   Economic War Director  -> economic conversion value
+;   Command Network         -> final communications
+;   Execution Bridge        -> production authority
+;
+; The director writes FORCE requirements and conversion intent. It does not
+; bypass the quartermaster or seize production authority directly.
+; ============================================================================
+
+; --------------------------- PRIVATE GOALS ------------------------------
+(defconst byz-scv-cycle-goal 1801) ; siege/conversion cycle
+(defconst byz-scv-state-goal 1802) ; siege state
+(defconst byz-scv-confidence-goal 1803) ; confidence in conversion plan
+(defconst byz-scv-urgency-goal 1804) ; conversion urgency
+(defconst byz-scv-role-goal 1805) ; selected siege role
+(defconst byz-scv-target-goal 1806) ; selected conversion target
+(defconst byz-scv-target-value-goal 1809) ; target value
+(defconst byz-scv-target-feasibility-goal 1810) ; target feasibility
+(defconst byz-scv-target-permanence-goal 1812) ; target permanence
+(defconst byz-scv-protection-goal 1813) ; siege protection requirement
+(defconst byz-scv-enemy-siege-risk-goal 1814) ; enemy anti-siege threat
+(defconst byz-scv-micro-burden-goal 1815) ; practical siege micro burden
+(defconst byz-scv-route-safety-goal 1816) ; route/position safety
+(defconst byz-scv-reinforcement-goal 1817) ; reinforcement support
+(defconst byz-scv-position-goal 1818) ; position value for siege
+(defconst byz-scv-screen-deficit-goal 1819) ; required protective screen
+(defconst byz-scv-mass-control-goal 1820) ; anti-mass value
+(defconst byz-scv-building-pressure-goal 1821) ; building damage pressure
+(defconst byz-scv-castle-pressure-goal 1822) ; Castle pressure
+(defconst byz-scv-production-denial-goal 1823) ; production-denial pressure
+(defconst byz-scv-resource-denial-goal 1824) ; resource-denial pressure
+(defconst byz-scv-reinforcement-denial-goal 1825) ; reinforcement denial
+(defconst byz-scv-recovery-denial-goal 1826) ; recovery denial
+(defconst byz-scv-conversion-score-goal 1827) ; aggregate conversion score
+(defconst byz-scv-conversion-window-goal 1828) ; window quality
+(defconst byz-scv-pursuit-discount-goal 1829) ; discount on chasing versus converting
+(defconst byz-scv-overreach-risk-goal 1830) ; overreach risk
+(defconst byz-scv-siege-exchange-goal 1831) ; expected siege exchange quality
+(defconst byz-scv-sustainability-goal 1832) ; ability to keep siege alive
+(defconst byz-scv-forward-value-goal 1833) ; value of forward siege/production
+(defconst byz-scv-forward-risk-goal 1834) ; risk of forward commitment
+(defconst byz-scv-ram-goal 1835) ; ram demand
+(defconst byz-scv-mango-goal 1836) ; mangonel/onager demand
+(defconst byz-scv-treb-goal 1837) ; trebuchet demand
+(defconst byz-scv-bbc-goal 1838) ; bombard cannon demand
+(defconst byz-scv-escort-goal 1839) ; escort requirement
+(defconst byz-scv-siege-hunt-goal 1840) ; enemy siege-hunting requirement
+(defconst byz-scv-stop-chase-goal 1841) ; stop chasing and convert
+(defconst byz-scv-release-valve-goal 1842) ; Cataphract release-valve support
+(defconst byz-scv-gold-window-goal 1843) ; enemy gold exposure window
+(defconst byz-scv-production-window-goal 1844) ; enemy production vulnerability
+(defconst byz-scv-castle-window-goal 1845) ; Castle vulnerability
+(defconst byz-scv-recovery-window-goal 1846) ; enemy recovery vulnerability
+(defconst byz-scv-target-lock-goal 1847) ; target lock duration/quality
+(defconst byz-scv-command-priority-goal 1848) ; command-network priority
+(defconst byz-scv-feedback-goal 1849) ; post-conversion feedback
+
+; --------------------------- ENUMS ------------------------------------
+(defconst byz-scv-observe 0)
+(defconst byz-scv-assess 1)
+(defconst byz-scv-prepare 2)
+(defconst byz-scv-convert 3)
+(defconst byz-scv-deny-recovery 4)
+(defconst byz-scv-disengage 5)
+
+; ============================================================================
+; INITIALIZATION
+; ============================================================================
+(defrule
+    (true)
+=>
+    (set-goal byz-scv-cycle-goal byz-scv-observe)
+    (set-goal byz-scv-state-goal byz-scv-observe)
+    (set-goal byz-scv-confidence-goal 50)
+    (set-goal byz-scv-urgency-goal 0)
+    (set-goal byz-scv-role-goal byz-siege-none)
+    (set-goal byz-scv-target-goal byz-convert-none)
+    (set-goal byz-scv-target-value-goal 0)
+    (set-goal byz-scv-target-feasibility-goal 0)
+    (set-goal byz-scv-target-permanence-goal 0)
+    (set-goal byz-scv-protection-goal 0)
+    (set-goal byz-scv-enemy-siege-risk-goal 0)
+    (disable-self))
+(defrule
+    (true)
+=>
+    (set-goal byz-scv-micro-burden-goal 0)
+    (set-goal byz-scv-route-safety-goal 50)
+    (set-goal byz-scv-reinforcement-goal 50)
+    (set-goal byz-scv-position-goal 50)
+    (set-goal byz-scv-screen-deficit-goal 0)
+    (set-goal byz-scv-mass-control-goal 0)
+    (set-goal byz-scv-building-pressure-goal 0)
+    (set-goal byz-scv-castle-pressure-goal 0)
+    (set-goal byz-scv-production-denial-goal 0)
+    (set-goal byz-scv-resource-denial-goal 0)
+    (set-goal byz-scv-reinforcement-denial-goal 0)
+    (disable-self))
+(defrule
+    (true)
+=>
+    (set-goal byz-scv-recovery-denial-goal 0)
+    (set-goal byz-scv-conversion-score-goal 0)
+    (set-goal byz-scv-conversion-window-goal 0)
+    (set-goal byz-scv-pursuit-discount-goal 0)
+    (set-goal byz-scv-overreach-risk-goal 0)
+    (set-goal byz-scv-siege-exchange-goal 0)
+    (set-goal byz-scv-sustainability-goal 50)
+    (set-goal byz-scv-forward-value-goal 0)
+    (set-goal byz-scv-forward-risk-goal 0)
+    (set-goal byz-scv-ram-goal 0)
+    (set-goal byz-scv-mango-goal 0)
+    (disable-self))
+(defrule
+    (true)
+=>
+    (set-goal byz-scv-treb-goal 0)
+    (set-goal byz-scv-bbc-goal 0)
+    (set-goal byz-scv-escort-goal 0)
+    (set-goal byz-scv-siege-hunt-goal 0)
+    (set-goal byz-scv-stop-chase-goal 0)
+    (set-goal byz-scv-release-valve-goal 0)
+    (set-goal byz-scv-gold-window-goal 0)
+    (set-goal byz-scv-production-window-goal 0)
+    (set-goal byz-scv-castle-window-goal 0)
+    (set-goal byz-scv-recovery-window-goal 0)
+    (set-goal byz-scv-target-lock-goal 0)
+    (disable-self))
+(defrule
+    (true)
+=>
+    (set-goal byz-scv-command-priority-goal 0)
+    (set-goal byz-scv-feedback-goal 0)
+    (disable-self))
+
+; ============================================================================
+; PHASE 1 — ESTABLISH THE CONVERSION QUESTION
+; ============================================================================
+; Siege is justified only when battlefield stability already exists.
+(defrule
+    (up-compare-goal byz-force-siege-safe-demand-goal >= c:60)
+    (up-compare-goal byz-battle-exchange-goal >= c:55)
+=>
+    (set-goal byz-scv-protection-goal 70)
+    (set-goal byz-scv-sustainability-goal 65)
+    (set-goal byz-scv-state-goal byz-scv-prepare))
+
+; If the army is losing badly, siege is a liability rather than a converter.
+(defrule
+    (up-compare-goal byz-battle-risk-goal >= c:75)
+    (up-compare-goal byz-battle-exchange-goal < c:45)
+=>
+    (set-goal byz-scv-state-goal byz-scv-disengage)
+    (set-goal byz-scv-stop-chase-goal 0)
+    (set-goal byz-scv-command-priority-goal 90))
+
+; ============================================================================
+; PHASE 2 — TARGET SELECTION
+; ============================================================================
+; The dissertation's conversion target hierarchy is explicit in spirit:
+; destroy the infrastructure/resources that make recovery possible.
+;
+; Target selection therefore prefers, in different circumstances:
+;   production -> gold/resources -> Castle -> TC -> army -> map/relic/water.
+;
+; We do not chase military kills when a high-permanence target is available.
+
+(defrule
+    (up-compare-goal byz-enemy-production-depth-goal >= c:40)
+    (up-compare-goal byz-scv-production-window-goal >= c:60)
+=>
+    (set-goal byz-scv-target-goal byz-convert-production)
+    (set-goal byz-scv-production-denial-goal 90)
+    (set-goal byz-scv-target-value-goal 90)
+    (set-goal byz-scv-target-permanence-goal 85))
+
+(defrule
+    (up-compare-goal byz-enemy-gold-dependence-goal >= c:65)
+    (up-compare-goal byz-scv-gold-window-goal >= c:55)
+    (up-compare-goal byz-scv-production-denial-goal < c:70)
+=>
+    (set-goal byz-scv-target-goal byz-convert-resources)
+    (set-goal byz-scv-resource-denial-goal 90)
+    (set-goal byz-scv-target-value-goal 85)
+    (set-goal byz-scv-target-permanence-goal 80))
+
+(defrule
+    (up-compare-goal byz-scv-castle-window-goal >= c:65)
+    (up-compare-goal byz-conversion-value-goal >= c:60)
+=>
+    (set-goal byz-scv-target-goal byz-convert-castle)
+    (set-goal byz-scv-castle-pressure-goal 95)
+    (set-goal byz-scv-target-value-goal 95)
+    (set-goal byz-scv-target-permanence-goal 95))
+
+(defrule
+    (up-compare-goal byz-enemy-recovery-capacity-goal <= c:35)
+    (up-compare-goal byz-win-pressure-goal >= c:70)
+=>
+    (set-goal byz-scv-target-goal byz-convert-production)
+    (set-goal byz-scv-recovery-denial-goal 95)
+    (set-goal byz-scv-target-value-goal 95)
+    (set-goal byz-scv-target-permanence-goal 90))
+
+; ============================================================================
+; PHASE 3 — SIEGE ROLE SELECTION
+; ============================================================================
+
+; Anti-mass: Mangonel/Onager is selected only when mass actually warrants it.
+(defrule
+    (up-compare-goal byz-force-area-demand-goal >= c:60)
+    (up-compare-goal byz-enemy-mass-goal >= c:18)
+=>
+    (set-goal byz-scv-role-goal byz-siege-anti-mass)
+    (set-goal byz-scv-mass-control-goal 90)
+    (set-goal byz-scv-mango-goal 4))
+
+; Anti-building / forward conversion: Rams.
+(defrule
+    (up-compare-goal byz-force-conversion-demand-goal >= c:55)
+    (up-compare-goal byz-scv-target-value-goal >= c:60)
+    (up-compare-goal byz-scv-overreach-risk-goal < c:65)
+=>
+    (set-goal byz-scv-role-goal byz-siege-anti-building)
+    (set-goal byz-scv-building-pressure-goal 85)
+    (set-goal byz-scv-ram-goal 2))
+
+; Anti-Castle: Trebuchet role.
+(defrule
+    (up-compare-goal byz-scv-castle-window-goal >= c:60)
+=>
+    (set-goal byz-scv-role-goal byz-siege-anti-castle)
+    (set-goal byz-scv-castle-pressure-goal 95)
+    (set-goal byz-scv-treb-goal 2))
+
+; Anti-siege: Bombard Cannon is the preferred long-range solution when available.
+(defrule
+    (up-compare-goal byz-siege-pressure-goal >= c:60)
+    (up-compare-goal byz-scv-sustainability-goal >= c:50)
+=>
+    (set-goal byz-scv-role-goal byz-siege-anti-siege)
+    (set-goal byz-scv-siege-hunt-goal 90)
+    (set-goal byz-scv-bbc-goal 3))
+
+; Support role: don't overproduce siege when the conversion target is already open.
+(defrule
+    (up-compare-goal byz-scv-building-pressure-goal >= c:80)
+    (up-compare-goal byz-scv-castle-pressure-goal >= c:80)
+=>
+    (set-goal byz-scv-role-goal byz-siege-support))
+
+; ============================================================================
+; PHASE 4 — SCREEN / ESCORT REQUIREMENT
+; ============================================================================
+; A moving siege train is a protected weapons system, not a naked workshop unit.
+
+(defrule
+    (up-compare-goal byz-force-siege-demand-goal >= c:60)
+=>
+    (set-goal byz-scv-screen-deficit-goal 12)
+    (set-goal byz-scv-escort-goal 80))
+
+(defrule
+    (up-compare-goal byz-scv-enemy-siege-risk-goal >= c:60)
+    (up-compare-goal byz-force-mobile-demand-goal < c:50)
+=>
+    (set-goal byz-scv-escort-goal 90)
+    (set-goal byz-scv-siege-hunt-goal 85))
+
+; If protection is insufficient, do not escalate siege merely because conversion is tempting.
+(defrule
+    (up-compare-goal byz-scv-protection-goal < c:55)
+    (up-compare-goal byz-scv-sustainability-goal < c:45)
+=>
+    (set-goal byz-scv-overreach-risk-goal 90)
+    (set-goal byz-scv-urgency-goal 20)
+    (set-goal byz-scv-state-goal byz-scv-prepare))
+
+; ============================================================================
+; PHASE 5 — CONVERSION WINDOW
+; ============================================================================
+; A siege push is strongest when enemy transition/recovery is weakest.
+
+(defrule
+    (up-compare-goal byz-transition-stage-goal == byz-transition-punishable)
+    (up-compare-goal byz-conversion-value-goal >= c:65)
+=>
+    (set-goal byz-scv-conversion-window-goal 90)
+    (set-goal byz-scv-urgency-goal 90)
+    (set-goal byz-scv-command-priority-goal 90))
+
+(defrule
+    (up-compare-goal byz-imperial-window-goal >= c:75)
+    (up-compare-goal byz-imperial-conversion-value-goal >= c:70)
+=>
+    (set-goal byz-scv-conversion-window-goal 95)
+    (set-goal byz-scv-urgency-goal 95))
+
+(defrule
+    (up-compare-goal byz-enemy-recovery-capacity-goal <= c:35)
+    (up-compare-goal byz-enemy-production-depth-goal <= c:40)
+=>
+    (set-goal byz-scv-recovery-window-goal 90)
+    (set-goal byz-scv-stop-chase-goal 85))
+
+; ============================================================================
+; PHASE 6 — STOP CHASING, START CONVERTING
+; ============================================================================
+; The dissertation's strategic pivot is from reaction to initiative.
+
+(defrule
+    (up-compare-goal byz-scv-recovery-window-goal >= c:80)
+    (up-compare-goal byz-scv-target-permanence-goal >= c:75)
+=>
+    (set-goal byz-scv-stop-chase-goal 95)
+    (set-goal byz-force-conversion-demand-goal 90))
+
+(defrule
+    (up-compare-goal byz-scv-target-value-goal >= c:80)
+    (up-compare-goal byz-scv-target-feasibility-goal >= c:60)
+    (up-compare-goal byz-scv-target-permanence-goal >= c:70)
+=>
+    (set-goal byz-scv-conversion-score-goal 90)
+    (set-goal byz-scv-command-priority-goal 90)
+    (set-goal byz-scv-conversion-score-goal 90))
+
+; ============================================================================
+; PHASE 7 — BYZANTINE RELEASE VALVE
+; ============================================================================
+; If the opponent has answered the cheap counter cycle with infantry/trash,
+; Cataphracts and siege become the release mechanism rather than more endless
+; cheap-unit accumulation.
+
+(defrule
+    (up-compare-goal byz-infantry-pressure-goal >= c:70)
+    (up-compare-goal byz-force-cataph-demand-goal >= c:8)
+=>
+    (set-goal byz-scv-release-valve-goal 90)
+    (set-goal byz-scv-conversion-window-goal 75)
+    (set-goal byz-scv-target-value-goal 80))
+
+; ============================================================================
+; PHASE 8 — FORWARD SIEGE / FORWARD PRODUCTION VALUE
+; ============================================================================
+; Byzantine building HP is time-production. Forward siege/production is attractive
+; only when the extra durability buys enough conversion time to justify the risk.
+
+(defrule
+    (up-compare-goal byz-force-map-demand-goal >= c:60)
+    (up-compare-goal byz-map-control-goal >= c:60)
+    (up-compare-goal byz-production-capacity-goal <= c:70)
+=>
+    (set-goal byz-scv-forward-value-goal 80))
+
+(defrule
+    (up-compare-goal byz-scv-forward-value-goal >= c:70)
+    (up-compare-goal byz-scv-forward-risk-goal <= c:50)
+=>
+    (set-goal byz-prod-forward-production-goal 80)
+    (set-goal byz-scv-command-priority-goal 75))
+
+; ============================================================================
+; PHASE 9 — OVERREACH / DISENGAGEMENT
+; ============================================================================
+
+(defrule
+    (up-compare-goal byz-scv-overreach-risk-goal >= c:80)
+    (up-compare-goal byz-scv-conversion-window-goal < c:70)
+=>
+    (set-goal byz-scv-state-goal byz-scv-disengage)
+    (set-goal byz-scv-command-priority-goal 95))
+
+(defrule
+    (up-compare-goal byz-scv-route-safety-goal < c:35)
+    (up-compare-goal byz-scv-reinforcement-goal < c:40)
+=>
+    (set-goal byz-scv-forward-risk-goal 85)
+    (set-goal byz-scv-overreach-risk-goal 80))
+
+; ============================================================================
+; PHASE 10 — WRITE FORCE REQUIREMENTS
+; ============================================================================
+; The Execution Bridge will convert these deficits into actual training flags.
+
+(defrule
+    (up-compare-goal byz-scv-mass-control-goal >= c:70)
+=>
+    (set-goal byz-force-mango-demand-goal 4)
+    (set-goal byz-force-siege-demand-goal 60))
+
+(defrule
+    (up-compare-goal byz-scv-building-pressure-goal >= c:70)
+=>
+    (set-goal byz-force-ram-demand-goal 2)
+    (set-goal byz-force-siege-demand-goal 70))
+
+(defrule
+    (up-compare-goal byz-scv-castle-pressure-goal >= c:75)
+=>
+    (set-goal byz-force-treb-demand-goal 2)
+    (set-goal byz-force-siege-demand-goal 80))
+
+(defrule
+    (up-compare-goal byz-scv-siege-hunt-goal >= c:75)
+=>
+    (set-goal byz-force-bbc-demand-goal 3)
+    (set-goal byz-force-siege-demand-goal 75))
+
+; Protective screen is a capability requirement, not a generic unit count.
+(defrule
+    (up-compare-goal byz-scv-escort-goal >= c:70)
+=>
+    (set-goal byz-force-siege-protect-score-goal 90)
+    (set-goal byz-force-frontline-demand-goal 65))
+
+; ============================================================================
+; PHASE 11 — ECONOMIC / CONVERSION EXPORT
+; ============================================================================
+
+(defrule
+    (up-compare-goal byz-scv-conversion-score-goal >= c:75)
+=>
+    (set-goal byz-conversion-ready-goal 90))
+
+(defrule
+    (up-compare-goal byz-scv-production-denial-goal >= c:80)
+=>
+    (set-goal byz-production-denial-cap-goal 90))
+
+(defrule
+    (up-compare-goal byz-scv-resource-denial-goal >= c:80)
+=>
+    (set-goal byz-gold-denial-cap-goal 90))
+
+; ============================================================================
+; PHASE 12 — FEEDBACK
+; ============================================================================
+; If the conversion is not working, do not keep feeding siege into the same
+; problem. Return authority to the battlefield/economic directors.
+
+(defrule
+    (up-compare-goal byz-battle-risk-goal >= c:75)
+    (up-compare-goal byz-scv-siege-exchange-goal < c:45)
+=>
+    (set-goal byz-scv-feedback-goal 90)
+    (set-goal byz-scv-state-goal byz-scv-disengage)
+    (set-goal byz-scv-urgency-goal 10))
+
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (set-goal byz-scv-cycle-goal byz-scv-observe))
+
+; ============================================================================
+; END OF AD BYZANTINE SIEGE & CONVERSION DIRECTOR
+; ============================================================================
+
+; ============================================================================
+; FINAL DOCTRINE — CONVERSION ROI
+; Siege is justified when permanent damage exceeds siege risk, escort cost, and
+; exposure—not merely because siege is available.
+; ============================================================================
+(defrule
+    (timer-triggered fifteensec)
+=>
+    (set-goal byz-conversion-roi-goal 50))
+
+(defrule
+    (up-compare-goal byz-scv-target-permanence-goal >= c:80)
+    (up-compare-goal byz-scv-target-feasibility-goal >= c:65)
+    (up-compare-goal byz-scv-overreach-risk-goal <= c:45)
+=>
+    (set-goal byz-conversion-roi-goal 90))
+
+(defrule
+    (up-compare-goal byz-scv-overreach-risk-goal >= c:75)
+=>
+    (set-goal byz-conversion-roi-goal 25))
