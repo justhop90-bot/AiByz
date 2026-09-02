@@ -1,0 +1,25 @@
+{
+  "required_fields": {
+    "experiment_id": "stable identifier",
+    "date": "ISO date",
+    "build_fingerprint": "target executable hash/version",
+    "environment": "OS/tool/runtime details material to result",
+    "question": "precise machine question",
+    "hypothesis": "falsifiable hypothesis",
+    "evidence_before": "prior evidence and confidence",
+    "independent_variable": "controlled change",
+    "controls": "unchanged conditions",
+    "dependent_observations": "measured outcomes",
+    "expected_outcomes": "predictions",
+    "confounders": "known threats to interpretation",
+    "commands": "exact commands/scripts",
+    "artifacts": "inputs and outputs",
+    "result": "observed result",
+    "interpretation": "source-derived versus inferred meaning",
+    "falsification": "what would reject hypothesis",
+    "promotion": "whether claim changes status",
+    "architecture_impact": "downstream consequence",
+    "reproduction": "steps for independent reproduction"
+  },
+  "epistemic_rule": "An experiment result changes claim confidence only to the extent that its controls and observations support the interpretation."
+}

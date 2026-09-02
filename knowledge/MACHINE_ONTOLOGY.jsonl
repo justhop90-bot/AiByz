@@ -1,0 +1,21 @@
+{"id":"machine.runtime","type":"RUNTIME","relations":["owns:loader","owns:ai-substrate","owns:scheduler","owns:state","owns:interfaces","owns:diagnostics"],"status":"CONFIRMED","scope":"target executable/build"}
+{"id":"machine.loader","type":"LOADER","relations":["acquires:ai-script","constructs:rule-substrate"],"status":"PROBABLE","evidence":"native loader vocabulary + script source contract"}
+{"id":"machine.rule","type":"RULE","relations":["has:trigger","has:handler","has:scheduler-metadata","belongs-to:rule-group"],"status":"CONFIRMED"}
+{"id":"machine.scheduler","type":"SCHEDULER","relations":["orders:rules","consults:priority","consults:intervals","consults:enablement","consults:groups"],"status":"PROBABLE","open":"exact ordering/comparator/fairness semantics require native verification"}
+{"id":"machine.rule_group","type":"RULE_GROUP","relations":["contains:rules","controls:enablement"],"status":"PROBABLE"}
+{"id":"machine.goal","type":"GOAL_STATE","relations":["stores:persistent-state","read-by:rules","written-by:actions"],"status":"CONFIRMED"}
+{"id":"machine.strategic_number","type":"STRATEGIC_NUMBER","relations":["stores:control-state","read-by:rules","written-by:actions"],"status":"CONFIRMED"}
+{"id":"machine.timer","type":"TIMER","relations":["stores:temporal-state","supports:hysteresis","supports:cooldown"],"status":"PROBABLE"}
+{"id":"machine.fact","type":"FACT","relations":["observes:engine-state","feeds:rules"],"status":"CONFIRMED"}
+{"id":"machine.up","type":"UP_INTERFACE","relations":["observes:facts","tests:feasibility","searches:objects","mutates:state","requests:actions"],"status":"PROBABLE","open":"complete primitive-by-primitive ledger pending"}
+{"id":"machine.xs","type":"XS_INTERFACE","relations":["controls:rule-lifecycle","controls:scheduling-metadata","controls:rule-groups"],"status":"PROBABLE","policy":"capability-qualified only"}
+{"id":"machine.trigger","type":"TRIGGER","relations":["evaluates:rule-eligibility","feeds:scheduler"],"status":"PROBABLE"}
+{"id":"machine.handler","type":"HANDLER","relations":["interprets:actions","causes:execution"],"status":"PROBABLE"}
+{"id":"machine.action","type":"ACTION","relations":["requires:preconditions","has:execution-result","has:postcondition"],"status":"CONFIRMED"}
+{"id":"machine.target","type":"TARGET","relations":["selected-by:search","consumed-by:action","may-be-invalidated"],"status":"PROBABLE"}
+{"id":"machine.execution_result","type":"EXECUTION_RESULT","relations":["classifies:success","classifies:failure","feeds:verification"],"status":"PROBABLE"}
+{"id":"machine.verification","type":"VERIFICATION","relations":["checks:postcondition","feeds:recovery"],"status":"ARCHITECTURAL_REQUIREMENT"}
+{"id":"machine.recovery","type":"RECOVERY","relations":["responds-to:failure","responds-to:stale-target","responds-to:stale-plan"],"status":"ARCHITECTURAL_REQUIREMENT"}
+{"id":"machine.identifier_domain","type":"TYPE_SYSTEM","relations":["constrains:api-arguments","prevents:semantic-integer-collision"],"status":"CONFIRMED","example":"knight-line is a unit-line domain, not a class domain"}
+{"id":"machine.validator","type":"VALIDATOR","relations":["checks:static-contract"],"status":"CONFIRMED","open":"validator/runtime semantic equivalence must be treated as a separate question"}
+{"id":"machine.runtime_evidence","type":"EVIDENCE","relations":["supports:machine-claim"],"status":"CONFIRMED","rule":"claims are build-scoped"}

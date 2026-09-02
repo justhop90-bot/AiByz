@@ -1,0 +1,68 @@
+{
+  "generated": "2026-09-02",
+  "purpose": "Cryptographic and provenance inventory for supplied research materials. Raw historical/vendor-derived source is preserved locally rather than mirrored into this public repository.",
+  "materials": [
+    {
+      "package": "AI (HD version).zip",
+      "sha256": "a3687ba15ce1e069ec91c617f7486b8b42773becad06806dfe9414456542f796",
+      "size_bytes": 130826,
+      "entries": 1,
+      "extracted_source": "AI (HD version).per",
+      "extracted_size_bytes": 1167238,
+      "extracted_sha256": "8a554a90a18f7983a949f7bef3b767e09732bce87dca3b9546fe782f098de51c"
+    },
+    {
+      "package": "AI (HD version) (2).zip",
+      "sha256": "dab1682d387741700ee3820202ff719f62ddc2dd320612f8fe723dc7e0e9b44f",
+      "size_bytes": 130826,
+      "entries": 1,
+      "extracted_source": "AI (HD version).per",
+      "extracted_size_bytes": 1167238,
+      "extracted_sha256": "8a554a90a18f7983a949f7bef3b767e09732bce87dca3b9546fe782f098de51c"
+    },
+    {
+      "package": "Promisory.zip",
+      "sha256": "a81785575ebe4715eeb3ab5feaf518ee4617a11b3f079b694ec668c8aa7baf29",
+      "size_bytes": 492581,
+      "entries": 37
+    }
+  ],
+  "promisory_entries": [
+    ["Promisory/boarhunting.per",42279,"f3705e3fed8a46d6f4c5d74bf0ab4c6c4d446e77a08bd9b1ba4488abba25947c"],
+    ["Promisory/buildings.per",427367,"48fd174451cf81144c4e1c9d9a6665d1054855a9e895bfecfdc31174acbc6564"],
+    ["Promisory/const.per",180224,"400160cf46fe9992ddf20817261fd337c925d2729d42083c8865747353803db0"],
+    ["Promisory/customConstants.per",231899,"ba72aac36739381ebe22a605f56cacb5341718949467b40347a577036ef813da"],
+    ["Promisory/dawn.per",15410,"b731f6c58f6033fd263a4ad1f96cb13adcb902b343e0878010ef80ace7b050b2"],
+    ["Promisory/defaultConstants.per",33628,"187980fd34f5a5626955b20dd97114dc2212c9e7e86356014a7976dd1ae310ad"],
+    ["Promisory/escrow.per",118357,"797c94896e7c53b38fc8fb88dc743dbb05add3cf58a2375f4b885fcb444da6ca"],
+    ["Promisory/event.per",39,"d55f1b4d333c410acd3fc4d6df02245dd78957c9a76060e4ce93ba48c4f4033a"],
+    ["Promisory/events.per",163,"5bb3df9cd82d3d4a34b233ca37b1ef430800080fa53274de8fab8b0d1c3476cb"],
+    ["Promisory/extremebuildings2.per",31709,"f7dd2ff266e4ac818b2973896057e6eafba64a9d84313dc5dd0cc04a774152b7"],
+    ["Promisory/finaling.per",29232,"95e18eb8b765a7f87ea499c25ed944d0e04c9abf932b70d8821ef1154d872e52"],
+    ["Promisory/finalingConstants.per",10515,"ce7a804a9855742cf4329c0fa44e603a5d19655951bf8e6bc5cf689264e07455"],
+    ["Promisory/gatherers.per",198652,"29179c2b4d9d29b7031b70b5d4f5dff382353df1938304f1115436676b92fb17"],
+    ["Promisory/general.per",257749,"ad926dd04d6dbad14830203d82f9d9d356f9697dd4eee98e02e207b1757b0afe"],
+    ["Promisory/ImprovementBucketsConst.per",134558,"76bfa9325564690610be7efe0e496aa288f729f6e4c04ca47956f9cd48efee4d"],
+    ["Promisory/ImprovementBucketsTestConst.per",29193,"247f728d53bc8e6330ff93929c123e3d94f3c83c3ab209c39957ac67d9bf154c"],
+    ["Promisory/init.per",351157,"d1d4fdbd5bb1936378e8899efdcdcc8bf1a6ab39392d236ed83246bb340d2a01"],
+    ["Promisory/interaction.per",154256,"bc421889aa881a901c93056e65bae12120db2535bbd3ddc12100e73d976980b2"],
+    ["Promisory/merge.per",27,"eacf98eec94e371bb96e4ed91a3677ab0c28e4872d755876280372f15b72ffd6"],
+    ["Promisory/merge1b.per",6004,"3eee7dced36b248c43f4db722e718b0924d94c6547a84190281b480740ecb05e"],
+    ["Promisory/merge2.per",0,"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"],
+    ["Promisory/merge2b.per",47,"852f6a157d744fe626bef4deda65057bf13558494970872bc7cd87f29cfad5e3"],
+    ["Promisory/merge3.per",0,"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"],
+    ["Promisory/merge3b.per",0,"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"],
+    ["Promisory/merge4.per",6338,"5990107f24d62ed59b7c4a8e943358319c6fac74605d85ba9a8607b13f95073f"],
+    ["Promisory/orb.per",152219,"f554f0fda0b4b2a037888c3cdccf5cd7f23636e69d05d5b341e6622423f59ece"],
+    ["Promisory/paphosConstants.per",17162,"515f0c35d1d691f228c1a095694fa7074d6208ae3383f03bcbfb5d255b7c691a"],
+    ["Promisory/researches.per",224466,"74e9e5babefea97d8360f992791a4965f943a4c6e1809b6772d7ddca13618216"],
+    ["Promisory/resign.per",25808,"a8e4b5497208939332a0bc6edcb357e6e63bb59130b868eee5ca332abb4b9139"],
+    ["Promisory/scoutcontrol.per",38871,"0a472440942c66cf70160fde6679eb99fd1a6c465c5a13050099be567b002688"],
+    ["Promisory/threats.per",74337,"6fc38288e8759e3d9e3de711e3e24754586bd904126e9a1b5e1931150957fb6a"],
+    ["Promisory/trade.per",42913,"3086374211618f6b536707936e12935a1cf51496dd7c4af7393034232b219639"],
+    ["Promisory/tsa.per",436096,"27950da53e6357a4e127595fb8b26f1161bd079d22145e07278952a89d043625"],
+    ["Promisory/ugp.per",8314,"ddd217170c75f5ca0c3534eb4c116d563a78e2e2d392e55042749507288d573b"],
+    ["Promisory/units.per",444615,"f55267cc531a2bb7892282003ba1db3de1fe3dc740dc6defdd1d24a09da5a397"],
+    ["Promisory/watercontrol.per",34675,"0ca999096ecf9a6faebe014a6fe17471cb9ccec7029194df3f3419f191ae6954"]
+  ]
+}

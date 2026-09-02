@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AEGIS HD AI Forensic Control Event",
+  "type": "object",
+  "required": ["artifact_id", "source", "inputs", "state", "effects", "interpretation", "evidence"],
+  "properties": {
+    "artifact_id": {"type": "string"},
+    "source": {
+      "type": "object",
+      "required": ["file", "line_start", "line_end"],
+      "properties": {
+        "file": {"type": "string"},
+        "line_start": {"type": "integer", "minimum": 1},
+        "line_end": {"type": "integer", "minimum": 1},
+        "source_hash": {"type": "string"},
+        "section": {"type": "string"}
+      }
+    },
+    "inputs": {"type": "array", "items": {"type": "string"}},
+    "state": {
+      "type": "object",
+      "properties": {
+        "reads": {"type": "array", "items": {"type": "string"}},
+        "writes": {"type": "array", "items": {"type": "string"}},
+        "clears": {"type": "array", "items": {"type": "string"}},
+        "overrides": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "effects": {
+      "type": "object",
+      "properties": {
+        "actions": {"type": "array", "items": {"type": "string"}},
+        "resource_effects": {"type": "array", "items": {"type": "string"}},
+        "production_effects": {"type": "array", "items": {"type": "string"}},
+        "military_effects": {"type": "array", "items": {"type": "string"}},
+        "map_effects": {"type": "array", "items": {"type": "string"}},
+        "temporal_effects": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "interpretation": {
+      "type": "object",
+      "properties": {
+        "mechanical": {"type": "string"},
+        "functional": {"type": "string"},
+        "control": {"type": "string"},
+        "strategic": {"type": "string"},
+        "designer_model": {"type": "string"}
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "properties": {
+        "strength": {"enum": ["CONFIRMED", "PROBABLE", "PLAUSIBLE", "UNCERTAIN", "OBSOLETE", "ENGINE-SPECIFIC", "HISTORICAL", "DISPROVEN"]},
+        "counterevidence": {"type": "array", "items": {"type": "string"}},
+        "independent_validation": {"type": "array", "items": {"type": "string"}},
+        "falsifier": {"type": "string"}
+      }
+    }
+  }
+}
