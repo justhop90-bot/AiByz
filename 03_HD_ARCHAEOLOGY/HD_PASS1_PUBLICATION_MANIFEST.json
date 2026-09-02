@@ -1,0 +1,37 @@
+{
+  "pass": "HD/2013 Explicit Knowledge Reconstruction — Pass 1",
+  "date": "2026-09-02",
+  "source_identity": {
+    "name": "AI (HD version).per",
+    "sha256": "8a554a90a18f7983a949f7bef3b767e09732bce87dca3b9546fe782f098de51c",
+    "bytes": 1167238,
+    "lines": 36141,
+    "defrules": 2429
+  },
+  "public_artifacts": [
+    "HD_EXPLICIT_RECONSTRUCTION_PASS1.md",
+    "HD_EXPLICIT_STATE_LEDGER_PASS1.json",
+    "HD_SNIPPET_CASEBOOK_PASS1.md",
+    "HD_PROGRAMMER_MACHINE_BRIDGE_PASS1.md"
+  ],
+  "publication_classification": {
+    "derived_analysis": "publish",
+    "machine_readable_metrics": "publish",
+    "limited_isolated_excerpts": "publish_with_attribution_and_context",
+    "full_historical_source": "do_not_publish",
+    "full_game_files": "do_not_publish",
+    "AoE2DE_executable": "do_not_publish",
+    "vendor_proprietary_directories": "do_not_publish"
+  },
+  "reproducibility": {
+    "source_is_identified_by_hash": true,
+    "full_source_redistribution_is_required": false,
+    "derived_artifacts_are_not_a_source_mirror": true
+  },
+  "validation": {
+    "source_hash_verified_against_recovered_artifact": true,
+    "rule_count_verified": 2429,
+    "active_goal_write_actions": 2095,
+    "active_strategic_number_writes": 1749
+  }
+}
