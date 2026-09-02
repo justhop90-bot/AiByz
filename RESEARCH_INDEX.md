@@ -22,11 +22,12 @@ Layer 1 is the current engineering priority.
 3. [`docs/MACHINE_EVIDENCE_MATRIX_2026-09-02.md`](docs/MACHINE_EVIDENCE_MATRIX_2026-09-02.md) — claim-by-claim evidence and confidence.
 4. [`docs/MACHINE_ARCHITECTURAL_CONSEQUENCES_2026-09-02.md`](docs/MACHINE_ARCHITECTURAL_CONSEQUENCES_2026-09-02.md) — what the evidence means for future architecture.
 5. [`docs/LAYER1_NATIVE_ARCHAEOLOGY_LOG_2026-09-02.md`](docs/LAYER1_NATIVE_ARCHAEOLOGY_LOG_2026-09-02.md) — native investigation record.
-6. [`docs/LAYER1_NATIVE_ARCHAEOLOGY_QC_ADDENDUM_2026-09-02.md`](docs/LAYER1_NATIVE_ARCHAEOLOGY_QC_ADDENDUM_2026-09-02.md) — quality control, negative evidence, experiments, and re-entry requirements.
-7. [`docs/NATIVE_OBJECT_IDENTITY_DOSSIER_2026-09-02.md`](docs/NATIVE_OBJECT_IDENTITY_DOSSIER_2026-09-02.md) — current object/unit identity research boundary.
-8. [`docs/OPEN_NATIVE_QUESTIONS_LAYER1.md`](docs/OPEN_NATIVE_QUESTIONS_LAYER1.md) — unresolved native questions and the next discriminating investigations.
-9. [`knowledge/LAYER1_MACHINE_FACTS.jsonl`](knowledge/LAYER1_MACHINE_FACTS.jsonl) — atomic machine facts.
-10. [`knowledge/MACHINE_INVESTIGATION_HISTORY.jsonl`](knowledge/MACHINE_INVESTIGATION_HISTORY.jsonl) — chronological investigation record.
+6. [`docs/NATIVE_METADATA_TABLE_INVESTIGATION_2026-09-02.md`](docs/NATIVE_METADATA_TABLE_INVESTIGATION_2026-09-02.md) — current API metadata/registration investigation and negative-reference results.
+7. [`docs/LAYER1_NATIVE_ARCHAEOLOGY_QC_ADDENDUM_2026-09-02.md`](docs/LAYER1_NATIVE_ARCHAEOLOGY_QC_ADDENDUM_2026-09-02.md) — quality control, negative evidence, experiments, and re-entry requirements.
+8. [`docs/NATIVE_OBJECT_IDENTITY_DOSSIER_2026-09-02.md`](docs/NATIVE_OBJECT_IDENTITY_DOSSIER_2026-09-02.md) — current object/unit identity research boundary.
+9. [`docs/OPEN_NATIVE_QUESTIONS_LAYER1.md`](docs/OPEN_NATIVE_QUESTIONS_LAYER1.md) — unresolved native questions and the next discriminating investigations.
+10. [`knowledge/LAYER1_MACHINE_FACTS.jsonl`](knowledge/LAYER1_MACHINE_FACTS.jsonl) — atomic machine facts.
+11. [`knowledge/MACHINE_INVESTIGATION_HISTORY.jsonl`](knowledge/MACHINE_INVESTIGATION_HISTORY.jsonl) — chronological investigation record.
 
 ### Layer 1 in one sentence
 
@@ -110,10 +111,11 @@ If you return after forgetting the project:
 4. Read the evidence matrix before reading conclusions.
 5. Read the machine monograph.
 6. Read the native archaeology log and QC addendum.
-7. Read the open-question register.
-8. Inspect the atomic knowledge ledgers for exact claims.
-9. Only then inspect historical archaeology and downstream strategy material.
-10. Continue from the explicitly recorded next action rather than reconstructing plans from memory.
+7. Read the metadata-table investigation and object identity dossier.
+8. Read the open-question register.
+9. Inspect the atomic knowledge ledgers for exact claims.
+10. Only then inspect historical archaeology and downstream strategy material.
+11. Continue from the explicitly recorded next action rather than reconstructing plans from memory.
 
 ## 9. What not to do
 
@@ -126,4 +128,4 @@ If you return after forgetting the project:
 
 ## Current research frontier
 
-The immediate frontier is **native instruction-level reference recovery and end-to-end tracing of high-value object-identity APIs**. The purpose is to resolve how script-facing identity functions map onto native object state, validation, lookup, lifetime, and return values.
+The immediate frontier is **native instruction-level reference recovery and end-to-end tracing of high-value object-identity APIs**. The current sub-frontier is reconstructing the API metadata/registration mechanism from the complete signature region rather than from individual string references. The purpose is to resolve how script-facing identity functions map onto native object state, validation, lookup, lifetime, and return values.
