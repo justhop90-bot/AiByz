@@ -1,0 +1,14 @@
+{
+  "lines": 36164,
+  "defrules": 2447,
+  "defconst": 4230,
+  "load_calls": 21,
+  "goal_writes": 2142,
+  "sn_writes": 1809,
+  "timer_enables": 239,
+  "train_actions": 253,
+  "research_actions": 614,
+  "build_actions": 117,
+  "attack_actions": 2,
+  "max_line_length": 145
+}
