@@ -2,94 +2,116 @@
 
 ## Purpose
 
-This document is the durable operational contract for designing AI against the Age of Empires II: Definitive Edition rule-script machine. It deliberately records what the project has established, the evidence classes used to establish it, and the boundary between demonstrated behavior and unresolved reverse-engineering questions.
+This document is the durable operational model for designing AI against the Age of Empires II: Definitive Edition rule-script machine. It records what the project has established, how that knowledge was established, and where the boundary between demonstrated behavior and unresolved native questions lies.
 
-## Closure standard
+## Current completion standard
 
-Layer 1 is operationally complete when the engineering team can design, validate, deploy, observe, and recover an AI implementation without relying on unsupported assumptions about the script machine. It does **not** mean every native instruction or proprietary implementation detail has been reverse engineered.
+The project is currently using a **predictive machine-understanding** standard. Layer 1 is not considered complete merely because the scripting vocabulary, interface names, or high-level execution concepts are known.
+
+For every material machine path, the desired model is:
+
+`precondition → trigger → dispatch → processing → state transition → postcondition → next observable consequence`
+
+Where the evidence is insufficient to make that chain predictive, the uncertainty must remain visible.
 
 ## Runtime substrate
 
-The relevant AI surface consists of `.ai` loading/bootstrap behavior and `.per` rule scripts. The rule system is stateful: script predicates observe engine state; goals, strategic numbers, and timers retain decision state; actions mutate engine-visible state or request game actions; subsequent rule evaluation observes the consequences.
+The relevant AI surface consists of `.ai` loading/bootstrap behavior and `.per` rule scripts. The rule system is stateful: script predicates observe engine state; goals, strategic numbers, and timers retain decision state; actions mutate engine-visible state or request game actions; subsequent evaluation observes consequences.
 
-The practical model is therefore a closed feedback loop:
+The practical model is therefore a feedback loop:
 
-`engine state -> sensors/predicates -> persistent state -> rule scheduling -> decisions/actions -> changed engine state -> next evaluation`.
+`engine state → sensors/predicates → persistent state → rule scheduling → decisions/actions → changed engine state → next evaluation`.
 
-## Rule scheduling evidence
+This is a model of the observed execution surface, not a claim that every internal scheduler detail has already been recovered.
 
-Native extraction identified embedded scheduler vocabulary including `mCurrentRuleID`, `mNextSortedRuleIndex`, `xsEnableRule`, `xsEnableRuleGroup`, `xsDisableRule`, `xsDisableRuleGroup`, `xsSetRulePriority`, `xsSetRulePrioritySelf`, and diagnostics for invalid rule IDs, rule execution failure, and rule interval/priority modifications. These strings establish native vocabulary and diagnostic surfaces; they are not, by themselves, proof of every scheduler invariant.
+## Rule scheduling
+
+Native extraction identified scheduler vocabulary including `mCurrentRuleID`, `mNextSortedRuleIndex`, `xsEnableRule`, `xsEnableRuleGroup`, `xsDisableRule`, `xsDisableRuleGroup`, `xsSetRulePriority`, `xsSetRulePrioritySelf`, and diagnostics associated with invalid rule IDs and rule execution or interval/priority changes.
+
+These findings establish a native scheduling vocabulary and diagnostic surface. They do **not**, by themselves, prove every scheduler invariant. The remaining work is to connect the vocabulary to implementation behavior through references, analyzed functions, and runtime experiments.
 
 The engineering consequence is that rule priority, enablement, intervals, and execution failure must be treated as first-class machine concepts rather than assumed to be simple source-order evaluation.
 
 ## State substrate
 
-Goals are persistent script state. Strategic numbers are persistent engine/script control variables. Timers provide temporal hysteresis and state persistence across evaluations. Facts provide observations and queries. The project has repeatedly observed designs where the AI uses a goal or strategic number as a state-machine latch, then modifies it when a transition condition occurs.
+Goals are persistent script state. Strategic numbers are persistent engine/script control variables. Timers provide temporal persistence and hysteresis. Facts provide observations and queries. Historical AI designs repeatedly use persistent variables as state-machine latches whose values change when transition conditions occur.
 
-This means a robust architecture should distinguish:
+A robust architecture should therefore distinguish:
 
 1. observation;
 2. belief/state storage;
 3. intent/decision;
-4. authorized action;
-5. execution;
+4. authorization;
+5. command execution;
 6. verification;
 7. recovery.
 
 ## UP/native interface evidence
 
-The project has observed UP-facing fact/action patterns and has classified them according to evidence strength. A critical example is the `up-get-focus-fact` plus `unit-type-count` sensor pattern. The `knight-line` identifier is an abstract unit-line identifier, not a civilization class identifier. It is semantically different from a concrete unit ID such as `knight` and from class identifiers. Validators may have narrower corpus expectations than the engine itself; validator behavior must therefore be recorded separately from runtime semantics.
+The project has identified UP-facing fact/action patterns and classified them by evidence strength. One important example is the `up-get-focus-fact` plus `unit-type-count` sensor pattern. The identifier `knight-line` is an abstract unit-line identifier rather than a civilization class identifier or a concrete unit ID.
 
-The project rule is: never alter a semantically correct engine-level abstraction merely to satisfy an unverified validator assumption. Instead, establish whether the validator corpus, local constants, or engine vocabulary is authoritative for the specific deployment path.
+Validator behavior and engine behavior are separate evidence domains. A validator's accepted corpus is not automatically proof of native semantics, and native vocabulary is not automatically proof that a particular script expression is accepted by a particular validator profile.
 
-## XS boundary
-
-XS is treated as a capability surface, not as blanket permission. Only specifically qualified XS capabilities, for specifically approved purposes, on specifically evidenced builds, may enter the AEGIS runtime. Native extraction demonstrated rule enable/disable, priority, and interval-related XS vocabulary. Any additional XS behavior requires evidence before architectural dependence.
+The engineering rule is to establish the actual deployment contract before changing a semantically meaningful abstraction merely to satisfy a narrower validation assumption.
 
 ## Loader and execution boundary
 
-The AI must be considered a loaded program with a finite consumable interface. Source correctness is insufficient: the `.ai` loader, included `.per` dependency graph, parser/validator, rule scheduler, action execution, and runtime observation chain all form part of the deployment contract.
+The AI should be treated as a loaded program with a finite consumable interface. Source correctness is insufficient: the `.ai` loader, included `.per` dependency graph, parser/validator, rule scheduler, command execution, and runtime observation chain all form part of the deployment contract.
 
-Therefore every runtime candidate must have:
+Every runtime candidate should have:
 
 - resolved load graph;
 - syntax/validation evidence;
-- version provenance;
+- target-version provenance;
 - reproducible installation path;
 - rollback artifact;
 - runtime observation evidence.
 
 ## Error and recovery semantics
 
-Native diagnostics identified invalid rule IDs, failed rule execution, and invalid rule interval/priority modifications. These are important because a production AI cannot assume every requested action is accepted. Execution failure is an observable state requiring policy.
+Native diagnostics identify invalid rule IDs and failures associated with rule execution and interval/priority changes. These are important because a production AI cannot assume every requested operation is accepted.
 
-The preferred AEGIS architecture therefore treats command execution as transactional in the conceptual sense:
+The preferred AEGIS architecture therefore treats command execution transactionally in the conceptual sense:
 
-`intent -> authorization -> command -> observation -> acknowledgement -> recovery on mismatch`.
+`intent → authorization → command → observation → acknowledgement → recovery on mismatch`.
+
+This is an architectural safety model, not a claim that the engine itself implements ACID-style transactions.
+
+## Object identity and lifecycle
+
+Object identity is a current high-priority native research boundary. Native signature evidence identifies interfaces for unit/object object-ID and copy-ID retrieval, type/class queries, validity/availability checks, and garrison relationships. Native diagnostic/source strings also expose concepts such as `obj->id` and `uniqueID`.
+
+These findings establish that the relevant concepts exist in the native evidence surface. They do not yet prove the complete equality/relationship topology among unit IDs, object IDs, copy IDs, ownership, type/class, creation, transformation, garrison, and removal.
+
+Until that topology is demonstrated, strategic architecture must not rely on undocumented identity assumptions.
+
+## Replay boundary
+
+Replay parsing is an observation instrument. It can establish what was recorded and what a parser can decode, but it does not automatically expose hidden native state or prove the semantics of every numeric field.
+
+In particular, object references, action payloads, sequence coordinates, lifecycle events, and production completion require explicit adjudication. A parser guess is evidence about the parser, not automatically a fact about the engine.
 
 ## Evidence hierarchy
 
-The project uses the following practical evidence hierarchy:
+The practical hierarchy is:
 
 1. reproducible runtime behavior;
-2. verified native call graph / analyzed function behavior;
-3. native signatures and cross-references;
+2. verified native implementation/call-path behavior;
+3. native references and analyzed functions;
 4. native diagnostic/error paths;
-5. script usage confirmed on the target build;
-6. embedded strings and symbol vocabulary;
+5. target-build script behavior;
+6. embedded strings and vocabulary;
 7. comments/documentation;
 8. inference/hypothesis.
 
-A lower evidence class must not silently override a higher one.
+Evidence levels should never be silently collapsed.
 
-## Ghidra status
+## Layer 1 research status
 
-The final Ghidra analysis pass is treated as evidence enrichment. It may strengthen, weaken, or invalidate individual claims in this contract. It does not reopen Layer 1 wholesale unless a critical exit-gate assumption is falsified.
+The project has established a substantial machine evidence surface and a rigorous methodology, but the predictive completion gate remains open. Native research continues specifically where it can convert vocabulary-level evidence into implementation-level causal understanding.
 
-## Layer 1 exit principle
-
-The purpose of Layer 1 is safe engineering leverage, not exhaustive archaeology. Once the machine contract is sufficiently reliable to constrain architecture, the project moves upward to strategy while continuing targeted machine research in parallel.
+The immediate frontier is instruction-level reference recovery into the embedded API signature region and end-to-end tracing of representative object-identity APIs.
 
 ## Non-negotiable architectural consequence
 
-Layer 2 may propose any strategically desirable state transition, but Layer 4 implementation may only realize transitions that can be represented and executed through the Layer 1 machine contract.
+Layer 2 may propose strategically desirable state transitions, but Layer 4 implementation may only realize transitions that can be represented, authorized, executed, observed, and recovered through the demonstrated Layer 1 machine contract.
