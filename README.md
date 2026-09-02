@@ -48,6 +48,35 @@ Validated architecture translated into Layer-1-compatible runtime code, followed
 - `knowledge/` — atomic durable knowledge records and cross-layer ledgers.
 - `99_ARCHIVE/` — superseded/uncertain material retained for provenance.
 
+## Project materials and publication boundary
+
+The repository is an institutional-memory layer, not a public mirror of the game or of historical/vendor-derived source trees.
+
+### Material classes
+
+1. **Canonical project source** — project-owned AEGIS/PORPHYRA implementation and contracts.
+2. **Strategy fossils** — historical AI material used for archaeology and knowledge recovery.
+3. **Research substrate** — Promisory/ADPromisory material used as evidence where permitted.
+4. **Machine evidence** — hashes, extraction reports, native-analysis findings, interface ledgers, and diagnostics.
+5. **Empirical evidence** — replay-derived observations and controlled experiments.
+6. **Derived knowledge** — principles, state models, schemas, architecture, methodologies, and lessons.
+
+### Public-repository rule
+
+Full proprietary game files, executables, complete stock/vendor-derived source trees, and other restricted artifacts remain outside the public repository. Their identity may be preserved with cryptographic hashes, inventories, provenance records, and derived analysis.
+
+Where a historical implementation materially demonstrates a concept, the public record may use **small, isolated, attributed excerpts** with surrounding explanation. Excerpts are evidence exhibits, not substitutes for the original source.
+
+The preferred public form is therefore:
+
+`source identity -> isolated evidence -> forensic interpretation -> general principle -> AEGIS abstraction -> implementation requirement`
+
+rather than:
+
+`copy historical source -> rename it -> call it architecture`.
+
+See `12_RESEARCH/PROJECT_MATERIALS.md`, `12_RESEARCH/SOURCE_MATERIAL_INVENTORY.json`, and `03_HD_ARCHAEOLOGY/HD_PASS1_PUBLICATION_MANIFEST.json`.
+
 ## Canonical authorities
 
 - **PORPHYRA V2.2.2** — immutable control baseline.
