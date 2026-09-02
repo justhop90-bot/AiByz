@@ -1,0 +1,39 @@
+{
+  "date":"2026-09-02",
+  "purpose":"Record the materials actually available to Pass 5 and define how each may be used.",
+  "materials":[
+    {
+      "name":"AI (HD version).zip",
+      "type":"historical_stock_source",
+      "sha256":"a3687ba15ce1e069ec91c617f7486b8b42773becad06806dfe9414456542f796",
+      "size_bytes":130826,
+      "contents":"AI (HD version).per",
+      "use":"primary historical evidence for strategic archaeology and designer-logic reconstruction",
+      "publication":"derived analysis and small attributed contextual exhibits only; do not reproduce large contiguous source"
+    },
+    {
+      "name":"Promisory.zip",
+      "type":"historical_derived_or_vendor_related_material",
+      "sha256":"a81785575ebe4715eeb3ab5feaf518ee4617a11b3f079b694ec668c8aa7baf29",
+      "size_bytes":492581,
+      "contents_count":37,
+      "use":"provenance/context only where explicitly justified; not a strategic authority source",
+      "publication":"do not mirror source tree or large source excerpts"
+    },
+    {
+      "name":"AiBuilder.per",
+      "type":"stock_tooling",
+      "sha256":"453b1c616b15d8657c9b3c1a45765d3338f4ffa1c22dc5437e6e278bb9bde528",
+      "size_bytes":55417,
+      "lines":1444,
+      "defrule_count":9,
+      "defconst_count":1227,
+      "use":"tooling/context evidence for exposed configuration concepts such as phases, resource allocation, caps, prerequisites and infrastructure limits",
+      "strategic_authority":"none by itself",
+      "publication":"small attributed exhibits only; never copy wholesale"
+    }
+  ],
+  "evidence_policy":"Historical source establishes what the historical implementation did. Stock tooling can establish what configuration concepts were exposed. Neither establishes that a generalized AEGIS principle is universally optimal. General principles require independent rationale and empirical validation.",
+  "excluded_as_authority":["ADPromisory","ByzantineWarCouncil","AiBuilder-derived user projects"],
+  "six_month_return_requirement":"A future researcher must be able to distinguish source fact, tooling context, inference, generalized principle, hypothesis, and validated result from this register and the linked Pass 5 records."
+}
