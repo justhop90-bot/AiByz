@@ -63,6 +63,12 @@ The project follows:
 
 `evidence → observation → pattern → principle → abstraction → architecture → machine interface → validation → runtime evidence`
 
+## Layer 1 re-entry map
+
+Start with `docs/MACHINE_KNOWLEDGE_MONOGRAPH_2026-09-02.md` for the operational machine model. Then read `docs/MACHINE_EVIDENCE_MATRIX_2026-09-02.md` for claim-level confidence and open questions, followed by `docs/MACHINE_ARCHITECTURAL_CONSEQUENCES_2026-09-02.md` for the architectural deductions. `docs/MACHINE_RECONSTRUCTION_PROCEDURE.md` defines how to independently reproduce the reasoning.
+
+The atomic history is in `knowledge/MACHINE_INVESTIGATION_HISTORY.jsonl`. The monograph deliberately records both positive and negative evidence. It is therefore not a polished narrative that erases uncertainty; it is a controlled reconstruction of the state of knowledge.
+
 ## Security and provenance
 
 Restricted/proprietary AoE2 binaries and stock source are not published merely because they are useful. Hashes, manifests, derived analysis, methodology, and project-owned knowledge may be preserved where appropriate. See `docs/SECURITY_AND_PROVENANCE.md`.
@@ -70,6 +76,8 @@ Restricted/proprietary AoE2 binaries and stock source are not published merely b
 ## Continuation principle
 
 A competent engineer who was not present for the original work should be able to determine from this repository what was learned, why it is believed, what failed, what remains uncertain, why the architecture looks the way it does, and where the next engineering action belongs.
+
+A documentation pass is not complete because it is long. It is complete only when an independent engineer can re-enter the project and reproduce the reasoning chain without relying on the original conversation.
 
 ## Current work
 
