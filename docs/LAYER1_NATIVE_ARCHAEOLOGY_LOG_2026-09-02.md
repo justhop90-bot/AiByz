@@ -45,7 +45,9 @@ A discovered string is therefore recorded as vocabulary until an implementation 
 
 Exact native executable:
 
-`C:\Program Files (x86)\Steam\steamapps\common\AoE2DE\AoE2DE_s.exe`
+`[LOCAL_AOE2DE_INSTALL]\AoE2DE_s.exe`
+
+The exact local installation path is intentionally redacted from the public record. Build identity is fixed by version, size, and SHA-256.
 
 The investigation is attached to the controlled Ghidra project:
 
