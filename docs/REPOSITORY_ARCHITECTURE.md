@@ -2,50 +2,108 @@
 
 ## Purpose
 
-The repository is organized as a knowledge system, not a miscellaneous code dump.
+AiByz is organized as a **research system with an implementation destination**, not as a miscellaneous code dump.
 
-## Domains
+The repository has three jobs:
 
-`00_CONSTITUTION` — project authority, safety, governance, definitions, non-negotiable rules.
+1. preserve evidence;
+2. preserve the reasoning derived from that evidence;
+3. make the next engineering action obvious.
 
-`01_MACHINE` — AoE2DE AI machine contract, parser/runtime semantics, rule scheduler, facts/goals/SNs, XS, loader/execution research, native evidence.
+The organization therefore separates historical archaeology, machine research, durable knowledge, and public provenance rather than mixing them into one source tree.
 
-`02_STRATEGY` — general AoE2 strategic knowledge, models, decision theory, competitive causality, and the Layer 2 curriculum.
+## Current public tree
 
-`03_HD_ARCHAEOLOGY` — extracted HD source, rule corpus, explicit/implicit/meta reconstruction, and evidence records.
+```text
+/
+├── README.md
+├── RESEARCH_INDEX.md
+├── PROJECT_MATERIALS.md
+├── PUBLIC_REPOSITORY_PROVENANCE_AUDIT_2026-09-02.md
+├── docs/
+├── knowledge/
+├── 03_HD_ARCHAEOLOGY/
+└── 12_RESEARCH/
+```
 
-`04_PROMISORY` — Promisory/ADPromisory research substrate and qualification evidence; never assumed canonical.
+This is the **actual current publication structure**. Older planning documents may describe a larger numbered architecture. Those descriptions are historical planning artifacts, not evidence that those directories currently exist.
 
-`05_PORPHYRA` — canonical control baseline and subsequent controlled Porphyra implementation history.
+## Domain responsibilities
 
-`06_REPLAYS` — replay-derived empirical evidence and match analysis.
+### `docs/`
 
-`07_NATIVE_ENGINE` — local/native reverse-engineering evidence, hashes, Ghidra artifacts, signatures, call graphs, and reports that may legally be preserved.
+Human-readable engineering documentation: current status, machine model, evidence matrices, archaeology logs, quality control, architecture consequences, provenance, and recovery procedures.
 
-`08_AEGIS_ARCHITECTURE` — system architecture, interfaces, state models, execution contracts, verification and recovery design.
+### `knowledge/`
 
-`09_BYZANTINE_DOCTRINE` — Byzantine-specific strategic doctrine after general Layer 2 knowledge is established.
+Institutional memory. This is the granular record of facts, hypotheses, principles, experiments, schemas, evidence history, replay adjudication, and downstream strategic knowledge.
 
-`10_EXPERIMENTS` — controlled experiments, hypotheses, results, failures, and lessons.
+### `03_HD_ARCHAEOLOGY/`
 
-`11_TOOLCHAIN` — validators, parsers, deployment tooling, scripts, and reproducibility procedures.
+Historical AI/source archaeology. This domain asks what earlier AI implementations did, what problems they appear to have been solving, and which principles can be generalized. It is evidence, not automatic authority.
 
-`12_RESEARCH` — external research and supporting references.
+### `12_RESEARCH/`
 
-`99_ARCHIVE` — superseded or uncertain material retained for provenance rather than active design.
+External supporting research and its inventory. Material here must remain traceable to its source and role in the project.
 
-## Canonicality
+## Authority model
 
-Canonical source is explicitly designated. Experimental source is never promoted by proximity or recency. Historical material may explain design intent without becoming implementation authority.
+The repository distinguishes four different things that are often confused:
 
-## Knowledge graph
+- **Evidence:** an artifact or reproducible observation.
+- **Knowledge:** a conclusion supported by evidence.
+- **Architecture:** a project design decision derived from knowledge and constraints.
+- **Implementation:** executable behavior that must still be validated against the real machine.
 
-Knowledge records should link evidence to interpretation and implementation: `evidence -> observed pattern -> inferred principle -> generalized law -> AEGIS abstraction -> implementation requirement -> machine interface -> experiment -> outcome`.
+Historical source is not automatically architecture. A parser is not automatically the machine specification. A successful experiment is not automatically a universal law.
+
+## Information flow
+
+The preferred research flow is:
+
+`source → evidence → observation → pattern → principle → abstraction → architecture → machine constraint → implementation requirement → validation`
+
+The reverse flow is also useful for auditing:
+
+`implementation → requirement → architectural decision → principle → evidence`
+
+If an important architectural decision cannot be traced backward to evidence or an explicitly declared engineering constraint, it is an audit candidate.
+
+## Evidence discipline
+
+The project uses an explicit evidence ladder and preserves negative results. In particular:
+
+- names identify vocabulary; they do not prove semantics;
+- declarations establish interfaces; they do not prove implementation;
+- string presence establishes a discovery surface; it does not establish a call graph;
+- replay data records observations; it does not necessarily expose hidden state;
+- command issuance is not execution success;
+- execution success is not strategic success;
+- absence is not destruction;
+- failed search is not proof of absence;
+- inference is not fact until the proposition itself is demonstrated.
+
+## Historical/publication boundary
+
+The public tree intentionally does **not** contain the former ADPromisory, AiBuilder, or ByzantineWarCouncil source/runtime trees. The cleanup is recorded in `PUBLIC_REPOSITORY_PROVENANCE_AUDIT_2026-09-02.md`.
+
+Deleting those files from the current branch removes them from the current public tree. Their old contents can still exist in historical Git objects; that is a separate history-retention question and must not be described as source erasure.
 
 ## Change discipline
 
-Major changes should be traceable to a rationale and evidence. Destructive cleanup is permitted only when provenance and irrelevance are established. Otherwise material belongs in archive/review.
+When adding or changing research material:
 
-## Long-term objective
+1. identify the question being answered;
+2. record the evidence used;
+3. distinguish observation from interpretation;
+4. record uncertainty and counter-hypotheses;
+5. state the practical engineering consequence;
+6. record the next discriminating test where the matter is unresolved.
 
-A new engineer should be able to enter the repository at the current layer and reconstruct the project's intellectual and technical state without relying on the original conversation transcript.
+When deleting material, preserve provenance unless there is a specific reason not to. Public cleanup should make the current repository safer and clearer without falsifying its history.
+
+## Six-month recovery standard
+
+A future engineer should be able to enter through `RESEARCH_INDEX.md`, recover the current status, inspect the evidence matrix, read the relevant method and investigation records, locate the exact atomic knowledge entries, and continue from the recorded next action without relying on the original conversation.
+
+That is the repository's primary quality criterion.
