@@ -36,7 +36,7 @@ Validated architecture translated into Layer-1-compatible runtime code, followed
 - `01_MACHINE/` — native machine investigation and engine contract.
 - `02_STRATEGY/` — general strategic intelligence.
 - `03_HD_ARCHAEOLOGY/` — HD source archaeology and reconstructed knowledge.
-- `04_PROMISORY/` — Promisory/ADPromisory research substrate.
+- `04_PROMISORY/` — historical substrate references and project-owned research notes; raw source remains quarantined.
 - `05_PORPHYRA/` — canonical control and implementation history.
 - `06_REPLAYS/` — empirical replay evidence.
 - `07_NATIVE_ENGINE/` — native analysis and reverse-engineering evidence.
@@ -45,8 +45,34 @@ Validated architecture translated into Layer-1-compatible runtime code, followed
 - `10_EXPERIMENTS/` — controlled experiments and lessons.
 - `11_TOOLCHAIN/` — validators, parsers, deployment and research tooling.
 - `12_RESEARCH/` — external supporting research.
-- `knowledge/` — atomic durable knowledge records and cross-layer ledgers.
+- `knowledge/` — **primary institutional-memory layer: atomic facts, principles, meta-knowledge, evidence, cross-layer mappings, failures, and lessons.**
 - `99_ARCHIVE/` — superseded/uncertain material retained for provenance.
+
+## Knowledge is the durable product
+
+The runtime bot is an executable consequence of the research. The `knowledge/` directory is therefore treated as a first-class engineering artifact, not a notes folder.
+
+The target is to preserve nearly everything learned from historical code, the engine, competitive strategy, experiments, and replays while avoiding redistribution of source material itself.
+
+A mature knowledge record should allow an engineer who never saw the original source or conversation to reconstruct:
+
+- what the system did;
+- what evidence established it;
+- what the original programmer appears to have been solving;
+- which substrate constraints shaped the implementation;
+- what alternative explanations exist;
+- what failed;
+- what general principle survives the implementation;
+- what AEGIS should preserve, replace, or reject;
+- and what experiment should validate the conclusion.
+
+The canonical transformation is:
+
+`source -> evidence -> observation -> pattern -> principle -> abstraction -> architecture -> machine constraint -> implementation requirement -> validation`
+
+The implementation is not the knowledge. **The reasoning chain is the knowledge.**
+
+See `knowledge/README.md` and `knowledge/KNOWLEDGE_PRESERVATION_STANDARD.md`.
 
 ## Project materials and publication boundary
 
@@ -56,16 +82,19 @@ The repository is an institutional-memory layer, not a public mirror of the game
 
 1. **Canonical project source** — project-owned AEGIS/PORPHYRA implementation and contracts.
 2. **Strategy fossils** — historical AI material used for archaeology and knowledge recovery.
-3. **Research substrate** — Promisory/ADPromisory material used as evidence where permitted.
+3. **Research substrate** — Promisory/ADPromisory material used as evidence where permitted; complete source remains outside the public tree.
 4. **Machine evidence** — hashes, extraction reports, native-analysis findings, interface ledgers, and diagnostics.
 5. **Empirical evidence** — replay-derived observations and controlled experiments.
 6. **Derived knowledge** — principles, state models, schemas, architecture, methodologies, and lessons.
+7. **Evidence exhibits** — small, isolated, attributed historical snippets with original explanation.
 
 ### Public-repository rule
 
 Full proprietary game files, executables, complete stock/vendor-derived source trees, and other restricted artifacts remain outside the public repository. Their identity may be preserved with cryptographic hashes, inventories, provenance records, and derived analysis.
 
-Where a historical implementation materially demonstrates a concept, the public record may use **small, isolated, attributed excerpts** with surrounding explanation. Excerpts are evidence exhibits, not substitutes for the original source.
+**Modified source is not automatically clean source.** If a tree is substantially derived from stock, historical, vendor, or otherwise restricted material, it remains quarantined unless redistribution rights are established.
+
+The public repository may publish the *knowledge about the source* at high density. Where a historical implementation materially demonstrates a concept, use small, isolated, attributed excerpts with surrounding explanation. Excerpts are evidence exhibits, not substitutes for the original source.
 
 The preferred public form is therefore:
 
@@ -75,7 +104,16 @@ rather than:
 
 `copy historical source -> rename it -> call it architecture`.
 
-See `12_RESEARCH/PROJECT_MATERIALS.md`, `12_RESEARCH/SOURCE_MATERIAL_INVENTORY.json`, and `03_HD_ARCHAEOLOGY/HD_PASS1_PUBLICATION_MANIFEST.json`.
+### Current quarantine decision
+
+The following source-derived material was removed from the public knowledge branch:
+
+- `ADPromisory/`
+- `AiBuilder/`
+- `ByzantineWarCouncil.per`
+- `ByzantineWarCouncil.ai`
+
+The cleanup is documented in `PUBLIC_REPOSITORY_PROVENANCE_AUDIT_2026-09-02.md`. Deletion from the current branch does not by itself erase earlier Git history; historical-object cleanup is a separate operation.
 
 ## Canonical authorities
 
@@ -86,11 +124,13 @@ See `12_RESEARCH/PROJECT_MATERIALS.md`, `12_RESEARCH/SOURCE_MATERIAL_INVENTORY.j
 
 ## Knowledge standard
 
-Claims are explicitly classified as fact, mechanical fact, heuristic, strategic/tactical/transition/economic principle, failure heuristic, engine workaround, historical artifact, bug compensation, hypothesis, or lesson. Evidence strength and epistemic status are preserved.
+Claims are explicitly classified as fact, mechanical fact, heuristic, strategic/tactical/transition/economic principle, meta-knowledge, failure heuristic, engine workaround, historical artifact, bug compensation, hypothesis, or lesson. Evidence strength and epistemic status are preserved.
+
+Historical snippets are used heavily when they improve understanding, but always as contextual exhibits. A good explanation should contain more reasoning than copied syntax.
 
 The project follows:
 
-`evidence → observation → pattern → principle → abstraction → architecture → machine interface → validation → runtime evidence`
+`evidence -> observation -> pattern -> principle -> abstraction -> architecture -> machine interface -> validation -> runtime evidence`
 
 ## Layer 1 re-entry map
 
@@ -100,7 +140,7 @@ The atomic history is in `knowledge/MACHINE_INVESTIGATION_HISTORY.jsonl`. The mo
 
 ## Security and provenance
 
-Restricted/proprietary AoE2 binaries and stock source are not published merely because they are useful. Hashes, manifests, derived analysis, methodology, and project-owned knowledge may be preserved where appropriate. See `docs/SECURITY_AND_PROVENANCE.md`.
+Restricted/proprietary AoE2 binaries and stock source are not published merely because they are useful. Hashes, manifests, derived analysis, methodology, and project-owned knowledge may be preserved where appropriate. See `docs/SECURITY_AND_PROVENANCE.md` and `PUBLIC_REPOSITORY_PROVENANCE_AUDIT_2026-09-02.md`.
 
 ## Continuation principle
 
@@ -110,4 +150,4 @@ A documentation pass is not complete because it is long. It is complete only whe
 
 ## Current work
 
-Layer 2 Phase 1: **Explicit Strategic Knowledge Reconstruction** from the HD corpus, followed by implicit/meta reconstruction and generalization into an AoE2 strategic ontology.
+Layer 2: **Strategic Knowledge Reconstruction** — explicit behavior, implicit principles, meta-knowledge, generalization, cross-validation, transition/counter-transition modeling, resource-tax reasoning, and eventual Byzantine specialization.
