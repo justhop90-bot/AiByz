@@ -1,0 +1,22 @@
+[
+  {"identifier":"strategy-goal","writes":0,"reads":0,"rules_mentioning":0},
+  {"identifier":"unit-goal","writes":0,"reads":0,"rules_mentioning":0},
+  {"identifier":"control-goal","writes":0,"reads":0,"rules_mentioning":0},
+  {"identifier":"enemy-goal","writes":0,"reads":0,"rules_mentioning":0},
+  {"identifier":"position-goal","writes":0,"reads":0,"rules_mentioning":0},
+  {"identifier":"attack-goal","writes":0,"reads":0,"rules_mentioning":0},
+  {"identifier":"attack-status-goal","writes":0,"reads":0,"rules_mentioning":0},
+  {"identifier":"retreat-now-goal","writes":0,"reads":0,"rules_mentioning":0},
+  {"identifier":"under-attack-goal","writes":0,"reads":0,"rules_mentioning":0},
+  {"identifier":"forward-threat-goal","writes":0,"reads":0,"rules_mentioning":0},
+  {"identifier":"enemy-fortifications-goal","writes":0,"reads":0,"rules_mentioning":0},
+  {"identifier":"save-wood-goal","writes":0,"reads":0,"rules_mentioning":0},
+  {"identifier":"escrow-purpose-goal","writes":0,"reads":0,"rules_mentioning":0},
+  {"identifier":"spread-military-goal","writes":0,"reads":0,"rules_mentioning":0},
+  {"identifier":"restart-attack-goal","writes":0,"reads":0,"rules_mentioning":0},
+  {"identifier":"sn-resource-control","writes":0,"reads":0,"rules_mentioning":0},
+  {"identifier":"sn-military-level","writes":0,"reads":0,"rules_mentioning":0},
+  {"identifier":"sn-current-age","writes":0,"reads":0,"rules_mentioning":0},
+  {"identifier":"sn-focus-player-number","writes":0,"reads":0,"rules_mentioning":0},
+  {"identifier":"sn-target-player-number","writes":0,"reads":0,"rules_mentioning":0}
+]
