@@ -39,7 +39,7 @@ A weaker evidence class may motivate investigation but may not silently become a
 
 ## Current controlled runtime
 
-Executable: `C:\Program Files (x86)\Steam\steamapps\common\AoE2DE\AoE2DE_s.exe`
+Executable: `[LOCAL_AOE2DE_INSTALL]\AoE2DE_s.exe`
 
 Version: `101.103.48987.0`
 
@@ -48,6 +48,8 @@ Size: `71,648,568` bytes
 SHA-256: `6378CA6F1FBD2F230B5B7F2CD048198331848AF70F44B5CD13CEB89420A321A4`
 
 PE: PE32+, x86:LE:64 Windows
+
+The exact local installation path is intentionally redacted from the public record. The build identity is fixed by version, size, and SHA-256.
 
 All native claims in this control record refer to this build unless explicitly marked otherwise.
 
