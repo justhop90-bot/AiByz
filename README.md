@@ -1,153 +1,153 @@
-# AiByz — AEGIS Byzantine Intelligence Project
+# AiByz — AEGIS Byzantine AI Research
 
-> **Long-term engineering memory and implementation repository for AEGIS.**
+> A research and engineering repository for understanding Age of Empires II: Definitive Edition deeply enough to build a high-quality Byzantine AI.
 
-AiByz is not merely a collection of AoE2DE AI scripts. It is the durable technical and intellectual record of the AEGIS project: machine knowledge, strategic knowledge, archaeological evidence, experiments, failures, architecture, provenance, and validated implementation.
+## What this project is
 
-## Mission
+AiByz is the long-term research record for **AEGIS**, a planned next-generation Byzantine AI for **Age of Empires II: Definitive Edition (AoE2DE)**.
 
-Build a next-generation Byzantine AI for Age of Empires II: Definitive Edition by first understanding the machine, then reconstructing competitive strategy as an explicit intelligence model, and only then implementing civilization-specific doctrine and runtime behavior.
+The project is deliberately being built in stages. We are not starting with a pile of AI rules and hoping that enough rules become intelligent. We are first trying to understand the system the AI actually runs on, then understand how strong AoE2 decisions work, then specialize that knowledge for the Byzantines, and only then turn the resulting model into runtime code.
 
-## Engineering layers
+In plain language, the project asks four questions:
 
-### Layer 1 — Machine
+1. **How does the game and its AI machinery actually work?**
+2. **What makes a strong AoE2 decision strong?**
+3. **What is uniquely powerful about Byzantine strategy?**
+4. **How can those answers be implemented reliably inside the real game environment?**
 
-Operational understanding of the AoE2DE AI execution substrate: `.ai/.per` loading, rule execution, scheduling, goals, strategic numbers, timers, facts, actions, UP/native interfaces, XS capability boundaries, diagnostics, validation, deployment, verification, and recovery.
+The repository exists so that the answers, evidence, failed experiments, and reasoning survive even if the original developers disappear for months.
 
-**Status: operationally closed.** Native reverse engineering may continue as evidence enrichment without blocking higher layers.
+## Current focus: Layer 1 — understand the machine
 
-### Layer 2 — Strategy
+The project is currently prioritizing **Layer 1: Machine Understanding**.
 
-General competitive intelligence: causal game-state modeling, economy, production, military capability, technology, map/position, timing, information, opponent beliefs, transitions, resource taxation, initiative/tempo, and failure-state reasoning.
+The standard is intentionally high. We do not consider a mechanism understood merely because we know its name or have seen a script example. For important execution paths, we want to know the causal chain:
 
-**Status: active.**
+**input/state → trigger → dispatch → processing → state change → observable result → next consequence**
 
-### Layer 3 — Byzantine Doctrine
+That means studying the AI script environment, rule execution, state representation, command paths, native interfaces, object identity, timing, replay boundaries, diagnostics, and failure behavior. Native reverse engineering is being used as evidence where it can answer questions that documentation and scripts cannot.
 
-Civilization-specific strategic doctrine derived from the general strategic ontology. Central thesis: make enemy commitments pay a conversion tax while preserving Byzantine strategic flexibility.
+The current Layer 1 target is **predictive machine understanding**: given a sufficiently specified state and input, we should be able to explain what the relevant machine layers will do next, and distinguish what is proven from what is still inferred.
 
-### Layer 4 — Implementation
+## Research layers
 
-Validated architecture translated into Layer-1-compatible runtime code, followed by controlled validation, replay testing, and promotion gates.
+| Layer | Purpose | Current state |
+|---|---|---|
+| **1 — Machine** | Understand the execution environment and native/runtime mechanisms. | **Active** |
+| **2 — Strategy** | Reconstruct general AoE2 decision-making and competitive causality. | Prepared / downstream |
+| **3 — Byzantine Doctrine** | Turn general strategy into Byzantine-specific doctrine. | Downstream |
+| **4 — Implementation** | Build, test, validate, and promote the runtime AI. | Downstream |
 
-## Repository structure
+The layers are ordered intentionally. Later architecture should not depend on undocumented assumptions about earlier layers.
 
-- `00_CONSTITUTION/` — authority, governance, safety, change control.
-- `01_MACHINE/` — native machine investigation and engine contract.
-- `02_STRATEGY/` — general strategic intelligence.
-- `03_HD_ARCHAEOLOGY/` — HD source archaeology and reconstructed knowledge.
-- `04_PROMISORY/` — historical substrate references and project-owned research notes; raw source remains quarantined.
-- `05_PORPHYRA/` — canonical control and implementation history.
-- `06_REPLAYS/` — empirical replay evidence.
-- `07_NATIVE_ENGINE/` — native analysis and reverse-engineering evidence.
-- `08_AEGIS_ARCHITECTURE/` — system architecture and execution contracts.
-- `09_BYZANTINE_DOCTRINE/` — Byzantine specialization.
-- `10_EXPERIMENTS/` — controlled experiments and lessons.
-- `11_TOOLCHAIN/` — validators, parsers, deployment and research tooling.
-- `12_RESEARCH/` — external supporting research.
-- `knowledge/` — **primary institutional-memory layer: atomic facts, principles, meta-knowledge, evidence, cross-layer mappings, failures, and lessons.**
-- `99_ARCHIVE/` — superseded/uncertain material retained for provenance.
+## How to navigate this repository
 
-## Knowledge is the durable product
+If you are new to the project, read in this order:
 
-The runtime bot is an executable consequence of the research. The `knowledge/` directory is therefore treated as a first-class engineering artifact, not a notes folder.
+1. **This README** — what the project is and why it is structured this way.
+2. **[`RESEARCH_INDEX.md`](RESEARCH_INDEX.md)** — the map of the repository and the recommended reading paths.
+3. **[`docs/PROJECT_STATUS_2026-09-02.md`](docs/PROJECT_STATUS_2026-09-02.md)** — current state, completed work, open work, and next actions.
+4. **[`docs/LAYER1_PREDICTIVE_MACHINE_STANDARD_2026-09-02.md`](docs/LAYER1_PREDICTIVE_MACHINE_STANDARD_2026-09-02.md)** — the standard used to decide whether machine knowledge is good enough.
+5. **[`docs/MACHINE_KNOWLEDGE_MONOGRAPH_2026-09-02.md`](docs/MACHINE_KNOWLEDGE_MONOGRAPH_2026-09-02.md)** — the current machine model.
+6. **[`docs/MACHINE_EVIDENCE_MATRIX_2026-09-02.md`](docs/MACHINE_EVIDENCE_MATRIX_2026-09-02.md)** — what is known, how strongly it is supported, and what remains open.
+7. **[`docs/LAYER1_NATIVE_ARCHAEOLOGY_QC_ADDENDUM_2026-09-02.md`](docs/LAYER1_NATIVE_ARCHAEOLOGY_QC_ADDENDUM_2026-09-02.md)** — quality-control and recovery standard for the native investigation.
+8. **[`knowledge/`](knowledge/)** — the atomic, durable knowledge base.
+9. **[`03_HD_ARCHAEOLOGY/`](03_HD_ARCHAEOLOGY/)** — historical AI archaeology and reconstructed design logic.
+10. **[`12_RESEARCH/`](12_RESEARCH/)** — external research material and its provenance.
 
-The target is to preserve nearly everything learned from historical code, the engine, competitive strategy, experiments, and replays while avoiding redistribution of source material itself.
+## Repository map
 
-A mature knowledge record should allow an engineer who never saw the original source or conversation to reconstruct:
+```text
+AiByz/
+├── README.md                         # Public front door
+├── RESEARCH_INDEX.md                 # Human navigation and reading map
+├── PROJECT_MATERIALS.md              # Project material inventory / boundary
+├── PUBLIC_REPOSITORY_PROVENANCE_AUDIT_2026-09-02.md
+│                                      # Public-tree provenance and cleanup record
+│
+├── docs/                             # Human-readable engineering documentation
+│   ├── PROJECT_STATUS_2026-09-02.md
+│   ├── LAYER1_*                      # Layer 1 standards, archaeology, QC, re-entry
+│   ├── MACHINE_*                     # Machine model, evidence, consequences, QC
+│   ├── REPOSITORY_ARCHITECTURE.md
+│   └── SECURITY_AND_PROVENANCE.md
+│
+├── knowledge/                        # Institutional memory / durable knowledge
+│   ├── LAYER1_MACHINE_FACTS.jsonl
+│   ├── MACHINE_ONTOLOGY.jsonl
+│   ├── MACHINE_INVESTIGATION_HISTORY.jsonl
+│   ├── MACHINE_EXPERIMENT_SCHEMA.json
+│   ├── replay/                       # Replay evidence and adjudication
+│   └── LAYER2_*                       # Strategy knowledge prepared for later layers
+│
+├── 03_HD_ARCHAEOLOGY/                # Historical AI/source archaeology
+│   ├── explicit reconstruction
+│   ├── implicit strategic principles
+│   ├── designer-logic reconstruction
+│   └── forensic methods and ledgers
+│
+└── 12_RESEARCH/                      # Supporting research and source inventory
+```
 
-- what the system did;
-- what evidence established it;
-- what the original programmer appears to have been solving;
-- which substrate constraints shaped the implementation;
-- what alternative explanations exist;
-- what failed;
-- what general principle survives the implementation;
-- what AEGIS should preserve, replace, or reject;
-- and what experiment should validate the conclusion.
+## The central research principle
 
-The canonical transformation is:
+The project treats **knowledge, not code, as the durable product**.
 
-`source -> evidence -> observation -> pattern -> principle -> abstraction -> architecture -> machine constraint -> implementation requirement -> validation`
+A useful result is therefore recorded as a chain:
 
-The implementation is not the knowledge. **The reasoning chain is the knowledge.**
+`source → evidence → observation → pattern → principle → abstraction → architecture → implementation requirement → validation`
 
-See `knowledge/README.md` and `knowledge/KNOWLEDGE_PRESERVATION_STANDARD.md`.
+This matters because a copied rule can become obsolete. A demonstrated principle, its evidence, its limitations, and the reason it was chosen remain useful even when the implementation changes.
 
-## Project materials and publication boundary
+## Evidence discipline
 
-The repository is an institutional-memory layer, not a public mirror of the game or of historical/vendor-derived source trees.
+The repository distinguishes evidence levels instead of presenting every plausible idea as fact. In particular:
 
-### Material classes
+- a symbol name is not its semantics;
+- a declaration is not its implementation;
+- a replay field is an observation, not necessarily the complete internal state;
+- issuing a command is not proof that the command succeeded;
+- a successful command is not proof that the strategic objective succeeded;
+- absence is not proof of destruction;
+- a failed search is not proof that a mechanism does not exist;
+- inference remains inference until evidence demonstrates the proposition itself.
 
-1. **Canonical project source** — project-owned AEGIS/PORPHYRA implementation and contracts.
-2. **Strategy fossils** — historical AI material used for archaeology and knowledge recovery.
-3. **Research substrate** — Promisory/ADPromisory material used as evidence where permitted; complete source remains outside the public tree.
-4. **Machine evidence** — hashes, extraction reports, native-analysis findings, interface ledgers, and diagnostics.
-5. **Empirical evidence** — replay-derived observations and controlled experiments.
-6. **Derived knowledge** — principles, state models, schemas, architecture, methodologies, and lessons.
-7. **Evidence exhibits** — small, isolated, attributed historical snippets with original explanation.
+Native findings, replay observations, historical-source observations, model inference, and hypotheses are kept distinguishable.
 
-### Public-repository rule
+## Historical material and the public boundary
 
-Full proprietary game files, executables, complete stock/vendor-derived source trees, and other restricted artifacts remain outside the public repository. Their identity may be preserved with cryptographic hashes, inventories, provenance records, and derived analysis.
+The public repository preserves **knowledge about historical material**, not complete restricted source trees or proprietary game binaries.
 
-**Modified source is not automatically clean source.** If a tree is substantially derived from stock, historical, vendor, or otherwise restricted material, it remains quarantined unless redistribution rights are established.
+Historical implementations can be valuable research specimens. They are therefore mined for evidence, design patterns, failures, and programmer intent without being treated automatically as current architecture.
 
-The public repository may publish the *knowledge about the source* at high density. Where a historical implementation materially demonstrates a concept, use small, isolated, attributed excerpts with surrounding explanation. Excerpts are evidence exhibits, not substitutes for the original source.
+The repository has deliberately removed the former source trees and runtime files associated with **ADPromisory, AiBuilder, and ByzantineWarCouncil** from the current development line. Their historical existence may remain visible in Git history because deleting a file from a branch does not erase historical commits; the current public tree is the authoritative publication boundary.
 
-The preferred public form is therefore:
+See `PUBLIC_REPOSITORY_PROVENANCE_AUDIT_2026-09-02.md` for the cleanup record.
 
-`source identity -> isolated evidence -> forensic interpretation -> general principle -> AEGIS abstraction -> implementation requirement`
+## What "done" means
 
-rather than:
+A Layer is not complete because its documentation is long. It is complete when an independent engineer can reproduce the reasoning behind it.
 
-`copy historical source -> rename it -> call it architecture`.
+For Layer 1, that means critical machine paths have:
 
-### Current quarantine decision
+- reproducible evidence;
+- explicit uncertainty;
+- traced causal paths;
+- documented failure and rejection behavior;
+- known cross-layer boundaries;
+- predictive tests where practical;
+- and no material unacknowledged black boxes.
 
-The following source-derived material was removed from the public knowledge branch:
+## Current next action
 
-- `ADPromisory/`
-- `AiBuilder/`
-- `ByzantineWarCouncil.per`
-- `ByzantineWarCouncil.ai`
+The immediate native investigation is instruction-level reference recovery around the embedded engine-facing API signatures, followed by end-to-end tracing of high-value object-identity APIs. The goal is to turn the current vocabulary-level evidence into implementation-level understanding of lookup, identity, lifetime, validation, and return-value behavior.
 
-The cleanup is documented in `PUBLIC_REPOSITORY_PROVENANCE_AUDIT_2026-09-02.md`. Deletion from the current branch does not by itself erase earlier Git history; historical-object cleanup is a separate operation.
+## Project status
 
-## Canonical authorities
+**Layer 1 — Machine Understanding: active.**
 
-- **PORPHYRA V2.2.2** — immutable control baseline.
-- **V3** — designated strategy source/fossil; mined for useful intent, not copied wholesale.
-- **HD/2013 AI** — principal strategic archaeology specimen.
-- **Experimental OMEGA/ADPromisory** — research evidence only.
+The repository is intentionally conservative about completion claims. Existing documentation records substantial progress, but the predictive completion gate has not been declared satisfied merely because the vocabulary and evidence surface have been mapped.
 
-## Knowledge standard
+---
 
-Claims are explicitly classified as fact, mechanical fact, heuristic, strategic/tactical/transition/economic principle, meta-knowledge, failure heuristic, engine workaround, historical artifact, bug compensation, hypothesis, or lesson. Evidence strength and epistemic status are preserved.
-
-Historical snippets are used heavily when they improve understanding, but always as contextual exhibits. A good explanation should contain more reasoning than copied syntax.
-
-The project follows:
-
-`evidence -> observation -> pattern -> principle -> abstraction -> architecture -> machine interface -> validation -> runtime evidence`
-
-## Layer 1 re-entry map
-
-Start with `docs/MACHINE_KNOWLEDGE_MONOGRAPH_2026-09-02.md` for the operational machine model. Then read `docs/MACHINE_EVIDENCE_MATRIX_2026-09-02.md` for claim-level confidence and open questions, followed by `docs/MACHINE_ARCHITECTURAL_CONSEQUENCES_2026-09-02.md` for the architectural deductions. `docs/MACHINE_RECONSTRUCTION_PROCEDURE.md` defines how to independently reproduce the reasoning.
-
-The atomic history is in `knowledge/MACHINE_INVESTIGATION_HISTORY.jsonl`. The monograph deliberately records both positive and negative evidence. It is therefore not a polished narrative that erases uncertainty; it is a controlled reconstruction of the state of knowledge.
-
-## Security and provenance
-
-Restricted/proprietary AoE2 binaries and stock source are not published merely because they are useful. Hashes, manifests, derived analysis, methodology, and project-owned knowledge may be preserved where appropriate. See `docs/SECURITY_AND_PROVENANCE.md` and `PUBLIC_REPOSITORY_PROVENANCE_AUDIT_2026-09-02.md`.
-
-## Continuation principle
-
-A competent engineer who was not present for the original work should be able to determine from this repository what was learned, why it is believed, what failed, what remains uncertain, why the architecture looks the way it does, and where the next engineering action belongs.
-
-A documentation pass is not complete because it is long. It is complete only when an independent engineer can re-enter the project and reproduce the reasoning chain without relying on the original conversation.
-
-## Current work
-
-Layer 2: **Strategic Knowledge Reconstruction** — explicit behavior, implicit principles, meta-knowledge, generalization, cross-validation, transition/counter-transition modeling, resource-tax reasoning, and eventual Byzantine specialization.
+**For contributors:** start with `RESEARCH_INDEX.md`. Do not promote a hypothesis to a fact, overwrite an evidence record without preserving provenance, or treat historical code as canonical without an explicit authority decision.
