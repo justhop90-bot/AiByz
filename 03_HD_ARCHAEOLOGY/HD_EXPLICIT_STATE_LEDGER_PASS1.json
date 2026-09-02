@@ -1,0 +1,59 @@
+{
+  "pass": "HD/2013 Explicit Knowledge Reconstruction — Pass 1",
+  "source": {
+    "name": "AI (HD version).per",
+    "sha256": "8a554a90a18f7983a949f7bef3b767e09732bce87dca3b9546fe782f098de51c",
+    "bytes": 1167238,
+    "lines": 36141,
+    "defrules": 2429
+  },
+  "active_profile": {
+    "rules_with_action_boundary": 2429,
+    "rules_writing_goals": 1048,
+    "rules_writing_strategic_numbers": 642,
+    "goal_write_actions": 2095,
+    "strategic_number_write_actions": 1749,
+    "train": 253,
+    "research": 323,
+    "build": 102,
+    "attack_now": 1,
+    "timer_enable": 233,
+    "disable_self": 356
+  },
+  "key_state": {
+    "strategy-goal": {"writes":328,"reads":693},
+    "unit-goal": {"writes":432,"reads":1493},
+    "control-goal": {"writes":335,"reads":305},
+    "position-goal": {"writes":3,"reads":224},
+    "enemy-goal": {"writes":13,"reads":159},
+    "attack-goal": {"writes":81,"reads":32},
+    "attack-status-goal": {"writes":19,"reads":2},
+    "retreat-now-goal": {"writes":14,"reads":13},
+    "under-attack-goal": {"writes":7,"reads":63},
+    "forward-threat-goal": {"writes":2,"reads":23},
+    "enemy-fortifications-goal": {"writes":2,"reads":29},
+    "save-wood-goal": {"writes":18,"reads":40},
+    "escrow-purpose-goal": {"writes":24,"reads":38},
+    "spread-military-goal": {"writes":6,"reads":0},
+    "restart-attack-goal": {"writes":3,"reads":0}
+  },
+  "top_goal_writers": [
+    ["unit-goal",432],["control-goal",335],["strategy-goal",328],
+    ["ranged-unit-type-goal",229],["increase-town-size-goal",171],
+    ["uu-up-goal",146],["attack-goal",81],["math-goal",43],
+    ["train-civ-goal",43],["farm-goal",36],["escrow-purpose-goal",24],
+    ["attack-status-goal",19],["save-wood-goal",18],["retreat-now-goal",14],
+    ["enemy-goal",13]
+  ],
+  "top_strategic_number_writers": [
+    ["sn-wood-gatherer-percentage",224],["sn-gold-gatherer-percentage",224],
+    ["sn-food-gatherer-percentage",223],["sn-stone-gatherer-percentage",223],
+    ["sn-resource-control",91],["sn-maximum-town-size",61],
+    ["sn-allow-adjacent-dropsites",38],["sn-maximum-wood-drop-distance",35],
+    ["sn-camp-max-distance",28],["sn-maximum-gold-drop-distance",27],
+    ["sn-maximum-food-drop-distance",26],["sn-target-player-number",26],
+    ["sn-focus-player-number",24],["sn-number-explore-groups",23],
+    ["sn-current-age",21],["sn-military-level",13]
+  ],
+  "interpretation": "Structural ledger only. Writer counts are not authority scores. Semantic promotion requires writer-reader-transition analysis and cross-validation."
+}
