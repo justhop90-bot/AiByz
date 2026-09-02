@@ -1,0 +1,69 @@
+{
+  "schema": "AEGIS-L2-DECISION-EVENT-1",
+  "purpose": "Represent a strategically meaningful decision opportunity without hindsight contamination.",
+  "epistemic_views": ["AS_KNOWN_THEN", "AS_KNOWN_NOW"],
+  "required_fields": [
+    "event_id", "game_id", "timestamp", "actor", "phase", "observable_state",
+    "derived_state", "beliefs", "objectives", "threats", "constraints",
+    "feasible_actions", "selected_action", "expected_transition", "commitment",
+    "predicted_outcome", "actual_outcome", "opponent_response", "post_state", "adjudication"
+  ],
+  "observable_state": {
+    "time": "game time",
+    "resources": "stock and observable flow",
+    "population": "civilian and military population where available",
+    "units": "composition and location where available",
+    "buildings": "owned/known production and infrastructure",
+    "technology": "completed/known technologies",
+    "map": "visible geography, resources, positions, control proxies",
+    "orders": "observable active commitments where available"
+  },
+  "derived_state": {
+    "resource_deficits": "objective-relative shortfalls",
+    "production_capacity": "usable throughput and bottlenecks",
+    "capabilities": "objective-relative capability estimates",
+    "timing_windows": "estimated opening/closing intervals",
+    "initiative": "response-demand/action-set restriction estimates",
+    "optionality": "weighted feasible future alternatives",
+    "uncertainty": "measurement and inference uncertainty"
+  },
+  "belief_record": {
+    "hypothesis": "hidden/future state claim",
+    "confidence": "calibrated or provisional confidence",
+    "support": "observations supporting hypothesis",
+    "contradiction": "observations against hypothesis",
+    "age": "time since material update",
+    "predicted_transition": "expected opponent transition",
+    "alternatives": "competing hypotheses",
+    "diagnosticity": "expected ability of future observation to discriminate hypotheses"
+  },
+  "decision_record": {
+    "objective": "primary objective served",
+    "feasible_actions": "actions materially achievable at decision time",
+    "selected_action": "actual selected action",
+    "foregone_best_alternative": "highest-value materially feasible alternative",
+    "regret": "counterfactual loss relative to best feasible alternative",
+    "commitment_cost": "resource/time/production/position/option costs",
+    "reversibility": "reversible, recoverable, expensive, effectively irreversible, irreversible",
+    "expected_conversion": "expected objective progress from commitment"
+  },
+  "outcome_record": {
+    "immediate": "local combat/resource/position effects",
+    "short_term": "production/economy/reinforcement effects",
+    "strategic": "capability/transition/initiative effects",
+    "terminal": "game-level outcome where attribution is justified",
+    "causal_attribution": "strength of evidence that action caused observed change",
+    "failure_signature": "observable divergence from expected result",
+    "recovery": "subsequent corrective transition"
+  },
+  "quality_controls": [
+    "Do not use future information in AS_KNOWN_THEN.",
+    "Do not treat beliefs as observations.",
+    "Do not infer causality from temporal proximity alone.",
+    "Do not evaluate an action without recording feasible alternatives.",
+    "Do not convert a proxy into a fact without validation.",
+    "Record missingness and uncertainty explicitly.",
+    "Preserve failed and ambiguous events; do not cherry-pick wins."
+  ],
+  "completion_test": "A future engineer can reconstruct the decision, information state, alternatives, commitment, expectation, outcome, attribution, and lesson without consulting conversational memory."
+}
