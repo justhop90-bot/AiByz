@@ -25,9 +25,10 @@ source is evidence for reasoning, not automatic implementation authority.
 
 ### 3. Research substrate
 
-Promisory/ADPromisory and related experimental material. These artifacts are
-useful for discovering possible engine capabilities and architectural ideas but
-are not authoritative merely because they are sophisticated or newer.
+Promisory/ADPromisory and related experimental material. These artifacts are useful
+for discovering possible engine capabilities and architectural ideas but are not
+authoritative merely because they are sophisticated or newer. Complete source
+remains quarantined outside the public repository.
 
 ### 4. Machine evidence
 
@@ -44,7 +45,8 @@ experiments, and observed runtime behavior.
 
 Ledgers, control maps, archaeology reports, state graphs, quantitative profiles,
 hypotheses, lessons, and cross-validation records produced from the source
-materials.
+materials. This class is actively expanded and is the principal long-term value
+of the public repository.
 
 ## Newly supplied materials — 2026-09-02
 
@@ -67,25 +69,62 @@ ZIP container hashes:
 
 ### Promisory package
 
-`Promisory.zip` contains 37 ZIP entries, including the Promisory `.per` research
-modules used by the HD source and AEGIS archaeology. The complete per-file
-inventory and hashes are recorded in `SOURCE_MATERIAL_INVENTORY.json`.
+`Promisory.zip` contains 37 ZIP entries, including the directory entry. The
+complete per-file inventory and hashes are recorded in `SOURCE_MATERIAL_INVENTORY.json`.
 
 - ZIP size: 492,581 bytes
 - ZIP SHA-256: `a81785575ebe4715eeb3ab5feaf518ee4617a11b3f079b694ec668c8aa7baf29`
 - Entries: 37 (including the directory entry)
 
-## Public-repository handling
+## Public quarantine decision — 2026-09-02
 
-Some supplied materials are historical/vendor-derived AoE2 AI source rather than
-new AEGIS-owned implementation. Because this repository is public, raw stock or
-third-party source is not mirrored here merely for convenience. Instead, this
-repository preserves cryptographic identity, provenance, structural facts,
-research outputs, methodology, and references sufficient to connect the public
-knowledge record to the locally preserved artifact.
+The following material was present on the knowledge branch but is now removed from
+the public tree because it is source-derived or otherwise unsuitable for public
+redistribution:
 
-If raw source ever needs to be versioned, that should occur only in an explicitly
-authorized private repository or other controlled store.
+- `ADPromisory/` — complete tree removed.
+- `AiBuilder/` — complete tree removed.
+- `ByzantineWarCouncil.per` — removed.
+- `ByzantineWarCouncil.ai` — removed.
+
+The private/local research specimens remain the evidence substrate where available.
+
+**Important:** substantial editing does not, by itself, establish clean provenance.
+If a file is derived from stock, historical, vendor, or restricted source, it remains
+quarantined unless redistribution rights are established.
+
+## Knowledge-first publication rule
+
+We can publish the **knowledge about the code** at high density:
+
+- rules and their purposes;
+- facts/goals/strategic-number usage;
+- control-flow patterns;
+- state-machine reconstruction;
+- strategic and tactical principles;
+- economic reasoning;
+- timer/hysteresis behavior;
+- failure and recovery logic;
+- engine limitations and workarounds;
+- designer tradeoffs;
+- historical evolution;
+- experiments and negative results;
+- generalized algorithms and schemas;
+- small, isolated, attributed snippets when they materially explain an idea.
+
+We do not need to publish the source implementation itself.
+
+## Preferred evidence pattern
+
+`small excerpt -> annotation -> observed behavior -> designer/problem interpretation -> general principle -> AEGIS abstraction -> independent implementation`
+
+A reader should be able to understand the idea even if the excerpt is removed.
+
+## History warning
+
+Removal from the current branch tree does not erase previously committed Git blobs.
+Historical source-object removal, if desired, requires an explicit history-rewrite
+operation followed by verification.
 
 ## Authority rule
 
