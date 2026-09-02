@@ -1,103 +1,92 @@
 # AEGIS Knowledge — Institutional Memory
 
-This directory is the project's **memory layer**. Source code is implementation; this directory preserves the reasoning that makes the implementation intelligible.
+`knowledge/` is the project's **durable reasoning layer**. Source code is implementation; this directory preserves the reasoning, evidence, models, experiments, and lessons that make implementation intelligible.
 
-## The governing idea
+## Governing transformation
 
-AEGIS learns from historical and stock-derived code without becoming a public copy of that code.
+`source artifact → observation → evidence → reconstructed logic → generalized principle → abstraction → architecture → implementation requirement → validation`
 
-The repository therefore preserves the transformation:
-
-`source artifact -> observation -> evidence -> reconstructed logic -> generalized principle -> abstraction -> architecture -> implementation requirement -> validation`
-
-The source artifact may remain outside GitHub. The knowledge extracted from it should not.
+The original source artifact may remain outside GitHub. The project should preserve the useful knowledge extracted from it without turning the public repository into a copy of restricted material.
 
 ## What belongs here
 
-### 1. Machine facts
+### Machine knowledge
 
-Verified facts about the AoE2DE AI substrate: loaders, rule execution, goals, strategic numbers, timers, facts, actions, UP/native interfaces, XS boundaries, diagnostics, validation behavior, deployment constraints, and recovery semantics.
+Verified or explicitly qualified knowledge about the AoE2DE AI execution substrate: loading, rule execution, state, facts, goals, strategic numbers, timers, actions, native interfaces, diagnostics, validation, deployment constraints, and failure behavior.
 
-### 2. Strategic principles
+### Strategic knowledge
 
-General AoE2 reasoning that survives beyond one implementation: economy, production, military capability, technology, map/position, timing, information, opponent modeling, transitions, resource opportunity cost, initiative, tempo, conversion efficiency, and failure-state reasoning.
+General AoE2 reasoning: economy, production, military capability, technology, map and position, timing, information, opponent modeling, transitions, opportunity cost, initiative, tempo, conversion efficiency, and failure recovery.
 
-### 3. Archaeological knowledge
+### Archaeological knowledge
 
-Reconstructed knowledge from HD/2013, Promisory, V3, and other historical implementations. This includes explicit behavior, implicit strategy, meta-knowledge about engineering choices, and historical artifacts.
+Reconstructed knowledge from historical AI implementations. This includes visible behavior, implicit principles, engineering intent, and lessons from obsolete approaches.
 
-### 4. Evidence exhibits
+### Replay knowledge
 
-Small, isolated, attributed source snippets when necessary to explain a claim. Every exhibit must have context and an interpretation. A snippet is an **evidence exhibit**, not a replacement source tree.
+Empirical observations and adjudication rules derived from replay data. Replay records are evidence about observed game history, not a guaranteed window into hidden native state.
 
-### 5. Cross-layer mappings
+### Negative knowledge
 
-Links between historical behavior and the AEGIS architecture: what should be preserved, generalized, rejected, or reimplemented differently.
-
-### 6. Negative knowledge
-
-Failed experiments, disproven hypotheses, misleading approaches, validator failures, engine workarounds, and things that appear sophisticated but are actually historical debris.
+Failed experiments, disproven hypotheses, misleading approaches, validator failures, engine workarounds, and historical behavior that should **not** be carried forward.
 
 ## Epistemic classes
 
-Use explicit labels:
-
-- `FACT` — directly established by an authoritative artifact or reproducible observation.
-- `MECHANICAL_FACT` — engine/runtime behavior established by native or controlled evidence.
-- `HEURISTIC` — repeated conditional behavior without proof of universal validity.
-- `STRATEGIC_PRINCIPLE` — generalized decision principle supported by multiple observations or strong causal reasoning.
+- `FACT` — directly established by authoritative evidence.
+- `MECHANICAL_FACT` — runtime/native behavior established by strong evidence.
+- `HEURISTIC` — repeated conditional behavior without universal proof.
+- `STRATEGIC_PRINCIPLE` — generalized decision principle.
 - `TACTICAL_PRINCIPLE` — local combat/position principle.
-- `TRANSITION_PRINCIPLE` — rule governing movement between strategic states.
+- `TRANSITION_PRINCIPLE` — rule governing strategic state changes.
 - `ECONOMIC_PRINCIPLE` — resource, production, opportunity-cost, or conversion principle.
-- `META_KNOWLEDGE` — knowledge about how the original designers structured the decision system and why.
-- `ENGINE_WORKAROUND` — behavior required by implementation constraints rather than strategy.
-- `HISTORICAL_ARTIFACT` — obsolete, experimental, debug, or superseded behavior.
-- `HYPOTHESIS` — plausible but not yet adequately evidenced.
+- `META_KNOWLEDGE` — knowledge about how an earlier system was designed and why.
+- `ENGINE_WORKAROUND` — behavior imposed by machine constraints.
+- `HISTORICAL_ARTIFACT` — obsolete, experimental, debug, or superseded material.
+- `HYPOTHESIS` — plausible but insufficiently demonstrated explanation.
 - `DISPROVEN` — tested and rejected.
-- `LESSON` — project-level conclusion derived from evidence and experiments.
+- `LESSON` — project-level conclusion derived from evidence.
 
 ## Evidence strength
 
 `DIRECT > REPRODUCED > CORROBORATED > PROBABLE > PLAUSIBLE > UNCERTAIN`
 
-Never silently upgrade an inference to a fact.
+Evidence strength and epistemic class are separate dimensions. A hypothesis can be well supported without becoming a fact; a historical fact can be well established without becoming current architecture.
 
-## Snippet policy
+## Claim-record requirements
 
-When a historical implementation materially clarifies an idea, a small excerpt may be published when appropriate. The excerpt must answer:
+A useful knowledge record should answer:
 
-1. What is the source?
-2. What behavior is visible?
-3. What state does it read?
-4. What state does it write?
-5. What action or consequence follows?
-6. Why does the behavior appear to exist?
-7. What are the limits/counterexamples?
-8. What does AEGIS learn from it?
+1. What is being claimed?
+2. What evidence supports it?
+3. What exactly was observed?
+4. What is interpretation rather than observation?
+5. What alternative explanations exist?
+6. What would falsify the claim?
+7. What practical engineering consequence follows?
+8. What should be tested next?
 
-Avoid publishing large contiguous source sections or complete historical/vendor-derived modules.
+## Important distinctions
 
-## Returnability standard
-
-An engineer returning years later must be able to reconstruct:
-
-- what was known,
-- why it was believed,
-- where the evidence came from,
-- what alternative explanations existed,
-- what was rejected,
-- what remains uncertain,
-- how the insight changed architecture,
-- and what experiment should come next.
-
-If a document cannot support that reconstruction, it is incomplete regardless of length.
+- A symbol name is vocabulary, not semantics.
+- A declaration is an interface, not proof of implementation.
+- A replay field is an observation, not necessarily complete internal state.
+- A command being issued is not proof of execution success.
+- Execution success is not proof of strategic success.
+- Absence is not proof of destruction.
+- A failed search is not proof that a mechanism is absent.
+- Repetition of an inference does not upgrade it to fact.
 
 ## Current high-value ledgers
 
-- `LAYER1_MACHINE_FACTS.jsonl`
-- `LAYER2_STRATEGIC_AXIOMS.jsonl`
-- `MACHINE_ONTOLOGY.jsonl`
-- `MACHINE_INVESTIGATION_HISTORY.jsonl`
-- `MACHINE_EXPERIMENT_SCHEMA.json`
+- `LAYER1_MACHINE_FACTS.jsonl` — atomic machine facts.
+- `MACHINE_ONTOLOGY.jsonl` — machine concepts and relationships.
+- `MACHINE_INVESTIGATION_HISTORY.jsonl` — chronological investigation record.
+- `MACHINE_EXPERIMENT_SCHEMA.json` — experiment structure.
+- `LAYER2_STRATEGIC_AXIOMS.jsonl` — strategic axioms for later layers.
+- `knowledge/replay/` — replay event, temporal, lifecycle, and production evidence.
 
-The knowledge directory is intentionally expected to grow much larger than the runtime code. A mature AEGIS repository should contain substantially more explanation of the intelligence than implementation required to execute it.
+## Six-month recovery rule
+
+If you return after forgetting the project, do not start by reading implementation code. Start at `../RESEARCH_INDEX.md`, then the current status and evidence matrix, then the machine monograph, then the investigation/QC records, and finally the atomic ledgers.
+
+The repository should make it possible to reconstruct **what we know, why we know it, what we do not know, and what to do next** without conversational memory.
