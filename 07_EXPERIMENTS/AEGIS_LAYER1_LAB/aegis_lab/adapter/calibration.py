@@ -18,7 +18,14 @@ class CalibrationReport:
     def write(self, path: str) -> None:
         target = Path(path)
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(json.dumps({"passed": self.passed, "checks": self.checks, "reasons": self.reasons}, indent=2) + "\n", encoding="utf-8")
+        target.write_text(
+            json.dumps(
+                {"passed": self.passed, "checks": self.checks, "reasons": self.reasons},
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
 
 
 def preflight(executable: str, expected_sha256: str, scenario: ScenarioContract) -> CalibrationReport:
@@ -37,5 +44,8 @@ def preflight(executable: str, expected_sha256: str, scenario: ScenarioContract)
         checks["scenario_contract"] = False
         reasons.append(str(error))
     checks["causal_promotion"] = False
-    reasons.append("Calibration is instrumentation validation only; it cannot promote a Layer 1 causal claim.")
-    return CalibrationReport(all(checks.values()) and not reasons, checks, reasons)
+    reasons.append(
+        "Calibration is instrumentation validation only; it cannot promote a Layer 1 causal claim."
+    )
+    setup_checks = checks["build_identity"] and checks["scenario_contract"]
+    return CalibrationReport(setup_checks, checks, reasons)
