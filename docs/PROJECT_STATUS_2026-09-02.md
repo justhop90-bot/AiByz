@@ -3,7 +3,8 @@
 ## Executive status
 
 **Current layer: Layer 1 — Machine Understanding**  
-**State: active, not declared complete**
+**State: active, not declared complete**  
+**Working completion estimate: 86%**
 
 The project has accumulated a substantial operational and research record, but the completion standard is deliberately stricter than familiarity with AI scripting vocabulary. The remaining work is to turn important machine-facing observations into causal, implementation-level, and experimentally predictive understanding.
 
@@ -36,11 +37,21 @@ High-value script-facing identity interfaces identified in native signature data
 
 A full executable `.text` instruction scan was used as a discriminating negative test. No direct RIP-relative references were recovered to the tested API signature addresses, the widened signature region, or the selected UnitAI diagnostic strings. This establishes a representation constraint for the tested addressing mode; it does **not** prove that the metadata or diagnostics are unused, nor does it prove that the actual consumer is indirect. Competing representations must be tested rather than assumed.
 
+### AIExpert / rule-engine architecture evidence
+
+The latest native pass materially deepened the rule-engine model. Retained native vocabulary identifies `AIExpertEngine.cpp`, `loadRules`, `Defining Fact`, `Defining Action`, `ruleElementsPtr`, indexed rule elements, rule debug information, `Next Rule`, breakpoint/debugging concepts, and an explicit `Evaluating Persistent Facts` phase.
+
+The same native corpus exposes parser and loader failures for malformed directives, missing identifiers, invalid identifiers, missing rule sides, list capacity, rule length, string-table capacity, and missing files. This supports a native rule-loading/semantic-construction subsystem rather than a purely opaque callback list, while leaving exact ownership and dispatch unproven.
+
+The native fact vocabulary is also extensive: resource, population, building, unit, research, feasibility, player-scope, game-mode, timer, search, and strategic-number concepts are represented at the same AIExpert boundary. This establishes a broad native semantic surface for rule evaluation.
+
 ### UnitAI control-loop model
 
 Native vocabulary supports a strong architectural hypothesis that UnitAI separates at least order state, action state, target state, and notification state, with search/recovery machinery associated with invalid or otherwise unsatisfied execution conditions.
 
 The distinction between `currentOrder` and `CurrentAction`, together with `OrderQueue`, `NotifyQueue`, `processNotify`, `processIdle`, search diagnostics, and explicit failed/invalidated/search-required action diagnostics, is a high-value model for subsequent implementation tracing. Exact ownership, persistence, sequencing, and causal ordering remain unproven.
+
+The latest pass strengthens the sequencing model: an update exposes current order/action/target state, processes notifications, may break notification processing on stop/new-action results, proceeds into miscellaneous processing and timer/patrol logic, and can enter search/recovery or retargeting before leaving the update. This remains native-vocabulary behavioral inference until the actual native call graph is recovered.
 
 ### QC correction to the UnitAI model
 
@@ -51,6 +62,12 @@ The most valuable next evidence is a concrete mutation chain:
 `native function → state read → condition/branch → state write → subsequent consumer`
 
 A complete `Update` reconstruction is not required before this smaller chain can be established.
+
+### Search subsystem
+
+Native source-path vocabulary identifies `ai\Searching\aisearch.cpp`. Search diagnostics expose LOS, search radius, cared-about object types, defend-target restrictions, candidate ownership/classification, current-target retention, pathability, attack range, wall handling, quick-path behavior, and fallback results.
+
+This supports a strong behavioral model in which target selection is a constrained candidate-evaluation subsystem rather than a simple nearest-object query. Exact scoring implementation remains open.
 
 ### Replay research
 
@@ -65,6 +82,8 @@ The most important remaining gap is **native implementation closure**. Two tight
 1. **Metadata-consumer closure:** recover the native structure and dispatch mechanism that consumes the embedded API name/signature region and turns an API identifier into a callable handler.
 2. **State-owner closure:** recover a concrete UnitAI state mutation chain showing where order/action/target/notification state is stored, read, invalidated, and rewritten.
 
+The AIExpert rule-engine bridge is now better constrained: rule loading, fact/action definition, rule-element storage, persistent-fact evaluation, and native semantic query vocabulary are established at the vocabulary level. The remaining bridge is to recover the actual function boundaries and connect rule evaluation to action/order issuance.
+
 For object identity, the eventual causal chain must still resolve:
 
 `registration/dispatch → validation → lookup → native state access → return value`
@@ -73,16 +92,17 @@ and the relationships among unit IDs, object IDs, copy IDs, native object identi
 
 ## Immediate work sequence
 
-1. Recover indirect/indexed consumers of the embedded engine-facing signature region. Do not repeat broad direct-string xref scans unless a new representation hypothesis requires them.
-2. Enumerate competing metadata representations before selecting a dispatch hypothesis.
-3. Identify the initialization/registration structure that owns or transforms the API metadata.
-4. Trace `xsGetUnitObjectId` end-to-end as the first representative identity path once its consumer/dispatch chain is located.
-5. In parallel, identify a concrete UnitAI state-owner candidate and recover one real read → condition → write → consumer chain.
-6. Test whether `CurrentAction` and `currentOrder` have distinct ownership/lifetime using native mutation evidence rather than vocabulary alone.
-7. Trace related copy-ID, type/class, validity/availability, and garrison interfaces.
-8. Design discriminating runtime experiments for target invalidation, action recovery, identity conversion, and lifecycle behavior.
-9. Update the evidence matrix, atomic machine facts, predictive tests, and QC amendments from demonstrated results.
-10. Reassess Layer 1 completion only after the predictive gate is satisfied.
+1. Use the completed `.text` disassembly when available to recover the first defensible `AIExpertEngine` function boundary around rule loading/evaluation.
+2. Recover the first defensible UnitAI mutation chain for `CurrentAction` or `CurrentOrder`.
+3. Recover the actual search function boundary associated with `ai::search` / `aisearch.cpp` vocabulary.
+4. Enumerate competing metadata representations before selecting a dispatch hypothesis.
+5. Identify the initialization/registration structure that owns or transforms the API metadata.
+6. Trace `xsGetUnitObjectId` end-to-end as the first representative identity path once its consumer/dispatch chain is located.
+7. Test whether `CurrentAction` and `currentOrder` have distinct ownership/lifetime using native mutation evidence rather than vocabulary alone.
+8. Trace related copy-ID, type/class, validity/availability, and garrison interfaces.
+9. Design discriminating runtime experiments for target invalidation, action recovery, identity conversion, and lifecycle behavior.
+10. Update the evidence matrix, atomic machine facts, predictive tests, and QC amendments from demonstrated results.
+11. Reassess Layer 1 completion only after the predictive gate is satisfied.
 
 ## Downstream layers
 
@@ -96,6 +116,8 @@ The project currently passes the **documentation/re-entry** requirement more str
 
 A repository can be excellent institutional memory while still documenting an unfinished investigation. Status must say so plainly.
 
+The 86% working estimate is not a completion claim. It reflects the additional native constraints recovered this pass while preserving the major implementation-closure gaps.
+
 ## Six-month re-entry instructions
 
 A returning engineer should:
@@ -107,10 +129,11 @@ A returning engineer should:
 5. read `MACHINE_KNOWLEDGE_MONOGRAPH_2026-09-02.md`;
 6. read the native archaeology log and QC addendum;
 7. read `LAYER1_NATIVE_PASS_2026-09-02_UNITAI_CONTROL_LOOP_DEEPENING.md`;
-8. read `LAYER1_QC_AMENDMENT_2026-09-02_UNITAI_AND_METADATA.md`;
-9. read `OPEN_NATIVE_QUESTIONS_LAYER1.md`;
-10. inspect the atomic machine ledgers;
-11. continue from the immediate work sequence above.
+8. read `LAYER1_NATIVE_PASS_2026-09-03_AIEXPERT_UNITAI_ARCHITECTURE.md`;
+9. read `LAYER1_QC_AMENDMENT_2026-09-02_UNITAI_AND_METADATA.md`;
+10. read `OPEN_NATIVE_QUESTIONS_LAYER1.md`;
+11. inspect the atomic machine ledgers;
+12. continue from the immediate work sequence above.
 
 ## Status rule
 
