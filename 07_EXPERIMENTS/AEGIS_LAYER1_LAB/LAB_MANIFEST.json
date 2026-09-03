@@ -1,0 +1,29 @@
+{
+  "name": "AEGIS Layer 1 Experimental Laboratory",
+  "version": "0.1.0-bootstrap",
+  "status": "harness_bootstrap",
+  "build": {
+    "version": "101.103.48987.0",
+    "sha256": "6378CA6F1FBD2F230B5B7F2CD048198331848AF70F44B5CD13CEB89420A321A4"
+  },
+  "campaigns": {
+    "P0-A": {
+      "generator": "persistent_fact_matrix",
+      "fact_classes": 4,
+      "mutation_modes": 4,
+      "timing_points": 6,
+      "replicates": 12,
+      "cartesian_capacity": 1152
+    }
+  },
+  "execution": {
+    "default": "dry_run",
+    "parallelism_default": 1,
+    "runtime_adapter": "runtime.launch"
+  },
+  "epistemic_policy": {
+    "execution_success_is_not_causal_proof": true,
+    "promotion_requires_competing_hypothesis_discrimination": true,
+    "validator_is_not_runtime_evidence": true
+  }
+}
