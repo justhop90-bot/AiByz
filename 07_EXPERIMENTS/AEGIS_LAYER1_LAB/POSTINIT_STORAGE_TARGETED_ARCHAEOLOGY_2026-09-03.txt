@@ -1,0 +1,62 @@
+﻿BUILD=6378CA6F1FBD2F230B5B7F2CD048198331848AF70F44B5CD13CEB89420A321A4
+EXE=C:\Program Files (x86)\Steam\steamapps\common\AoE2DE\AoE2DE_s.exe
+
+=== RUN_REGRESSION_TEST ===
+HIT 1 OFFSET 52407128
+    Write out a text file containing map info       WRITE_MAP_INFO  AOE1 or AOE2. User privilege is still required  LAUNCH_GAME_VARIANT             Run regression tests on game data from previous versions of the game.   RUN_REGRESSION_TESTS    DEBUGPATHGRAPHICAL      Boot directly into the scenario editor. EDITOR          Display additional map sizes when setting up a game or scenario.        MORE_MAP_SIZES  ??fC    ???@    dcam0    ?fC    ???@    ??fC    ???@    ??fC    @??@    S??B    S??B     ?fC    ???@    ??fC
+HIT 2 OFFSET 53390520
+ifc language and markup against english.    LOC_REPORT_LANG Post-Init Tools         Run specific regression tests on game data from previous versions of the game.  Takes the regression directory of a specific test.      RUN_REGRESSION_TEST     Request application to exit after post init tools are run.      EXIT_AFTER_POST_INIT_TOOLS      Specify the log file path for the tool manager  TOOL_MANAGER_LOG_LOCATION       Initializing Tool Manager       Terminating Tool Manager        Result: ??kC      ?A    ? ?A    ` ?A
+COUNT=2
+
+=== EXIT_AFTER_POST_INIT_TOOLS ===
+HIT 1 OFFSET 53390608
+specific regression tests on game data from previous versions of the game.  Takes the regression directory of a specific test.      RUN_REGRESSION_TEST     Request application to exit after post init tools are run.      EXIT_AFTER_POST_INIT_TOOLS      Specify the log file path for the tool manager  TOOL_MANAGER_LOG_LOCATION       Initializing Tool Manager       Terminating Tool Manager        Result: ??kC      ?A    ? ?A    ` ?A     ?,@    x?kC    0 ?A      ?A    ? ?A     ?,@    ??kC    ? ?A    ` ?A    @ ?A    p ?A
+COUNT=1
+
+=== SCRIPTREPORT ===
+HIT 1 OFFSET 52403192
+    Force original main menu        FORCE_ORIGINAL_MENU     LOGSTATS         Script to run  SCRIPT   Enable Test Harness socket communication - Test name as ID     TEST_HARNESS_COMM        Script report outputfile       SCRIPTREPORT     Session ID with which client script should join!       SESSIONID       Force record game on    RECORDGAME      QUICKBUILD  LOBBY   LOGDIR      LOGNAME:        Force enable high resolution sprites    FORCE_2X_ASSETS Ignore civ rotation feature entirely.   UNLOCK_ALL_CIVS SKIPSYNCSAVE
+COUNT=1
+
+=== TEST_HARNESS_COMM ===
+HIT 1 OFFSET 52403136
+NOMODS      Force light main menu   FORCE_SIMPLE_MENU       Force original main menu        FORCE_ORIGINAL_MENU     LOGSTATS         Script to run  SCRIPT   Enable Test Harness socket communication - Test name as ID     TEST_HARNESS_COMM        Script report outputfile       SCRIPTREPORT     Session ID with which client script should join!       SESSIONID       Force record game on    RECORDGAME      QUICKBUILD  LOBBY   LOGDIR      LOGNAME:        Force enable high resolution sprites    FORCE_2X_ASSETS Ignore civ r
+COUNT=1
+
+=== TESTHARNESS_SCRIPTS ===
+HIT 1 OFFSET 52019568
+    RANDOM_MAPS     COMMON_STRINGS  STRINGS SHADERS PARTICLES       PACKAGES        PROFILE ACHIEVEMENTS    CAMPAIGN_MOVIES CAMPAIGN_SOUNDS SCENARIO_SOUNDS WIDGETUI    WPFG    WWISE       WWISE_EXTERNALS TESTHARNESS     TESTHARNESS_SCRIPTS     TESTHARNESS_REPORTS     TESTHARNESS_REG_SAVES   PERFORMANCE_TEST_GAMES  XS      TESTHARNESS_XS  TELEMETRY       SCENARIO_EDITOR COUNT   NONE    NOTFOUND    TEMP    BASE    APPATA  USER        MODSROOT        LOCALMODS       SUBSCRIBEDMODS  DLC CLOUD       ??eC    @??@    ?#?@
+COUNT=1
+
+=== StoragePoint_t ===
+HIT 1 OFFSET 52020272
+    ? ?@    ?#?@     ?eC    @??@    ?.?@    ?V?@    P#?@      ?@      ?@    ??eC    ???@    0/?@    `W?@    `#?@    ? ?@    ? ?@     ?eC    ???@    @.?@    pV?@    @#?@    ? ?@    ? ?@    StoragePointBase_t      APPDATA StoragePoint_t  XS_SCRIPTS      TESTHARNESS_XS_SCRIPTS  PathSpec    Base    Point   Spec        F:\Agents\PhoenixBuilders-11\p4\release_12_0_0_build_machine\Aoc\Source\Engine\FileSystem\storagepoint.cpp      Error bad enum value: %d        intValue        &intValue       ????????????????????????????
+COUNT=1
+
+=== PathSpec ===
+HIT 1 OFFSET 52020328
+      ?@      ?@    ??eC    ???@    0/?@    `W?@    `#?@    ? ?@    ? ?@     ?eC    ???@    @.?@    pV?@    @#?@    ? ?@    ? ?@    StoragePointBase_t      APPDATA StoragePoint_t  XS_SCRIPTS      TESTHARNESS_XS_SCRIPTS  PathSpec    Base    Point   Spec        F:\Agents\PhoenixBuilders-11\p4\release_12_0_0_build_machine\Aoc\Source\Engine\FileSystem\storagepoint.cpp      Error bad enum value: %d        intValue        &intValue       ????????????????????????????????????????????????????????????????????????????????????
+HIT 2 OFFSET 67837060
+??_C            .?AV<lambda_2>@?CO@??start3@GamePC@@QEAA_NXZ@           ??_C            .?AV<lambda_1>@?BG@??setup_modmanager@GamePC@@QEAAXXZ@          ??_C            .?AV<lambda_1>@?7??RunTestScenario@GamePC@@QEAAHAEBVPathSpec@@@Z@               ??_C            .?AV<lambda_1>@?4???R0?7??RunTestScenario@GamePC@@QEAAHAEBVPathSpec@@@Z@QEBA@PEAVAge2Frame@@PEAVObject@AVUI@@@Z@                ??_C            .?AV<lambda_2>@?O@??OpenTutorial@GamePC@@QEAAXXZ@               ??_C            .?AV<lambda_1>@?1???R<lambda_2>@
+HIT 3 OFFSET 67837163
+?BG@??setup_modmanager@GamePC@@QEAAXXZ@          ??_C            .?AV<lambda_1>@?7??RunTestScenario@GamePC@@QEAAHAEBVPathSpec@@@Z@               ??_C            .?AV<lambda_1>@?4???R0?7??RunTestScenario@GamePC@@QEAAHAEBVPathSpec@@@Z@QEBA@PEAVAge2Frame@@PEAVObject@AVUI@@@Z@                ??_C            .?AV<lambda_2>@?O@??OpenTutorial@GamePC@@QEAAXXZ@               ??_C            .?AV<lambda_1>@?1???R<lambda_2>@?O@??OpenTutorial@GamePC@@QEAAXXZ@QEBA@XZ@      ??_C            .?AV<lambda_1>@?8??OpenTutorial@GamePC@
+HIT 4 OFFSET 67860666
+  ??_C            .?AV<lambda_1>@?1???R0?BA@??SaveGame@SaveSystem@@QEAAXAEBUSaveGameRequest@2@@Z@QEBA@XZ@         ??_C            .?AV<lambda_3>@?1??AttemptToWriteSave@SaveSystem@@AEAAXAEBV?$ref_ptr@VGameFileType@@@@AEBVPathSpec@@AEBV?$shared_ptr@V?$vector@EV?$allocator@E@std@@@std@@@std@@_NAEBV?$function@$$A6AXVResult@@@Z@6@@Z@        ??_C            .?AV<lambda_1>@?1??deleteProfile@HotKeyHandlerBase@@SAXAEBVPathSpec@@@Z@        ??_C            .?AV<lambda_1>@?1??onPlayerSignIn@PlayerProfileManager@@QEAAXXZ@      
+HIT 5 OFFSET 67860859
+f_ptr@VGameFileType@@@@AEBVPathSpec@@AEBV?$shared_ptr@V?$vector@EV?$allocator@E@std@@@std@@@std@@_NAEBV?$function@$$A6AXVResult@@@Z@6@@Z@        ??_C            .?AV<lambda_1>@?1??deleteProfile@HotKeyHandlerBase@@SAXAEBVPathSpec@@@Z@        ??_C            .?AV<lambda_1>@?1??onPlayerSignIn@PlayerProfileManager@@QEAAXXZ@                ??_C            .?AV<lambda_17>@?DN@??save@PlayerProfiles@@UEBA?AVResult@@XZ@   ??_C            .?AV<lambda_1>@?1??OpenProfileDialog@SocialUtils@@YAX_J@Z@      ??_C            .?AV<la
+HIT 6 OFFSET 67885535
+ade_api@@@std@@@std@@XZ@     ??_C            .?AV<lambda_1>@?P@??handleMovieDone@WebmMovieProgramMode@@AEAAXXZ@              ??_C            .?AV<lambda_5>@?BI@??saveScenarioUsingDefaultFilename@TRIBE_Screen_Sed@@QEAA?AVPathSpec@@XZ@    ??_C            .?AV<lambda_1>@?4???R<lambda_5>@?BI@??saveScenarioUsingDefaultFilename@TRIBE_Screen_Sed@@QEAA?AVPathSpec@@XZ@QEBA@PEAVAge2Frame@@PEAVObject@AVUI@@@Z@           ??_C            .?AV<lambda_3>@?BA@??saveScenarioUsingDefaultFilename@TRIBE_Screen_Sed@@QEAA?AVPathSpec@@XZ
+HIT 7 OFFSET 67885664
+            .?AV<lambda_5>@?BI@??saveScenarioUsingDefaultFilename@TRIBE_Screen_Sed@@QEAA?AVPathSpec@@XZ@    ??_C            .?AV<lambda_1>@?4???R<lambda_5>@?BI@??saveScenarioUsingDefaultFilename@TRIBE_Screen_Sed@@QEAA?AVPathSpec@@XZ@QEBA@PEAVAge2Frame@@PEAVObject@AVUI@@@Z@           ??_C            .?AV<lambda_3>@?BA@??saveScenarioUsingDefaultFilename@TRIBE_Screen_Sed@@QEAA?AVPathSpec@@XZ@    ??_C            .?AV<lambda_1>@?4???R<lambda_3>@?BA@??saveScenarioUsingDefaultFilename@TRIBE_Screen_Sed@@QEAA?AVPathSpec@@XZ
+HIT 8 OFFSET 67885823
+@??saveScenarioUsingDefaultFilename@TRIBE_Screen_Sed@@QEAA?AVPathSpec@@XZ@QEBA@PEAVAge2Frame@@PEAVObject@AVUI@@@Z@           ??_C            .?AV<lambda_3>@?BA@??saveScenarioUsingDefaultFilename@TRIBE_Screen_Sed@@QEAA?AVPathSpec@@XZ@    ??_C            .?AV<lambda_1>@?4???R<lambda_3>@?BA@??saveScenarioUsingDefaultFilename@TRIBE_Screen_Sed@@QEAA?AVPathSpec@@XZ@QEBA@PEAVAge2Frame@@PEAVObject@AVUI@@@Z@           ??_C            .?AV<lambda_1>@?7??saveScenarioUsingDefaultFilename@TRIBE_Screen_Sed@@QEAA?AVPathSpec@@XZ@ 
+HIT 9 OFFSET 67885952
+            .?AV<lambda_3>@?BA@??saveScenarioUsingDefaultFilename@TRIBE_Screen_Sed@@QEAA?AVPathSpec@@XZ@    ??_C            .?AV<lambda_1>@?4???R<lambda_3>@?BA@??saveScenarioUsingDefaultFilename@TRIBE_Screen_Sed@@QEAA?AVPathSpec@@XZ@QEBA@PEAVAge2Frame@@PEAVObject@AVUI@@@Z@           ??_C            .?AV<lambda_1>@?7??saveScenarioUsingDefaultFilename@TRIBE_Screen_Sed@@QEAA?AVPathSpec@@XZ@      ??_C            .?AV<lambda_1>@?4???R0?7??saveScenarioUsingDefaultFilename@TRIBE_Screen_Sed@@QEAA?AVPathSpec@@XZ@QEBA@PEAVAg
+HIT 10 OFFSET 67886109
+BA@??saveScenarioUsingDefaultFilename@TRIBE_Screen_Sed@@QEAA?AVPathSpec@@XZ@QEBA@PEAVAge2Frame@@PEAVObject@AVUI@@@Z@           ??_C            .?AV<lambda_1>@?7??saveScenarioUsingDefaultFilename@TRIBE_Screen_Sed@@QEAA?AVPathSpec@@XZ@      ??_C            .?AV<lambda_1>@?4???R0?7??saveScenarioUsingDefaultFilename@TRIBE_Screen_Sed@@QEAA?AVPathSpec@@XZ@QEBA@PEAVAge2Frame@@PEAVObject@AVUI@@@Z@       ??_C            .?AV<lambda_6>@?BK@??saveScenarioUsingDefaultFilename@TRIBE_Screen_Sed@@QEAA?AVPathSpec@@XZ@    ??_C     
+COUNT=10
+
+=== RegressionTest.cpp ===
+HIT 1 OFFSET 53386025
+ssion tests '%s'   Deleting old folder: %s         Copying folder: %s to %s        <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<        F:\Agents\PhoenixBuilders-11\p4\release_12_0_0_build_machine\Aoc\Source\Tools\Regression\RegressionTest.cpp \*.nfp      No profile files found  Checking player profile file: %s        Player profile ok: %s   \*.hkp  No hotkey files found   Checking hotkey file: %s        Hotkeys ok: %s  \resources\_common\scenario\    No scenario files found     .txt        Testing scenario: %s    Scena
+COUNT=1
