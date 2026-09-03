@@ -1,14 +1,16 @@
-# AEGIS Layer 1 Completion Control — 2026-09-02
+# AEGIS Layer 1 Completion Control — Final Investigation Position
+
+**Final investigation position:** 89%  
+**Investigation phase:** CLOSED / HANDOFF  
+**Completion certification:** NOT SATISFIED
 
 ## Purpose
 
-This document is the active control record for completing Layer 1 (Machine) to the AEGIS engineering standard. It supersedes conversational memory as the operational checklist while preserving prior evidence rather than rewriting it.
+This document is the active control record for Layer 1 (Machine Understanding). It defines the evidentiary standard and the conditions under which the layer may be called complete. The investigation phase is now closed at 89%; this document remains the governing gate for any future evidence that reopens the layer.
 
 The objective is not to produce a plausible explanation of AoE2DE. The objective is to establish a reproducible, evidence-bounded machine model for the exact controlled executable and to document every unresolved proposition that could affect implementation.
 
-## Epistemic standard
-
-AEGIS uses the following evidence ladder:
+## Evidence ladder
 
 1. RUNTIME-IDENTITY — exact installed executable identity and cryptographic hash.
 2. SCRIPT-CONSUMED — behavior demonstrably exposed to or consumed by AI scripts.
@@ -35,27 +37,24 @@ A weaker evidence class may motivate investigation but may not silently become a
 - A validator result is not automatically a runtime result.
 - Historical source is not automatically shipped-runtime source.
 - Intuitive naming never promotes a claim.
+- A metadata pointer near an API signature is not semantic API ownership.
+- `.pdata` function geometry is structural evidence, not semantic naming.
+- A PDB filename is not authenticated symbol evidence without GUID/age matching.
 - A claim is promoted only when evidence demonstrates the proposition itself.
 
-## Current controlled runtime
+## Controlled runtime
 
-Executable: `[LOCAL_AOE2DE_INSTALL]\AoE2DE_s.exe`
-
-Version: `101.103.48987.0`
-
-Size: `71,648,568` bytes
-
-SHA-256: `6378CA6F1FBD2F230B5B7F2CD048198331848AF70F44B5CD13CEB89420A321A4`
-
+Executable: `[LOCAL_AOE2DE_INSTALL]\AoE2DE_s.exe`  
+Version: `101.103.48987.0`  
+Size: `71,648,568` bytes  
+SHA-256: `6378CA6F1FBD2F230B5B7F2CD048198331848AF70F44B5CD13CEB89420A321A4`  
 PE: PE32+, x86:LE:64 Windows
 
-The exact local installation path is intentionally redacted from the public record. The build identity is fixed by version, size, and SHA-256.
-
-All native claims in this control record refer to this build unless explicitly marked otherwise.
+The exact local installation path is intentionally redacted from the public record. All native claims in this control record refer to this build unless explicitly marked otherwise.
 
 ## Layer 1 completion gate
 
-Layer 1 is complete when all of the following are either CONFIRMED/STRONG with adequate evidence or explicitly closed as bounded unknowns that cannot affect the current architecture:
+Layer 1 is complete only when the following are either CONFIRMED/STRONG with adequate evidence or explicitly closed as bounded unknowns that cannot affect the architecture:
 
 - executable identity is fixed;
 - script acquisition/loading boundary is mapped;
@@ -67,8 +66,7 @@ Layer 1 is complete when all of the following are either CONFIRMED/STRONG with a
 - UP APIs used by AEGIS have an argument/return/effect ledger;
 - action/order/target execution boundaries are mapped;
 - failure/invalidation/completion semantics are mapped;
-- XS registration and relevant capability boundaries are mapped;
-- native object/unit identity topology is characterized;
+- native object/unit identity topology is characterized to the degree required by implementation;
 - replay-observable identifiers are mapped to native concepts only where evidence permits;
 - critical native call relationships are independently verified;
 - negative evidence and failed searches are preserved;
@@ -76,101 +74,60 @@ Layer 1 is complete when all of the following are either CONFIRMED/STRONG with a
 - open questions have explicit promotion tests;
 - architecture contains no undocumented dependency on a stronger claim than the evidence supports.
 
-## Native object/unit priority investigation
+**XS is explicitly excluded from the completion gate.** XS may remain machine archaeology when useful, but it is not a ByzBot implementation dependency and cannot block Layer 1 completion.
 
-The highest-value remaining Layer 1 enrichment is identity topology, not generic parser development.
+## Final investigation findings
 
-The recovered native vocabulary includes:
+### `.pdata` function geometry
 
-- `xsGetUnitObjectId`;
-- `xsGetObjectType`;
-- `xsGetObjectClass`;
-- `xsGetObjectCopyId`;
-- `xsGetObjectCount`;
-- `xsGetObjectCountTotal`;
-- `xsGetPlayerUnitIds`;
-- `xsGetUnitOwner`;
-- `xsGetUnitTargetUnitId`;
-- `xsGetUnitTaskCount`;
-- `xsGetGarrisonedInUnitId`;
-- `xsGetGarrisonedUnitIds`;
-- `xsIsObjectAvailable`;
-- `xsIsObjectValid`;
-- `gameIDOfResourceObject`;
-- `obj->id`;
-- `uniqueID`.
+The controlled PE contains 166,741 physical 12-byte `.pdata` slots; 166,730 contain non-zero runtime-function records and 11 are trailing zero padding. Valid starts are unique and monotonically ordered, with no overlaps among valid runtime-function intervals. Function interval statistics: minimum 1 byte, median 91 bytes, mean 275.17 bytes, maximum 106,696 bytes; aggregate interval coverage is 45,879,189 bytes, approximately 88.88% of `.text` raw size.
 
-These names establish an object/unit-oriented native surface. They do not, by themselves, establish that every named identifier is the same namespace.
+This provides an independent native coordinate system for targeted instruction/data-flow archaeology. It is not a semantic inventory of 166,730 source-level functions.
 
-The investigation must therefore answer separately:
+### CodeView/PDB
 
-1. What is a unit identifier?
-2. What is an object identifier?
-3. What is a copy identifier?
-4. What is a class identifier?
-5. What is a type identifier?
-6. What is a game ID?
-7. What is a unique ID?
-8. Is `unit_id -> object_id` a direct relation, lookup, or derived value?
-9. Which identifiers are stable across a unit's lifetime?
-10. Which identifiers are reused?
-11. How are garrison, transform, deletion, creation, and ownership transitions represented?
-12. Which replay action references correspond to which native identity namespace?
+The executable contains CodeView `RSDS` data with PDB GUID `b04f37aa-ccf9-48da-ad19-583ffb4bb36d`, age `1`, and an embedded build-system path ending in `AoE2DE_s.pdb`. No matching local PDB was established. A future PDB may be used only after GUID/age authentication against the controlled executable.
 
-No answer may be promoted merely because the names appear intuitive.
+### AI diagnostic anchors
 
-## Ghidra control
+Correct section-aware mapping plus full `.text` Capstone scanning found zero RIP-relative references to seven selected AI diagnostic/source anchors; executable-wide exact 64-bit-pointer scanning also found zero occurrences. This is bounded negative evidence for those representations, not proof of absence of the AI subsystem.
 
-The historical Pass33 project remains preserved and must not be overwritten or used as the sole reproducibility reference.
+### Metadata pointer false positive
 
-A separate controlled headless analysis was initiated on 2026-09-02 using Ghidra `12.1.3_PUBLIC` against the exact controlled executable. The project is isolated under:
+A correctly mapped metadata-area pointer led to `0x1417FF3E0`, a valid `.pdata` function start. Direct disassembly showed cleanup/destructor-like behavior. The candidate is therefore rejected as an XS API implementation association. Pointer proximity does not establish semantic ownership.
 
-`01_MACHINE\INVESTIGATION\AEGIS_CONTROLLED_HEADLESS_2026-09-02`
+### Ghidra
 
-The purpose is differential validation: determine which observations reproduce independently of the original GUI session and which are artifacts of configuration, analysis state, or manual intervention.
+The historical Pass33 workspace is preserved. The separate controlled headless analysis successfully imported/saved the exact executable but timed out at 1800 seconds during `Disassemble Entry Points` with `CreateThunkFunctionCmd` / `body must contain the entry point`. Broad analysis completion is therefore not certified; targeted `.pdata`-bounded verification is the preferred method.
 
-The controlled run must record loader, language/compiler, analysis configuration, logs, completion state, discovered functions, entry points, externals, thunks, memory blocks, strings, references, and known analysis failures.
+## Final causal frontier
 
-Broad analysis is index generation. It is not semantic proof. Critical claims require targeted verification.
+The remaining 11% is concentrated in:
 
-## Parser boundary
+1. rule-loader/parser implementation boundary;
+2. rule-representation ownership/mutation;
+3. persistent-fact result mutation and freshness/cache semantics;
+4. scheduler comparator/interval transition path;
+5. rule/handler-to-native-action bridge;
+6. `CurrentOrder -> CurrentAction` mutation chain;
+7. action failure/invalidation/completion propagation;
+8. required object-identity lifecycle edges;
+9. one experimentally predictive `.per` end-to-end path.
 
-Replay parsing is subordinate evidence. The parser can establish what was encoded/decoded in a recording; it cannot by itself establish the complete internal simulation state.
+No one of these may be declared closed from vocabulary alone.
 
-The current DE parser exposes object references in many action families. A fresh forensic parse on 2026-09-02 successfully decoded the reference recording with zero malformed records. It produced 6,858 ACTION records and 27,369 object-ID references spanning 4,411 distinct numeric values.
+## Final architectural consequence
 
-Some decoded values are clearly suspicious as literal stable object identities, including very large unsigned values. Therefore numeric replay references remain `OBJECT_REFERENCE_CANDIDATE` until their namespace and encoding are established.
+The most defensible authority model remains:
 
-## Promotion protocol for object tracking
+`OBSERVATION -> BELIEF / MACHINE FACTS -> STRATEGIC INTENT -> TACTICAL REQUEST -> NATIVE VALIDATION / ACCEPTANCE -> EXECUTION -> OBSERVED RESULT -> RECONCILIATION -> RETAIN / RETRY / RETARGET / REPLACE / ABANDON`
 
-A replay identity claim may be promoted only through one or more of:
+This is an engineering architecture derived from convergent evidence. It is not a claim that the shipped engine literally contains these exact classes.
 
-- direct native implementation showing the namespace;
-- repeated replay continuity with independent corroboration;
-- explicit creation/destruction/transform/garrison evidence;
-- controlled runtime experiment linking an observable reference to a known object;
-- convergent native and replay evidence.
+## Six-month re-entry
 
-Absence alone never proves destruction. A missing reference may represent garrison, transform, observation limits, parser loss, ownership transition, deletion, or another unobserved state.
-
-## Six-month re-entry requirement
-
-An engineer returning after six months must be able to answer from this repository:
-
-- which executable is authoritative;
-- what evidence classes mean;
-- which machine claims are confirmed versus inferred;
-- how the rule scheduler is known to work;
-- what UP and XS actually expose;
-- what object/unit identity concepts exist;
-- what replay parsing can and cannot prove;
-- why the architecture has its current boundaries;
-- what remains open;
-- what experiment or native analysis promotes each open question;
-- which artifacts are historical and which are controlled-runtime evidence.
-
-If this cannot be answered from the repository, the documentation is incomplete regardless of how much text exists.
+A returning engineer should begin with `docs/LAYER1_FINAL_INVESTIGATION_HANDOFF_2026-09-03.md`, then the research index, predictive standard, this completion control, evidence matrix, machine monograph, native archaeology/QC records, atomic facts, and open questions. The final investigation position is **89%** until new evidence demonstrates a material change.
 
 ## Change control
 
-Every new Layer 1 finding must be dated, tied to a concrete artifact or experiment, classified by evidence level, state what it proves, state what it does not prove, and identify the promotion/demotion path. Corrections amend prior claims; they do not erase the historical reasoning that produced them.
+Every future Layer 1 finding must be dated, tied to a concrete artifact or experiment, classified by evidence level, state what it proves, state what it does not prove, and identify the promotion/demotion path. Corrections amend prior claims; they do not erase the historical reasoning that produced them.
