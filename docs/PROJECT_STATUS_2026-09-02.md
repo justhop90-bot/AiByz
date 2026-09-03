@@ -16,9 +16,13 @@ The governing predictive machine standard explicitly excludes XS from project sc
 
 ## Newest QC result
 
-The latest pass revalidated the PE section map and performed a fresh direct-reference experiment against the native AIExpert and UnitAI diagnostic strings. The selected `loadRules`, persistent-fact, rule-definition, `CurrentAction`, `CurrentOrder`, `processNotify`, and action-failure strings are in `.rdata`. The tested direct RIP-relative reference representation produced zero consumers for the selected strings.
+The latest pass extracted additional native AI semantic-boundary evidence from the controlled AIExpert context artifact. The corpus contains an explicit `Init AI Facts` boundary followed by comparison and player-scope vocabulary, plus game-mode, player, civilization, map-size, victory, age, difficulty, resource-setting, and processing-mode symbols around game-start processing.
 
-This is useful negative evidence but not proof that the diagnostics are unused or that all references are indirect. The investigation must now use structural anchors rather than string-address anchoring.
+`UP-PROCESS-60FPS` is confirmed as native AI-visible vocabulary only. Its effect on rule-evaluation cadence is unresolved and must not be inferred from its name.
+
+The pass also strengthens the distinction between semantic resolution/validation and operation/result: the native corpus contains validation diagnostics for goals, points, unit/building types, attributes, resources, players, technologies, timers, search sources, and targets alongside feasibility predicates such as `up-can-build`.
+
+These findings do not establish a new native call edge. The working completion estimate therefore remains 89%.
 
 ## Project objective
 
@@ -61,7 +65,13 @@ Each arrow remains individually graded. Native source/debug vocabulary establish
 
 ## AIExpert / rule-engine model
 
-Native vocabulary establishes rule loading, constant/fact/action definition, indexed rule elements, debug metadata, persistent-fact evaluation, rule navigation, breakpoints, and parser/error categories. The exact function ownership, scheduler comparator, state mutation sequence, and handler bridge remain open.
+Native vocabulary establishes rule loading, constant/fact/action definition, indexed rule elements, debug metadata, persistent-fact evaluation, rule navigation, breakpoints, parser/error categories, and an explicit AI-fact initialization boundary. The exact function ownership, scheduler comparator, state mutation sequence, and handler bridge remain open.
+
+## Fact semantic model
+
+The native corpus supports a useful taxonomy of direct state, derived state, feasibility predicates, relational player scopes, event/timer state, and environment/game-configuration state. This is an engineering classification, not a recovered internal class hierarchy.
+
+A key predictive question is fact freshness: whether individual fact classes are evaluated live, on a scheduler cadence, from persistent caches, or through class-specific invalidation.
 
 ## UnitAI model
 
@@ -71,18 +81,22 @@ Native vocabulary continues to support separate order, action, target, notificat
 
 ByzBot should classify machine capabilities into trusted observations, trusted native control surfaces, compensating wrappers, `.per` strategic logic, and unresolved capabilities requiring experiment. Native feasibility predicates and other machine-provided state should not be redundantly reimplemented without a demonstrated reason.
 
+The architecture should keep strategic desirability separate from machine feasibility: strategy decides what is desirable; native feasibility determines whether the requested operation is currently executable under engine semantics; execution must then be reconciled against observed results.
+
 ## Repository position
 
 The public tree remains suitable for practical development, while historical source-derived material remains controlled exposure rather than certified-clean history. Malformed or unverified native disassembly remains quarantined.
 
+Every substantive pass is expected to leave durable research memory in GitHub when the evidence supports a new record. Unverified findings must be recorded as hypotheses or negative results rather than omitted.
+
 ## Immediate next sequence
 
 1. Recover structural anchors for the AIExpert rule engine.
-2. Recover one persistent-fact evaluation boundary.
+2. Recover one persistent-fact state mutation boundary.
 3. Recover one UnitAI state mutation chain.
 4. Recover the rule/handler-to-action bridge.
 5. Recover failure/completion feedback.
-6. Construct the first runtime falsification experiment.
+6. Construct the first runtime falsification experiment, beginning with fact freshness if practical.
 7. Update atomic machine facts and predictive tests from demonstrated results.
 
 ## Status rule
