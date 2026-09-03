@@ -9,6 +9,10 @@ This is the repository's **human navigation map**. If you have not worked on AiB
 | [`README.md`](README.md) | What AiByz is, why it exists, and the overall project model. |
 | [`docs/PROJECT_STATUS_2026-09-02.md`](docs/PROJECT_STATUS_2026-09-02.md) | Final Layer 1 investigation position: **89%, closed for handoff, not certified complete**. |
 | [`docs/LAYER1_FINAL_INVESTIGATION_HANDOFF_2026-09-03.md`](docs/LAYER1_FINAL_INVESTIGATION_HANDOFF_2026-09-03.md) | The authoritative six-month recovery handoff for the completed Layer 1 investigation phase. |
+| [`docs/QC_THREE_PASS_2026-09-03_PASS1_REPOSITORY_INTEGRITY.md`](docs/QC_THREE_PASS_2026-09-03_PASS1_REPOSITORY_INTEGRITY.md) | Pass 1: repository integrity, authority boundaries, and quantitative corrections. |
+| [`docs/QC_THREE_PASS_2026-09-03_PASS2_EXTERNAL_CROSS_REFERENCE.md`](docs/QC_THREE_PASS_2026-09-03_PASS2_EXTERNAL_CROSS_REFERENCE.md) | Pass 2: cross-reference of new material, GitHub, and verified public sources. |
+| [`docs/QC_THREE_PASS_2026-09-03_PASS3_PROMOTION_AND_ACTION_PLAN.md`](docs/QC_THREE_PASS_2026-09-03_PASS3_PROMOTION_AND_ACTION_PLAN.md) | Pass 3: claim promotion, corrections, and the next native causal workboard. |
+| [`12_RESEARCH/NEW_MATERIAL_INGEST_2026-09-03.md`](12_RESEARCH/NEW_MATERIAL_INGEST_2026-09-03.md) | Provenance and findings from the latest supplied executable, AI, XS, and data material. |
 | [`docs/REPOSITORY_ARCHITECTURE.md`](docs/REPOSITORY_ARCHITECTURE.md) | Why information is separated into research, evidence, knowledge, and implementation domains. |
 | [`PUBLIC_REPOSITORY_PROVENANCE_AUDIT_2026-09-02.md`](PUBLIC_REPOSITORY_PROVENANCE_AUDIT_2026-09-02.md) | What was removed from the public tree and why. |
 
@@ -40,6 +44,10 @@ Layer 1 is the current research boundary, and its investigation phase is now clo
 ### Layer 1 in one sentence
 
 We progressed from **mechanism vocabulary** to a bounded machine model with an independent native function-coordinate layer; the remaining gap is implementation-level causal closure, not generic documentation.
+
+### Latest three-pass QC
+
+The 2026-09-03 three-pass review concluded that the repository is structurally sound, the latest evidence materially strengthens several claims, and Layer 1 remains correctly held at 89%. The newest rule-corpus measurement is **7,831 syntactically reachable definitions across 28 reachable `.per/.per2/.xs` files under conservative conditional-branch inclusion**; the prior 7,715 figure is retired. See the three-pass QC documents above.
 
 ## 3. Historical AI archaeology
 
@@ -123,11 +131,12 @@ If you return after forgetting the project:
 7. Read the native archaeology log and QC addenda.
 8. Read the AIExpert/UnitAI passes and persistent-fact QC.
 9. Read the `.pdata`/PDB/RIP QC and function-geometry ledger.
-10. Read the open-question register.
-11. Inspect the atomic machine facts and investigation history.
-12. Treat **89%** as the final investigation position unless new evidence changes it.
-13. Continue only from the explicitly recorded implementation-closure gaps.
-14. Do not restart vocabulary collection unless a new question requires it.
+10. Read the three-pass QC documents and new-material ingestion record.
+11. Read the open-question register.
+12. Inspect the atomic machine facts and investigation history.
+13. Treat **89%** as the final investigation position unless new evidence changes it.
+14. Continue only from the explicitly recorded implementation-closure gaps.
+15. Do not restart vocabulary collection unless a new question requires it.
 
 ## 9. What not to do
 
@@ -141,6 +150,7 @@ If you return after forgetting the project:
 - Do not treat `.pdata` function geometry as semantic function naming.
 - Do not treat zero direct references as proof of code absence.
 - Do not treat a matching PDB filename as an authenticated symbol source without GUID/age verification.
+- Do not use the 7,715 rule-count figure; it has been superseded by the qualified 7,831 measurement.
 
 ## Final research frontier
 
