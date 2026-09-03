@@ -25,6 +25,8 @@
   },
   "fixture": {
     "id": "P0A-CAL-001",
+    "path": "07_EXPERIMENTS/AEGIS_LAYER1_LAB/fixtures/P0A_CAL_001_BASE.aoe2scenario",
+    "sha256": "63A5121DE2B89BBBEC3F120B3C0328ECF6881E1A9C47FFBDEC4C5707BBBE3672",
     "initial_p1_unit_count": 1,
     "mutation": "scenario trigger creates one P1 male villager at t=5s",
     "script_call_conditions": 0,
