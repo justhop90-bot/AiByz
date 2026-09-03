@@ -23,11 +23,12 @@ Layer 1 is the current engineering priority.
 4. [`docs/MACHINE_ARCHITECTURAL_CONSEQUENCES_2026-09-02.md`](docs/MACHINE_ARCHITECTURAL_CONSEQUENCES_2026-09-02.md) — what the evidence means for future architecture.
 5. [`docs/LAYER1_NATIVE_ARCHAEOLOGY_LOG_2026-09-02.md`](docs/LAYER1_NATIVE_ARCHAEOLOGY_LOG_2026-09-02.md) — native investigation record.
 6. [`docs/LAYER1_NATIVE_ARCHAEOLOGY_QC_ADDENDUM_2026-09-02.md`](docs/LAYER1_NATIVE_ARCHAEOLOGY_QC_ADDENDUM_2026-09-02.md) — quality control, negative evidence, experiments, and re-entry requirements.
-7. [`docs/LAYER1_NATIVE_PASS_2026-09-02_UNITAI_CONTROL_LOOP_DEEPENING.md`](docs/LAYER1_NATIVE_PASS_2026-09-02_UNITAI_CONTROL_LOOP_DEEPENING.md) — latest UnitAI control-loop reconstruction and full-text native reference experiment.
-8. [`docs/NATIVE_OBJECT_IDENTITY_DOSSIER_2026-09-02.md`](docs/NATIVE_OBJECT_IDENTITY_DOSSIER_2026-09-02.md) — current object/unit identity research boundary.
-9. [`docs/OPEN_NATIVE_QUESTIONS_LAYER1.md`](docs/OPEN_NATIVE_QUESTIONS_LAYER1.md) — unresolved native questions and the next discriminating investigations.
-10. [`knowledge/LAYER1_MACHINE_FACTS.jsonl`](knowledge/LAYER1_MACHINE_FACTS.jsonl) — atomic machine facts.
-11. [`knowledge/MACHINE_INVESTIGATION_HISTORY.jsonl`](knowledge/MACHINE_INVESTIGATION_HISTORY.jsonl) — chronological investigation record.
+7. [`docs/LAYER1_NATIVE_PASS_2026-09-02_UNITAI_CONTROL_LOOP_DEEPENING.md`](docs/LAYER1_NATIVE_PASS_2026-09-02_UNITAI_CONTROL_LOOP_DEEPENING.md) — UnitAI control-loop reconstruction and direct-reference experiments.
+8. [`docs/LAYER1_NATIVE_PASS_2026-09-03_AIEXPERT_UNITAI_ARCHITECTURE.md`](docs/LAYER1_NATIVE_PASS_2026-09-03_AIEXPERT_UNITAI_ARCHITECTURE.md) — latest native AIExpert, UnitAI, search, rule-representation, and fact/action vocabulary reconstruction.
+9. [`docs/NATIVE_OBJECT_IDENTITY_DOSSIER_2026-09-02.md`](docs/NATIVE_OBJECT_IDENTITY_DOSSIER_2026-09-02.md) — current object/unit identity research boundary.
+10. [`docs/OPEN_NATIVE_QUESTIONS_LAYER1.md`](docs/OPEN_NATIVE_QUESTIONS_LAYER1.md) — unresolved native questions and the next discriminating investigations.
+11. [`knowledge/LAYER1_MACHINE_FACTS.jsonl`](knowledge/LAYER1_MACHINE_FACTS.jsonl) — atomic machine facts.
+12. [`knowledge/MACHINE_INVESTIGATION_HISTORY.jsonl`](knowledge/MACHINE_INVESTIGATION_HISTORY.jsonl) — chronological investigation record.
 
 ### Layer 1 in one sentence
 
@@ -112,10 +113,11 @@ If you return after forgetting the project:
 5. Read the machine monograph.
 6. Read the native archaeology log and QC addendum.
 7. Read the latest UnitAI native pass.
-8. Read the open-question register.
-9. Inspect the atomic knowledge ledgers for exact claims.
-10. Only then inspect historical archaeology and downstream strategy material.
-11. Continue from the explicitly recorded next action rather than reconstructing plans from memory.
+8. Read the latest AIExpert/UnitAI architecture pass.
+9. Read the open-question register.
+10. Inspect the atomic knowledge ledgers for exact claims.
+11. Only then inspect historical archaeology and downstream strategy material.
+12. Continue from the explicitly recorded next action rather than reconstructing plans from memory.
 
 ## 9. What not to do
 
@@ -128,4 +130,4 @@ If you return after forgetting the project:
 
 ## Current research frontier
 
-The immediate frontier is **native metadata-consumer recovery plus state-owner recovery for the UnitAI control loop**. The latest full-text instruction scan found no direct RIP-relative references to the tested API/UnitAI diagnostic strings, which rules out a simple string-to-function path for the tested representation and redirects the investigation toward registration/index structures, initialization consumers, indirect dispatch, and concrete state mutation chains.
+The immediate frontier is now a three-way native closure problem: **AIExpert rule execution, UnitAI state mutation, and native API metadata dispatch**. The latest pass establishes strong native vocabulary for rule loading, fact/action definition, rule-element storage, persistent-fact evaluation, UnitAI order/action/notification state, retryable recovery, and constrained search. Direct RIP-relative and absolute-pointer scans of the tested AI diagnostic region remain negative, so the next step is implementation-level function-boundary recovery rather than more broad string searching.
