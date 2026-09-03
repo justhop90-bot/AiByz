@@ -25,10 +25,13 @@ Layer 1 is the current engineering priority.
 6. [`docs/LAYER1_NATIVE_ARCHAEOLOGY_QC_ADDENDUM_2026-09-02.md`](docs/LAYER1_NATIVE_ARCHAEOLOGY_QC_ADDENDUM_2026-09-02.md) — quality control, negative evidence, experiments, and re-entry requirements.
 7. [`docs/LAYER1_NATIVE_PASS_2026-09-02_UNITAI_CONTROL_LOOP_DEEPENING.md`](docs/LAYER1_NATIVE_PASS_2026-09-02_UNITAI_CONTROL_LOOP_DEEPENING.md) — UnitAI control-loop reconstruction and direct-reference experiments.
 8. [`docs/LAYER1_NATIVE_PASS_2026-09-03_AIEXPERT_UNITAI_ARCHITECTURE.md`](docs/LAYER1_NATIVE_PASS_2026-09-03_AIEXPERT_UNITAI_ARCHITECTURE.md) — latest native AIExpert, UnitAI, search, rule-representation, and fact/action vocabulary reconstruction.
-9. [`docs/NATIVE_OBJECT_IDENTITY_DOSSIER_2026-09-02.md`](docs/NATIVE_OBJECT_IDENTITY_DOSSIER_2026-09-02.md) — current object/unit identity research boundary.
-10. [`docs/OPEN_NATIVE_QUESTIONS_LAYER1.md`](docs/OPEN_NATIVE_QUESTIONS_LAYER1.md) — unresolved native questions and the next discriminating investigations.
-11. [`knowledge/LAYER1_MACHINE_FACTS.jsonl`](knowledge/LAYER1_MACHINE_FACTS.jsonl) — atomic machine facts.
-12. [`knowledge/MACHINE_INVESTIGATION_HISTORY.jsonl`](knowledge/MACHINE_INVESTIGATION_HISTORY.jsonl) — chronological investigation record.
+9. [`docs/LAYER1_NATIVE_PASS_2026-09-03_PREDICTIVE_BOUNDARY_QC.md`](docs/LAYER1_NATIVE_PASS_2026-09-03_PREDICTIVE_BOUNDARY_QC.md) — predictive boundary and promotion-test control.
+10. [`docs/LAYER1_NATIVE_PASS_2026-09-03_PDATA_AND_METADATA_DISPATCH_QC.md`](docs/LAYER1_NATIVE_PASS_2026-09-03_PDATA_AND_METADATA_DISPATCH_QC.md) — `.pdata` function geometry, metadata-pointer validation, and function-boundary-first archaeology.
+11. [`docs/NATIVE_OBJECT_IDENTITY_DOSSIER_2026-09-02.md`](docs/NATIVE_OBJECT_IDENTITY_DOSSIER_2026-09-02.md) — current object/unit identity research boundary.
+12. [`docs/OPEN_NATIVE_QUESTIONS_LAYER1.md`](docs/OPEN_NATIVE_QUESTIONS_LAYER1.md) — unresolved native questions and the next discriminating investigations.
+13. [`knowledge/LAYER1_MACHINE_FACTS.jsonl`](knowledge/LAYER1_MACHINE_FACTS.jsonl) — atomic machine facts.
+14. [`knowledge/LAYER1_NATIVE_FUNCTION_GEOMETRY_2026-09-03.jsonl`](knowledge/LAYER1_NATIVE_FUNCTION_GEOMETRY_2026-09-03.jsonl) — atomic function-boundary and metadata-dispatch findings.
+15. [`knowledge/MACHINE_INVESTIGATION_HISTORY.jsonl`](knowledge/MACHINE_INVESTIGATION_HISTORY.jsonl) — chronological investigation record.
 
 ### Layer 1 in one sentence
 
@@ -77,6 +80,7 @@ Important files include:
 - `KNOWLEDGE_PRESERVATION_STANDARD.md` — how claims are recorded.
 - `MACHINE_ONTOLOGY.jsonl` — machine concepts and relationships.
 - `LAYER1_MACHINE_FACTS.jsonl` — atomic facts.
+- `LAYER1_NATIVE_FUNCTION_GEOMETRY_2026-09-03.jsonl` — verified native function-boundary method and findings.
 - `MACHINE_EXPERIMENT_SCHEMA.json` — experiment structure.
 - `MACHINE_INVESTIGATION_HISTORY.jsonl` — chronological evidence history.
 - `LAYER2_STRATEGIC_AXIOMS.jsonl` — strategic knowledge prepared for later use.
@@ -114,10 +118,12 @@ If you return after forgetting the project:
 6. Read the native archaeology log and QC addendum.
 7. Read the latest UnitAI native pass.
 8. Read the latest AIExpert/UnitAI architecture pass.
-9. Read the open-question register.
-10. Inspect the atomic knowledge ledgers for exact claims.
-11. Only then inspect historical archaeology and downstream strategy material.
-12. Continue from the explicitly recorded next action rather than reconstructing plans from memory.
+9. Read the predictive-boundary QC pass.
+10. Read the `.pdata`/metadata-dispatch QC pass.
+11. Read the open-question register.
+12. Inspect the atomic knowledge ledgers for exact claims.
+13. Only then inspect historical archaeology and downstream strategy material.
+14. Continue from the explicitly recorded next action rather than reconstructing plans from memory.
 
 ## 9. What not to do
 
@@ -127,7 +133,8 @@ If you return after forgetting the project:
 - Do not delete failed experiments merely because they failed.
 - Do not let documentation hide uncertainty.
 - Do not implement Layer 4 behavior against an undocumented Layer 1 assumption.
+- Do not infer API ownership from metadata proximity alone.
 
 ## Current research frontier
 
-The immediate frontier is now a three-way native closure problem: **AIExpert rule execution, UnitAI state mutation, and native API metadata dispatch**. The latest pass establishes strong native vocabulary for rule loading, fact/action definition, rule-element storage, persistent-fact evaluation, UnitAI order/action/notification state, retryable recovery, and constrained search. Direct RIP-relative and absolute-pointer scans of the tested AI diagnostic region remain negative, so the next step is implementation-level function-boundary recovery rather than more broad string searching.
+The immediate frontier is now a three-way native closure problem: **AIExpert rule execution, UnitAI state mutation, and native API metadata dispatch**. The latest pass establishes a reproducible `.pdata` function-boundary layer, but no new AIExpert or UnitAI implementation edge has yet been promoted. The next investigation must use verified function geometry to recover the first defensible state mutation and then connect it to a downstream consumer.
