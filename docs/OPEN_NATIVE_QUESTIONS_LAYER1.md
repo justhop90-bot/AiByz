@@ -26,9 +26,16 @@ These are not defects in the operational contract. They are the highest-value un
 22. **UnitAI state ownership:** which native object/module owns `CurrentAction`, order state, target state, and notification queues, and which functions mutate them.
 23. **UnitAI invalidation path:** what event/condition converts a valid action into the observed failed/invalidated/search-required state.
 24. **Search-to-target mutation boundary:** whether native search directly writes target state or returns a candidate to a separate selection/execution layer.
+25. **AIExpert rule-list ownership:** what native object owns `listId`, `ruleElementsPtr`, indexed rule elements, and rule debug metadata.
+26. **Fact/action registration timing:** whether fact and action IDs are assigned during lexical parsing, semantic construction, registration, or game initialization.
+27. **Persistent-fact cadence:** when persistent facts are evaluated and what state snapshot or cache they observe.
+28. **Rule navigation state:** how jumps, `Next Rule`, and breakpoints interact with sorted-rule scheduling and current-rule state.
+29. **Rule-to-UnitAI bridge:** which native path turns a rule/handler result into an action or order request.
+30. **Action-result feedback:** which native path carries completion, failure, invalidation, or search-required results back into UnitAI and/or the rule scheduler.
+31. **Search ownership:** whether `ai::search` is a shared service, an AIExpert helper, or a UnitAI-owned subsystem in the target build.
 
 ## Research priority
 
-Prioritize questions by architectural leverage rather than curiosity. Scheduler determinism, action atomicity, resource reservation, target lifetime, loader/execution closure, API metadata dispatch, and concrete UnitAI state mutation chains have the highest downstream impact because they constrain virtually every future subsystem.
+Prioritize questions by architectural leverage rather than curiosity. Scheduler determinism, action atomicity, resource reservation, target lifetime, loader/execution closure, API metadata dispatch, AIExpert rule-list ownership, the rule-to-UnitAI bridge, and concrete UnitAI state mutation chains have the highest downstream impact because they constrain virtually every future subsystem.
 
-The latest full-text instruction scan produced no direct RIP-relative references to the tested API and UnitAI diagnostic strings. This is now a methodological constraint: further research should target indirect tables, relative/indexed metadata, initialization consumers, dispatch structures, and state mutation chains rather than repeating broad direct-string xref scans.
+The latest full-text instruction scan produced no direct RIP-relative references to the tested API and UnitAI diagnostic strings, and an executable-wide absolute-pointer scan produced no 64-bit absolute pointers into the tested AI diagnostic region. This is now a methodological constraint: further research should target indirect tables, relative/indexed metadata, initialization consumers, dispatch structures, and state mutation chains rather than repeating broad direct-string xref scans.
