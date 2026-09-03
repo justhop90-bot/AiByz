@@ -110,6 +110,8 @@ The historical `aoe2-ai-module` source is useful because it independently expose
 
 This is **comparative architecture**, not proof that the 2021 structure is byte-for-byte identical to the 2026 executable. The source is historical and its current-build signature failed to match.
 
+The public AoE2 AI Scripting Encyclopedia independently documents `up-get-rule-id` as returning the zero-based ID of the current rule within the rule set and `up-jump-rule` as jumping within the current rule set. This strengthens the machine-visible notion of a rule-set execution context, but still does not prove the native scheduler's comparator, cursor implementation, or selection algorithm.
+
 ## 7. Remaining P0 causal frontiers
 
 ### P0-A — Persistent facts
@@ -163,7 +165,7 @@ Start with:
 - `03_HD_ARCHAEOLOGY/`
 - `07_EXPERIMENTS/AEGIS_LAYER1_LAB/`
 - `07_EXPERIMENTS/AEGIS_LAYER1_LAB/LAB_MANIFEST.json`
-- `07_EXPERIMENTS/AEGIS_LAYER1_LAB/MACHINE_EXPERIMENT_SCHEMA.json`
+- `knowledge/MACHINE_EXPERIMENT_SCHEMA.json`
 - `07_EXPERIMENTS/AEGIS_LAYER1_LAB/SECURITY_GATE_STANDARD_2026-09-03.md`
 - `07_EXPERIMENTS/AEGIS_LAYER1_LAB/NATIVE_PER_LOADER_QC_DEEP_DIVE_2026-09-03.md`
 - `07_EXPERIMENTS/AEGIS_LAYER1_LAB/NATIVE_SCENARIO_AI_EMBEDDING_GATE_2026-09-03.md`
