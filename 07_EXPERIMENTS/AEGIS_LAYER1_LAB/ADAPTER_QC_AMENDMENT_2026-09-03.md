@@ -76,3 +76,11 @@ Parser source remains SHA-256 pinned. No native game launch was performed.
 The security gate still does not certify the game executable's internal safety,
 nor does it permit DLL injection, hooks, debugger attachment, memory patching,
 or XS execution. Those remain explicitly outside the laboratory contract.
+
+## Native startup calibration â€” follow-up
+
+The exact verified executable was launched through the hardened runtime with `SKIPINTRO` and a 20-second timeout. The process did not terminate naturally within the window. The runtime killed and reaped PID 3876; return code after enforced termination was `1`. stdout and stderr were empty, and a post-reap task check found no matching PID. This is infrastructure/lifecycle evidence only and does not prove successful initialization, scenario loading, AI loading, or any game-state observation.
+
+The local combined adapter + scenario-provider suite is **7/7 PASS** (four adapter tests plus three scenario-provider tests). Parser bundled tests remain **106/106 PASS**.
+
+Layer 1 remains 89%; no causal proposition is promoted.
