@@ -16,7 +16,7 @@ The repository exists so that the answers, evidence, failed experiments, correct
 
 The investigation phase is now **closed for handoff**. It is not certified complete. The remaining work is concentrated in implementation-level causal closure: verified native state mutations, the rule-to-action bridge, scheduler details, failure propagation, required object-lifecycle edges, and at least one experimentally predictive end-to-end path.
 
-The final recovery document is `docs/LAYER1_FINAL_INVESTIGATION_HANDOFF_2026-09-03.md`. It is the authoritative starting point for resuming the machine investigation after a long absence.
+The final recovery document is `docs/LAYER1_FINAL_INVESTIGATION_HANDOFF_2026-09-03.md`. The latest three-pass QC is recorded in `docs/QC_THREE_PASS_2026-09-03_PASS1_REPOSITORY_INTEGRITY.md`, `docs/QC_THREE_PASS_2026-09-03_PASS2_EXTERNAL_CROSS_REFERENCE.md`, and `docs/QC_THREE_PASS_2026-09-03_PASS3_PROMOTION_AND_ACTION_PLAN.md`.
 
 ## Research layers
 
@@ -28,6 +28,12 @@ The final recovery document is `docs/LAYER1_FINAL_INVESTIGATION_HANDOFF_2026-09-
 | **4 — Implementation** | Build, test, validate, and promote the runtime AI. | Downstream |
 
 The layers are ordered intentionally. Later architecture should not depend on undocumented assumptions about earlier layers.
+
+## Latest QC disposition
+
+Three independent passes over the repository and latest evidence set **passed**. The review strengthened the stock-AI composition model, XS capability evidence, UnitAI/search boundaries, data namespace distinctions, and build-scoped native conclusions. It did **not** close the implementation-level causal gaps, so the Layer 1 position remains 89%.
+
+The latest recursive stock-AI measurement is **7,831 syntactically reachable `defrule` definitions across 28 reachable `.per/.per2/.xs` files under conservative conditional-branch inclusion**. This is a corpus statistic, not a claim that 7,831 rules execute in every game. The older 7,715 figure is retired.
 
 ## Layer 1 result in one sentence
 
@@ -55,16 +61,19 @@ All native findings are scoped to the controlled `AoE2DE_s.exe` build recorded i
 
 1. `RESEARCH_INDEX.md` — complete human navigation map.
 2. `docs/LAYER1_FINAL_INVESTIGATION_HANDOFF_2026-09-03.md` — final Layer 1 investigation record and six-month recovery entry point.
-3. `docs/PROJECT_STATUS_2026-09-02.md` — current project position.
-4. `docs/LAYER1_PREDICTIVE_MACHINE_STANDARD_2026-09-02.md` — predictive completion standard.
-5. `docs/LAYER1_COMPLETION_CONTROL_2026-09-02.md` — evidence and completion control.
-6. `docs/MACHINE_EVIDENCE_MATRIX_2026-09-02.md` — claim-by-claim evidence register.
-7. `docs/MACHINE_KNOWLEDGE_MONOGRAPH_2026-09-02.md` — consolidated machine model.
-8. `docs/LAYER1_NATIVE_ARCHAEOLOGY_LOG_2026-09-02.md` and its QC addenda — native investigation history.
-9. `docs/LAYER1_NATIVE_PASS_2026-09-03_PDATA_PDB_RIP_QC.md` — `.pdata`, CodeView/PDB, and direct-reference findings.
-10. `knowledge/` — atomic institutional memory.
-11. `03_HD_ARCHAEOLOGY/` — historical AI archaeology.
-12. `12_RESEARCH/` — supporting research and provenance.
+3. `docs/QC_THREE_PASS_2026-09-03_PASS1_REPOSITORY_INTEGRITY.md` — repository integrity pass.
+4. `docs/QC_THREE_PASS_2026-09-03_PASS2_EXTERNAL_CROSS_REFERENCE.md` — external/source cross-reference pass.
+5. `docs/QC_THREE_PASS_2026-09-03_PASS3_PROMOTION_AND_ACTION_PLAN.md` — promotion and forward-work pass.
+6. `12_RESEARCH/NEW_MATERIAL_INGEST_2026-09-03.md` — latest evidence ingestion record.
+7. `docs/PROJECT_STATUS_2026-09-02.md` — current project position.
+8. `docs/LAYER1_PREDICTIVE_MACHINE_STANDARD_2026-09-02.md` — predictive completion standard.
+9. `docs/LAYER1_COMPLETION_CONTROL_2026-09-02.md` — evidence and completion control.
+10. `docs/MACHINE_EVIDENCE_MATRIX_2026-09-02.md` — claim-by-claim evidence register.
+11. `docs/MACHINE_KNOWLEDGE_MONOGRAPH_2026-09-02.md` — consolidated machine model.
+12. `docs/LAYER1_NATIVE_ARCHAEOLOGY_LOG_2026-09-02.md` and its QC addenda — native investigation history.
+13. `knowledge/` — atomic institutional memory.
+14. `03_HD_ARCHAEOLOGY/` — historical AI archaeology.
+15. `12_RESEARCH/` — supporting research and provenance.
 
 ## Central research principle
 
@@ -122,6 +131,6 @@ These are implementation-closure targets, not invitations to restart broad vocab
 
 ## Six-month recovery
 
-A returning engineer should read `RESEARCH_INDEX.md`, then `docs/LAYER1_FINAL_INVESTIGATION_HANDOFF_2026-09-03.md`, then the predictive standard, completion control, evidence matrix, machine monograph, native archaeology/QC documents, and atomic knowledge ledgers. The final position is **89%**, investigation closed for handoff, completion gate unsatisfied.
+A returning engineer should read `RESEARCH_INDEX.md`, then `docs/LAYER1_FINAL_INVESTIGATION_HANDOFF_2026-09-03.md`, then the three-pass QC documents, then the predictive standard, completion control, evidence matrix, machine monograph, native archaeology/QC documents, and atomic knowledge ledgers. The final position is **89%**, investigation closed for handoff, completion gate unsatisfied.
 
 **For contributors:** do not promote a hypothesis to a fact, overwrite an evidence record without preserving provenance, or treat historical code as canonical without an explicit authority decision.
