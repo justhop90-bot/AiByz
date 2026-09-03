@@ -1,0 +1,16 @@
+AEGIS_NATIVE_FUNCTION_RECOVERY_TARGETS_2026-09-03
+BUILD_SHA256=6378CA6F1FBD2F230B5B7F2CD048198331848AF70F44B5CD13CEB89420A321A4
+
+Ghidra string-byte locations:
+getOrExtractPlayerAiRulesFileName=0x1440ad945,0x1440ada16,0x14410823d,0x14410834c
+mAiRulesFileData=0x1431fde09
+mAiScriptBaseName=0x143268bf0,0x143268db1
+loadRules=0x1431cb558
+Evaluating Persistent Facts=0x1431cbf48,0x1431cbf71
+Finished Evaluating Persistent Facts=0x1431cbf68
+
+Ghidra ReferenceManager direct xrefs to these raw string locations: ZERO
+Exact 64-bit absolute pointer occurrences in executable: ZERO for all targets
+RIP-relative .text candidates targeting exact locations: ZERO for all targets
+
+Interpretation: direct string-byte addressing is not a valid function-recovery shortcut. The targets may be metadata/type/debug strings, indirectly referenced, or absent from the relevant code path. No function address or call edge promoted.
