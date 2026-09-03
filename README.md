@@ -65,19 +65,20 @@ All native findings are scoped to the controlled `AoE2DE_s.exe` build recorded i
 4. `docs/QC_THREE_PASS_2026-09-03_PASS2_EXTERNAL_CROSS_REFERENCE.md` — external/source cross-reference pass.
 5. `docs/QC_THREE_PASS_2026-09-03_PASS3_PROMOTION_AND_ACTION_PLAN.md` — promotion and forward-work pass.
 6. `12_RESEARCH/NEW_MATERIAL_INGEST_2026-09-03.md` — latest evidence ingestion record.
-7. `docs/PROJECT_STATUS_2026-09-02.md` — current project position.
-8. `docs/LAYER1_PREDICTIVE_MACHINE_STANDARD_2026-09-02.md` — predictive completion standard.
-9. `docs/LAYER1_COMPLETION_CONTROL_2026-09-02.md` — evidence and completion control.
-10. `docs/MACHINE_EVIDENCE_MATRIX_2026-09-02.md` — claim-by-claim evidence register.
-11. `docs/MACHINE_KNOWLEDGE_MONOGRAPH_2026-09-02.md` — consolidated machine model.
-12. `docs/LAYER1_NATIVE_ARCHAEOLOGY_LOG_2026-09-02.md` and its QC addenda — native investigation history.
-13. `knowledge/` — atomic institutional memory.
-14. `03_HD_ARCHAEOLOGY/` — historical AI archaeology.
-15. `12_RESEARCH/` — supporting research and provenance.
+7. `12_RESEARCH/EXTERNAL_PROJECTS_AND_REUSE_PLAN_2026-09-03.md` — external GitHub project registry, qualification status, reuse boundaries, and AEGIS adaptation plan.
+8. `docs/PROJECT_STATUS_2026-09-02.md` — current project position.
+9. `docs/LAYER1_PREDICTIVE_MACHINE_STANDARD_2026-09-02.md` — predictive completion standard.
+10. `docs/LAYER1_COMPLETION_CONTROL_2026-09-02.md` — evidence and completion control.
+11. `docs/MACHINE_EVIDENCE_MATRIX_2026-09-02.md` — claim-by-claim evidence register.
+12. `docs/MACHINE_KNOWLEDGE_MONOGRAPH_2026-09-02.md` — consolidated machine model.
+13. `docs/LAYER1_NATIVE_ARCHAEOLOGY_LOG_2026-09-02.md` and its QC addenda — native investigation history.
+14. `knowledge/` — atomic institutional memory.
+15. `03_HD_ARCHAEOLOGY/` — historical AI archaeology.
+16. `12_RESEARCH/` — supporting research and provenance.
 
 ## Central research principle
 
-The project treats **knowledge, not code, as the durable product**.
+The repository treats **knowledge, not code, as the durable product**.
 
 A useful result is therefore recorded as:
 
