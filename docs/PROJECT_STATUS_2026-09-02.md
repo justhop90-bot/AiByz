@@ -34,7 +34,15 @@ The investigation has established a useful native evidence surface around script
 
 High-value script-facing identity interfaces identified in native signature data include object/copy ID, class/type, validity/availability, and garrison-related functions. Native debug/source strings also expose concepts such as `obj->id`, `uniqueID`, and AI module names.
 
-These findings establish the **research surface**, not the full semantics of the APIs. The important unresolved question is how those interfaces map to native object state and lifecycle.
+A full executable `.text` instruction scan was subsequently used as a discriminating negative test. No direct RIP-relative references were recovered to the tested API signature addresses, the widened signature region, or the selected UnitAI diagnostic strings. This rules out a simple direct-string-to-function archaeology path for the tested representation and redirects the investigation toward metadata tables, indirect/indexed dispatch, initialization consumers, and concrete state mutation chains.
+
+These findings establish the **research surface and representation constraints**, not the full semantics of the APIs. The important unresolved question is how those interfaces map to native object state and lifecycle.
+
+### UnitAI control-loop model
+
+Native vocabulary now supports a stronger architectural hypothesis: UnitAI is a persistent reactive controller that separates at least order state, action state, target state, and notification state, with search/recovery machinery used when execution becomes invalid or requires a new target.
+
+The distinction between `currentOrder` and `CurrentAction`, together with `OrderQueue`, `NotifyQueue`, `processNotify`, `processIdle`, search diagnostics, and explicit failed/invalidated/search-required action diagnostics, is now treated as a high-value model for subsequent implementation tracing. Exact sequencing and ownership remain unproven.
 
 ### Replay research
 
@@ -44,22 +52,28 @@ Replay parsing has been calibrated against multiple recordings. The research dis
 
 The project is not yet claiming that every material machine path is predictive.
 
-The most important remaining gap is **instruction-level and end-to-end native tracing**. In particular, the project needs to recover consumers of embedded script-facing API signatures and trace representative functions through:
+The most important remaining gap is **native implementation closure**. Two tightly related problems now dominate:
+
+1. **Metadata-consumer closure:** recover the native structure and dispatch mechanism that consumes the embedded API name/signature region and turns an API identifier into a callable handler.
+2. **State-owner closure:** recover a concrete UnitAI state mutation chain showing where order/action/target/notification state is stored, read, invalidated, and rewritten.
+
+For object identity, the eventual causal chain must still resolve:
 
 `registration/dispatch → validation → lookup → native state access → return value`
 
-For object identity, this must eventually resolve the relationships among unit IDs, object IDs, copy IDs, native object identity, ownership, type/class, lifecycle, transformation, garrison, creation, and removal.
+and the relationships among unit IDs, object IDs, copy IDs, native object identity, ownership, type/class, lifecycle, transformation, garrison, creation, and removal.
 
 ## Immediate work sequence
 
-1. Recover instruction-level references to the embedded engine-facing signature region, with x86-64 RIP-relative and indirect-reference handling.
-2. Identify candidate consumer functions for high-value identity APIs.
-3. Trace `xsGetUnitObjectId` end-to-end as the first representative identity path.
-4. Trace related copy-ID, type/class, validity/availability, and garrison interfaces.
-5. Build an implementation-backed identity topology.
-6. Design discriminating runtime experiments that connect native identity to script-visible and replay-visible observations.
-7. Update the evidence matrix and predictive tests.
-8. Reassess Layer 1 completion only after the predictive gate is satisfied.
+1. Recover indirect/indexed consumers of the embedded engine-facing signature region; do not repeat broad direct-string xref scans unless a new representation hypothesis requires them.
+2. Identify the initialization/registration structure that owns or transforms the API metadata.
+3. Trace `xsGetUnitObjectId` end-to-end as the first representative identity path once its consumer/dispatch chain is located.
+4. In parallel, identify a concrete UnitAI state-owner candidate and recover one real read → condition → write → consumer chain.
+5. Trace related copy-ID, type/class, validity/availability, and garrison interfaces.
+6. Build an implementation-backed identity topology and UnitAI control-loop topology.
+7. Design discriminating runtime experiments for target invalidation, action recovery, identity conversion, and lifecycle behavior.
+8. Update the evidence matrix, atomic machine facts, and predictive tests from demonstrated results.
+9. Reassess Layer 1 completion only after the predictive gate is satisfied.
 
 ## Downstream layers
 
@@ -83,9 +97,10 @@ A returning engineer should:
 4. read `MACHINE_EVIDENCE_MATRIX_2026-09-02.md`;
 5. read `MACHINE_KNOWLEDGE_MONOGRAPH_2026-09-02.md`;
 6. read the native archaeology log and QC addendum;
-7. read `OPEN_NATIVE_QUESTIONS_LAYER1.md`;
-8. inspect the atomic machine ledgers;
-9. continue from the immediate work sequence above.
+7. read `LAYER1_NATIVE_PASS_2026-09-02_UNITAI_CONTROL_LOOP_DEEPENING.md`;
+8. read `OPEN_NATIVE_QUESTIONS_LAYER1.md`;
+9. inspect the atomic machine ledgers;
+10. continue from the immediate work sequence above.
 
 ## Status rule
 
