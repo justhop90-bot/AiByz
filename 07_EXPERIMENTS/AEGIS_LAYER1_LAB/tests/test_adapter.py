@@ -45,7 +45,7 @@ class AdapterTests(unittest.TestCase):
             source = Path(tmp) / "source.txt"
             source.write_text("raw observation\n", encoding="utf-8")
             result = capture_file(str(source), str(Path(tmp) / "run"), "raw.txt")
-            self.assertEqual(result["size"], 15)
+            self.assertEqual(result["size"], 17)
             self.assertTrue(Path(str(result["path"])).is_file())
 
 
