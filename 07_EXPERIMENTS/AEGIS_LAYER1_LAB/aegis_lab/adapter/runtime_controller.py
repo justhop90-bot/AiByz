@@ -25,15 +25,39 @@ class RuntimeResult:
     duration_seconds: float
 
 
-class AoE2DERuntime:
-    """Launch only a verified build with an argv list and isolated cwd."""
+SAFE_ENVIRONMENT_KEYS = frozenset({
+    "APPDATA", "LOCALAPPDATA", "PROGRAMDATA", "PROGRAMFILES",
+    "PROGRAMFILES(X86)", "SYSTEMDRIVE", "SYSTEMROOT", "TEMP", "TMP",
+    "USERPROFILE", "PATH", "WINDIR",
+})
 
-    def __init__(self, executable: str, expected_sha256: str) -> None:
+
+class AoE2DERuntime:
+    """Launch only a verified build inside the isolated AEGIS lab root."""
+
+    def __init__(self, executable: str, expected_sha256: str,
+                 run_root: str | None = None) -> None:
         self.executable = executable
         self.expected_sha256 = expected_sha256
+        default_root = Path(__file__).resolve().parents[2] / "runs"
+        self.run_root = Path(run_root).resolve() if run_root else default_root
 
     def verify(self) -> BuildIdentity:
         return verify_executable(self.executable, self.expected_sha256)
+
+    def _validate_run_directory(self, run_dir: str) -> Path:
+        root = self.run_root.resolve()
+        directory = Path(run_dir).resolve()
+        if directory == root or root not in directory.parents:
+            raise ValueError(f"run directory escapes lab root: {directory}")
+        return directory
+
+    @staticmethod
+    def _sanitized_environment(build_sha256: str) -> dict[str, str]:
+        env = {key: value for key, value in os.environ.items()
+               if key.upper() in SAFE_ENVIRONMENT_KEYS}
+        env["AEGIS_BUILD_SHA256"] = build_sha256
+        return env
 
     def launch(
         self,
@@ -42,15 +66,16 @@ class AoE2DERuntime:
         timeout_seconds: int = 120,
     ) -> RuntimeResult:
         """Run the verified executable; never invoke through a shell."""
+        if timeout_seconds <= 0:
+            raise ValueError("timeout_seconds must be positive")
         identity = self.verify()
-        directory = Path(run_dir).resolve()
+        directory = self._validate_run_directory(run_dir)
         directory.mkdir(parents=True, exist_ok=True)
         stdout_path = directory / "process.stdout.txt"
         stderr_path = directory / "process.stderr.txt"
         argv = [identity.path, *(extra_args or [])]
         started = time.monotonic()
-        env = os.environ.copy()
-        env["AEGIS_BUILD_SHA256"] = identity.sha256
+        env = self._sanitized_environment(identity.sha256)
 
         with stdout_path.open("w", encoding="utf-8", errors="replace") as stdout:
             with stderr_path.open("w", encoding="utf-8", errors="replace") as stderr:

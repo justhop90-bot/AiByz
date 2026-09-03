@@ -51,3 +51,28 @@ or that any fact is persistent, cached, live, scheduled, or explicitly refreshed
 Those propositions remain untested.
 
 **Layer 1 remains 89%. No causal proposition is promoted.**
+
+## Security-hardening pass
+
+The two gates were raised from functional qualification to explicit fail-closed
+security controls. Native runs now require an isolated lab run root and a
+sanitized child environment. The runtime continues to use the verified
+executable, explicit argv, shell=False, mandatory timeout, and process reap.
+
+The parser environment is now reproduced in a dedicated Python 3.13 virtual
+environment with exact dependency versions recorded in
+`PARSER_ENVIRONMENT_LOCK_2026-09-03.txt`. No dependency is installed into the
+game installation or global interpreter as part of qualification.
+
+A deliberately incomplete system-Python test initially failed because the
+parser dependency `typing_extensions` was absent. This was treated as a gate
+failure, not worked around by weakening the qualification. The isolated
+environment was then provisioned from the parser's own requirements and the
+full adapter suite passed.
+
+Final local adapter/scenario-provider suite: **9/9 PASS**. Compileall: PASS.
+Parser source remains SHA-256 pinned. No native game launch was performed.
+
+The security gate still does not certify the game executable's internal safety,
+nor does it permit DLL injection, hooks, debugger attachment, memory patching,
+or XS execution. Those remain explicitly outside the laboratory contract.

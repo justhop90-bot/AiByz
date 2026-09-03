@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 import tempfile
 import unittest
@@ -12,6 +13,7 @@ sys.path.insert(0, str(LAB_ROOT))
 from aegis_lab.adapter.artifacts import capture_file
 from aegis_lab.adapter.build_guard import verify_executable
 from aegis_lab.adapter.observer import read_observation
+from aegis_lab.adapter.runtime_controller import AoE2DERuntime
 
 
 class AdapterTests(unittest.TestCase):
@@ -54,6 +56,23 @@ class AdapterTests(unittest.TestCase):
             result = capture_file(str(source), str(Path(tmp) / "run"), "raw.txt")
             self.assertEqual(result["size"], 17)
             self.assertTrue(Path(str(result["path"])).is_file())
+
+    def test_runtime_rejects_run_directory_escape(self) -> None:
+        runtime = AoE2DERuntime("C:\\missing.exe", "0" * 64,
+                                run_root=str(Path.cwd() / "runs"))
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaises(ValueError):
+                runtime._validate_run_directory(tmp)
+
+    def test_runtime_environment_is_sanitized(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            os.environ["AEGIS_TEST_SECRET"] = "must-not-propagate"
+            try:
+                env = AoE2DERuntime._sanitized_environment("A" * 64)
+                self.assertNotIn("AEGIS_TEST_SECRET", env)
+                self.assertEqual(env["AEGIS_BUILD_SHA256"], "A" * 64)
+            finally:
+                del os.environ["AEGIS_TEST_SECRET"]
 
 
 if __name__ == "__main__":

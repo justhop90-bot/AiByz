@@ -1,0 +1,10 @@
+# AEGIS parser qualification environment lock
+# Python: 3.13.x (controlled Weebo environment)
+# Source requirements: AoE2ScenarioParser-master/requirements.txt
+# packaging is a transitive dependency of deprecation.
+# Versions are exact; parser source is independently SHA-256 pinned.
+
+deprecation==2.1.0
+ordered-set==4.1.0
+packaging==26.3
+typing_extensions==4.12.2
