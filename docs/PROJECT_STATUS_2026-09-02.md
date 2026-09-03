@@ -1,108 +1,96 @@
-# AEGIS Project Status — 2026-09-02
+# AEGIS Project Status — Final Layer 1 Investigation Position
+
+**Last substantive update:** 2026-09-03  
+**Current layer:** Layer 1 — Machine Understanding  
+**Investigation status:** CLOSED / HANDOFF  
+**Working completion estimate:** **89%**  
+**Completion certification:** NOT SATISFIED
 
 ## Executive status
 
-**Current layer: Layer 1 — Machine Understanding**  
-**State: active, not declared complete**  
-**Working completion estimate: 89%**
+Layer 1 investigation is closed at 89%. This is a deliberate stopping point, not a declaration of machine omniscience and not a claim that the remaining work is unimportant. The remaining 11% is concentrated in implementation-level causal closure: verified native state mutations, rule-to-action bridging, scheduler behavior, failure propagation, and at least one predictive end-to-end causal path.
 
-The project has accumulated a substantial operational and research record, but the completion standard is deliberately stricter than familiarity with AI scripting vocabulary. The remaining work is to turn important machine-facing observations into causal, implementation-level, and experimentally predictive understanding.
+The repository now contains a final investigation handoff, the `.pdata`/CodeView/PDB findings, native negative-evidence boundaries, the AIExpert/UnitAI model, the predictive standard, and the explicit unresolved frontier. A future engineer should be able to resume from this point without reconstructing the investigation from conversational history.
 
 ## Scope clarification
 
-ByzBot is a pure `.per` implementation. XS and XS qualification are outside the implementation scope and are not Layer 1 completion dependencies. Native XS material may be retained as machine archaeology when it helps explain the executable, but it must not determine ByzBot architecture or implementation priorities.
+ByzBot is a pure `.per` implementation. XS is machine archaeology only and is neither an implementation dependency nor a Layer 1 completion gate. The completion checklist must not require XS qualification merely because XS is present in the executable.
 
-The governing predictive machine standard explicitly excludes XS from project scope.
+## Authoritative controlled build
 
-## Newest QC result
+- Executable: `AoE2DE_s.exe`
+- Version: `101.103.48987.0`
+- Size: `71,648,568` bytes
+- SHA-256: `6378CA6F1FBD2F230B5B7F2CD048198331848AF70F44B5CD13CEB89420A321A4`
+- Image base: `0x140000000`
+- Architecture: PE32+, x86:LE:64 Windows
 
-The latest native pass established an independent function-boundary layer from the executable's PE `.pdata`: 166,730 valid runtime-function ranges were recovered for the controlled build. This allows native archaeology to proceed from verified function geometry even when broad Ghidra auto-analysis is incomplete or slow.
+All native claims are build-scoped. The local installation path remains intentionally redacted from public documentation.
 
-A correctly section-mapped metadata-region pointer was also demonstrated to target a `.pdata`-recognized function start. Direct disassembly showed that target function to be cleanup/destructor-like rather than an implementation of the adjacent XS API. The association is therefore explicitly rejected. This is a useful methodological result: pointer proximity and valid function-start membership are necessary but insufficient for semantic ownership.
+## Final native archaeology findings
 
-The controlled Ghidra workspace exists and remains under a long-running analysis process. It must not be treated as a completed, clean analysis baseline until the process terminates and the resulting project is independently validated.
+### `.pdata` function geometry
 
-No new AIExpert or UnitAI implementation call edge was promoted in this pass. The working completion estimate therefore remains 89%.
+The controlled executable contains 166,741 physical 12-byte `.pdata` slots. 166,730 are non-zero runtime-function records and 11 are trailing zero padding. Valid starts are unique and monotonically ordered; no overlaps were found among valid runtime-function intervals. Function interval statistics: minimum 1 byte, median 91 bytes, mean 275.17 bytes, maximum 106,696 bytes. Aggregate interval coverage is 45,879,189 bytes, approximately 88.88% of `.text` raw size.
 
-## Project objective
+This is a structural coordinate system, not a semantic function inventory. It allows bounded native instruction/data-flow work without depending on guessed function boundaries.
 
-Build a high-quality Byzantine AI for AoE2DE by establishing the machine contract first, reconstructing general strategic intelligence second, specializing that intelligence for the Byzantine civilization third, and implementing the validated architecture last.
+### CodeView / PDB lead
 
-## Current `.per` completion gaps
+The PE debug directory contains CodeView `RSDS` data with GUID `b04f37aa-ccf9-48da-ad19-583ffb4bb36d`, age `1`, and an embedded build-system path ending in `AoE2DE_s.pdb`. No matching PDB was found in the user's home directory; a full `C:\` search encountered access-denied locations and did not establish a match. A matching PDB is therefore a future authorized lead, not current evidence.
 
-1. Recover the native rule-loader/parser boundary.
-2. Recover rule representation ownership and mutation.
-3. Recover persistent-fact evaluation and its state boundary.
-4. Recover scheduler ordering, intervals, and rule-state transitions.
-5. Recover the rule/handler-to-native-action bridge.
-6. Recover one UnitAI `CurrentAction` or `CurrentOrder` mutation chain.
-7. Recover action failure/invalidation/completion propagation.
-8. Establish at least one experimentally predictive end-to-end `.per` causal path.
+### AI anchor reference tests
 
-These are now the implementation-facing priorities.
+A corrected section-aware mapping was used to test seven exact AI diagnostic/source anchors, including `UnitAIModule.cpp`, `TribeUnitAIModule.cpp`, `CurrentAction`, `currentTargetID`, `currentTargetType`, `processNotify`, and `ai::search`. Full `.text` Capstone scanning found zero RIP-relative references to those exact `.rdata` addresses. An executable-wide exact 64-bit-pointer scan also found zero occurrences.
 
-## Key methodological rule
+This is bounded negative evidence for the tested direct representations. It does not prove the AI code or diagnostics are absent; indirect, indexed, encoded, or metadata-mediated representations remain possible.
 
-All native raw offsets must be converted through the PE section containing the byte. The `.rdata` section has RVA `0x313c000` and raw pointer `0x313ac00`. Results produced by treating raw offsets as universal RVAs are not admissible evidence.
+### Metadata-pointer false positive
 
-The `.pdata` section now provides an additional independent function-boundary mechanism: its 12-byte runtime-function records can be mapped to executable virtual ranges. This is now the preferred structural substrate for targeted native archaeology.
+A correctly mapped metadata-area field pointed to `0x1417FF3E0`, a valid `.pdata` function start. Direct disassembly showed cleanup/destructor-like behavior, so the candidate was rejected as an XS API implementation association. The permanent rule is: metadata proximity + valid pointer + valid function boundary does not establish semantic ownership.
 
-## `.per` causal model
+## Ghidra disposition
 
-The current working machine path is:
+Historical Pass33 remains preserved. It contains genuine analysis activity but also substantial function-body repair noise. The controlled headless run successfully imported/saved the exact executable, but broad analysis timed out at 1800 seconds during `Disassemble Entry Points` with a `CreateThunkFunctionCmd` / `body must contain the entry point` error. Therefore import/save is established, but clean complete auto-analysis is not. Targeted `.pdata`-bounded native work is the preferred method.
 
-`.per source`
- -> lexical/preprocessor handling
- -> rule construction
- -> rule storage
- -> scheduling/evaluation
- -> facts/goals/strategic numbers
- -> action/handler
- -> native AI control
- -> UnitAI
- -> simulation
- -> observable feedback
+## Current machine model
 
-Each arrow remains individually graded. Native source/debug vocabulary establishes semantic boundaries but does not by itself establish call-graph edges.
+The working `.per` causal model is:
 
-## AIExpert / rule-engine model
+`.per source -> lexical/preprocessor handling -> rule construction -> rule storage -> scheduling/evaluation -> facts/goals/strategic numbers -> action/handler -> native AI control -> UnitAI -> simulation -> observable feedback`
 
-Native vocabulary establishes rule loading, constant/fact/action definition, indexed rule elements, debug metadata, persistent-fact evaluation, rule navigation, breakpoints, parser/error categories, and an explicit AI-fact initialization boundary. The exact function ownership, scheduler comparator, state mutation sequence, and handler bridge remain open.
+Native vocabulary establishes explicit AI-fact initialization, persistent-fact evaluation, rule definitions, sorted rules, rule groups, UnitAI order/action/target/notification/search/recovery concepts, feasibility validation, and broad game-state semantics. Exact implementation ownership of the critical bridges remains open.
 
-The next native search must use verified `.pdata` function geometry rather than widening string inventories.
+## Predictive architecture
 
-## Fact semantic model
+The most defensible future ByzBot authority model is:
 
-The native corpus supports a useful taxonomy of direct state, derived state, feasibility predicates, relational player scopes, event/timer state, and environment/game-configuration state. This is an engineering classification, not a recovered internal class hierarchy.
+`OBSERVATION -> BELIEF / MACHINE FACTS -> STRATEGIC INTENT -> TACTICAL REQUEST -> NATIVE VALIDATION / ACCEPTANCE -> EXECUTION -> OBSERVED RESULT -> RECONCILIATION -> RETAIN / RETRY / RETARGET / REPLACE / ABANDON`
 
-A key predictive question is fact freshness: whether individual fact classes are evaluated live, on a scheduler cadence, from persistent caches, or through class-specific invalidation.
+This is an engineering architecture derived from convergent evidence, not a claim that the shipped engine literally uses these exact classes.
 
-## UnitAI model
+## Final Layer 1 gaps
 
-Native vocabulary continues to support separate order, action, target, notification, search, retry, retargeting, and completion/failure concepts. The next promotion target is a concrete native mutation chain showing read → condition/transition → write → downstream consumer.
+1. Verified rule-loader/parser boundary.
+2. Verified rule-representation ownership and mutation.
+3. Verified persistent-fact result mutation, cache/storage lifetime, and freshness boundary.
+4. Verified scheduler comparator, interval semantics, and transition path.
+5. Verified rule/handler-to-native-action bridge.
+6. Verified `CurrentOrder -> CurrentAction` mutation chain.
+7. Verified action failure/invalidation/completion propagation.
+8. At least one runtime-predictive `.per` causal path.
+9. Complete native object identity lifecycle closure where required by implementation.
 
-## Practical architecture implication
+## Why 89% remains correct
 
-ByzBot should classify machine capabilities into trusted observations, trusted native control surfaces, compensating wrappers, `.per` strategic logic, and unresolved capabilities requiring experiment. Native feasibility predicates and other machine-provided state should not be redundantly reimplemented without a demonstrated reason.
+No implementation-level AI causal edge was promoted solely from strings, source names, metadata proximity, decompiler guesses, or plausible architecture. The remaining work is therefore small in scope but high in evidentiary difficulty. Raising the percentage without closing a critical causal edge would weaken the project's epistemic standard.
 
-The architecture should keep strategic desirability separate from machine feasibility: strategy decides what is desirable; native feasibility determines whether the requested operation is currently executable under engine semantics; execution must then be reconciled against observed results.
+## Repository disposition
 
-## Repository position
+The current public tree is suitable for practical development and preserves the research record. Historical source-derived material remains controlled exposure rather than certified-clean history. Malformed/unverified disassembly remains non-evidentiary. Every substantive finding is expected to survive in dated documentation or atomic knowledge records.
 
-The public tree remains suitable for practical development, while historical source-derived material remains controlled exposure rather than certified-clean history. Malformed or unverified native disassembly remains quarantined.
+## Final handoff
 
-Every substantive pass is expected to leave durable research memory in GitHub when the evidence supports a new record. Unverified findings must be recorded as hypotheses or negative results rather than omitted.
+Read `docs/LAYER1_FINAL_INVESTIGATION_HANDOFF_2026-09-03.md` first when resuming after the investigation closure. Then follow `RESEARCH_INDEX.md`, the predictive standard, the evidence matrix, the native archaeology/QC documents, and the open-question register.
 
-## Immediate next sequence
-
-1. Use `.pdata` function geometry to partition AI-related executable regions into verified functions.
-2. Recover the first defensible AIExpert state mutation.
-3. Recover the first defensible UnitAI `CurrentOrder`/`CurrentAction` mutation.
-4. Recover the rule/handler-to-action bridge.
-5. Recover failure/completion feedback.
-6. Construct the first runtime falsification experiment, beginning with fact freshness if practical.
-7. Update atomic machine facts and predictive tests from demonstrated results.
-
-## Status rule
-
-The 89% estimate is a working progress estimate, not a completion claim. Layer 1 reaches completion only when the predictive machine-understanding gate is satisfied and material critical paths no longer depend on unacknowledged black boxes.
+**Final Layer 1 position: 89%, investigation closed, completion gate unsatisfied, remaining work precisely bounded.**
