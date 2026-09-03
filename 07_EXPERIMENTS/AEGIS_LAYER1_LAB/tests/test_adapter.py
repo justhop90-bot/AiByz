@@ -17,7 +17,7 @@ class AdapterTests(unittest.TestCase):
             path.write_bytes(b"AEGIS-FIXTURE")
             identity = verify_executable(
                 str(path),
-                "A1F9F0D7D8C1B0D1E0BFA0A0D0E5AFA0C2D0C1E4F5D4F1E6C4D0D0D1E2F3A4",
+                "44199A0E4009918B7C3EB51883C9B5064C1B27728E56AB7A930235094E3DDB90",
             )
             self.assertEqual(identity.size, 13)
 
