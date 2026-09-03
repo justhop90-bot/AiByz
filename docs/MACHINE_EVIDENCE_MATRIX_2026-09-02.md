@@ -56,6 +56,20 @@ This register is deliberately conservative. It records what was actually observe
 | AI architecture | AI is decomposed into expert/rule, UnitAI, action, and search modules | retained native source-path corpus | STRONG inference | recovered programmer intent | caller/ownership/implementation trace |
 | AI diagnostics | tested UnitAI diagnostic string region lacks direct RIP-relative consumers | full `.text` Capstone scan | CONFIRMED negative for tested representation | indirect/indexed/unused alternatives | alternate representation tests |
 | AI diagnostics | tested UnitAI diagnostic string region lacks embedded absolute 64-bit pointers | executable-wide pointer scan | CONFIRMED negative for tested representation | relative/indexed/encoded alternatives | representation archaeology |
+| XS native structure | native XS corpus contains explicit source/file, symbol, function, rule, syscall, runtime, activation-record, variable, and data components | embedded source paths and member/debug strings | CONFIRMED at vocabulary level | exact C++ inheritance/ownership | native structure/call-graph recovery |
+| XS functions | function entries expose symbol ID, return type, code offset, parameter count, mutability, and variables | `xsfunctionentry.cpp` vocabulary | CONFIRMED at vocabulary level | exact field layout and code-offset semantics | recover a BXSFunctionEntry instance and consumer |
+| XS symbols | symbol table exposes hash-table size, symbol count, invalid sentinels, and symbols-by-ID state | `xssymboltable.cpp` vocabulary | CONFIRMED at vocabulary level | hash function and lookup algorithm | recover symbol lookup function |
+| XS syscalls | syscall entries expose context, caller context, and parameter storage | `xssyscallentry.cpp` vocabulary | CONFIRMED at vocabulary level | final handler representation | recover syscall execution chain |
+| XS syscall module | syscall registration includes symbol addition, syscall IDs, call-array insertion, and validation/error paths | `xssyscallmodule.cpp` diagnostics | STRONG native-vocabulary evidence | exact call-array indexing and handler address | recover one registration-to-dispatch chain |
+| XS runtime | runtime explicitly stores syscalls, source, data, and interpreter/debug configuration | `xsruntime.cpp` vocabulary | CONFIRMED at vocabulary level | runtime initialization order | recover runtime initialization consumer |
+| XS activation | activation record exposes function ID, stack, heap, PC, source line, and breakpoint state | `xsactivationrecord.cpp` vocabulary | CONFIRMED at vocabulary level | exact interpreter dispatch | recover PC mutation during execution |
+| XS source | source object exposes file collection and code storage | `xssource.cpp` vocabulary: `mFiles`, `mCodeSize`, `mCode` | CONFIRMED at vocabulary level | relationship between source code and executable code | trace source/code registration |
+| XS file entries | file entries expose filename/source lengths, source text, and source-line storage | `xsfileentry.cpp` vocabulary | CONFIRMED at vocabulary level | debug-info indexing algorithm | recover source-file lookup |
+| XS rules | rule entries/modules explicitly expose timing, active state, groups, sorted rules, and next sorted index | `xsruleentry.cpp`, `xsrulemodule.cpp` vocabulary | CONFIRMED at vocabulary level | exact scheduler comparator | recover scheduler mutation path |
+| XS metadata | inspected API tail contains binary fields between signature and source/debug data | direct byte inspection | CONFIRMED observation | semantic identity of fields | compare multiple records and recover consumer |
+| XS candidate address | one inspected binary field equals `0x1417ff3e0` inside `.text` | direct byte/address-range test | QUARANTINED | being an XS handler | registration/call-site corroboration |
+| XS candidate pointer | candidate `0x1417ff3e0` occurs only once as an exact 64-bit value in the executable scan | executable-wide exact-value search | CONFIRMED negative result | relative/indexed/encoded references | representation-specific search |
+| PE mapping | `.rdata` raw pointer differs from RVA by `0x1400` over relevant section | PE section table | CONFIRMED | universal mapping across unrelated sections | section-aware conversion |
 
 ## Negative evidence that must survive
 
@@ -99,6 +113,12 @@ The latest native pass adds a second negative boundary: the broad AI diagnostic 
 - What is the exact runtime implementation of rule-control APIs?
 - Are group lifecycle changes immediate or deferred?
 - Does disabling a rule remove it from the sorted structure immediately?
+- Is the syscall call array indexed directly by syscall ID?
+- Does one symbol table serve built-in syscalls and script-defined functions?
+- What exactly does `mCodeOffset` reference?
+- What native operation assigns or resolves `mSymbolID`?
+- Where does `mContext` enter syscall execution?
+- How does an activation-record PC transition into interpreter execution?
 
 ### AIExpert / UnitAI bridge
 - What native function owns `loadRules` and the first rule-list construction?
