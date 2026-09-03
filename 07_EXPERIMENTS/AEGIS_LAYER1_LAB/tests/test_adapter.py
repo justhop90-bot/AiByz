@@ -25,6 +25,13 @@ class AdapterTests(unittest.TestCase):
             )
             self.assertEqual(identity.size, 13)
 
+    def test_build_guard_rejects_mismatch(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "fixture.bin"
+            path.write_bytes(b"AEGIS-FIXTURE")
+            with self.assertRaises(RuntimeError):
+                verify_executable(str(path), "0" * 64)
+
     def test_observer_rejects_wrong_experiment(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "observation.json"
