@@ -16,13 +16,13 @@ The governing predictive machine standard explicitly excludes XS from project sc
 
 ## Newest QC result
 
-The latest pass extracted additional native AI semantic-boundary evidence from the controlled AIExpert context artifact. The corpus contains an explicit `Init AI Facts` boundary followed by comparison and player-scope vocabulary, plus game-mode, player, civilization, map-size, victory, age, difficulty, resource-setting, and processing-mode symbols around game-start processing.
+The latest native pass established an independent function-boundary layer from the executable's PE `.pdata`: 166,730 valid runtime-function ranges were recovered for the controlled build. This allows native archaeology to proceed from verified function geometry even when broad Ghidra auto-analysis is incomplete or slow.
 
-`UP-PROCESS-60FPS` is confirmed as native AI-visible vocabulary only. Its effect on rule-evaluation cadence is unresolved and must not be inferred from its name.
+A correctly section-mapped metadata-region pointer was also demonstrated to target a `.pdata`-recognized function start. Direct disassembly showed that target function to be cleanup/destructor-like rather than an implementation of the adjacent XS API. The association is therefore explicitly rejected. This is a useful methodological result: pointer proximity and valid function-start membership are necessary but insufficient for semantic ownership.
 
-The pass also strengthens the distinction between semantic resolution/validation and operation/result: the native corpus contains validation diagnostics for goals, points, unit/building types, attributes, resources, players, technologies, timers, search sources, and targets alongside feasibility predicates such as `up-can-build`.
+The controlled Ghidra workspace exists and remains under a long-running analysis process. It must not be treated as a completed, clean analysis baseline until the process terminates and the resulting project is independently validated.
 
-These findings do not establish a new native call edge. The working completion estimate therefore remains 89%.
+No new AIExpert or UnitAI implementation call edge was promoted in this pass. The working completion estimate therefore remains 89%.
 
 ## Project objective
 
@@ -45,6 +45,8 @@ These are now the implementation-facing priorities.
 
 All native raw offsets must be converted through the PE section containing the byte. The `.rdata` section has RVA `0x313c000` and raw pointer `0x313ac00`. Results produced by treating raw offsets as universal RVAs are not admissible evidence.
 
+The `.pdata` section now provides an additional independent function-boundary mechanism: its 12-byte runtime-function records can be mapped to executable virtual ranges. This is now the preferred structural substrate for targeted native archaeology.
+
 ## `.per` causal model
 
 The current working machine path is:
@@ -66,6 +68,8 @@ Each arrow remains individually graded. Native source/debug vocabulary establish
 ## AIExpert / rule-engine model
 
 Native vocabulary establishes rule loading, constant/fact/action definition, indexed rule elements, debug metadata, persistent-fact evaluation, rule navigation, breakpoints, parser/error categories, and an explicit AI-fact initialization boundary. The exact function ownership, scheduler comparator, state mutation sequence, and handler bridge remain open.
+
+The next native search must use verified `.pdata` function geometry rather than widening string inventories.
 
 ## Fact semantic model
 
@@ -91,9 +95,9 @@ Every substantive pass is expected to leave durable research memory in GitHub wh
 
 ## Immediate next sequence
 
-1. Recover structural anchors for the AIExpert rule engine.
-2. Recover one persistent-fact state mutation boundary.
-3. Recover one UnitAI state mutation chain.
+1. Use `.pdata` function geometry to partition AI-related executable regions into verified functions.
+2. Recover the first defensible AIExpert state mutation.
+3. Recover the first defensible UnitAI `CurrentOrder`/`CurrentAction` mutation.
 4. Recover the rule/handler-to-action bridge.
 5. Recover failure/completion feedback.
 6. Construct the first runtime falsification experiment, beginning with fact freshness if practical.
