@@ -1,8 +1,8 @@
-# AEGIS Layer 1 Machine Knowledge Monograph
+# AEGIS Layer 1 Machine Knowledge Monograph — Final Investigation Baseline
 
-**Status:** Public-safe operational knowledge baseline; native evidence remains subject to the Layer 1 evidence and publication gates.
-**Purpose:** Preserve enough machine understanding that a future engineer can reconstruct the operational model without relying on conversational memory.
-**Authority:** Derived from controlled AEGIS investigations, runtime identity evidence, archived forensic passes, script evidence, and qualified source-contract artifacts.
+**Status:** Public-safe operational knowledge baseline; Layer 1 investigation closed for handoff at **89%**; completion gate remains unsatisfied.  
+**Purpose:** Preserve enough machine understanding that a future engineer can reconstruct the operational model without relying on conversational memory.  
+**Authority:** Derived from controlled AEGIS investigations, runtime identity evidence, archived forensic passes, script evidence, qualified source-contract artifacts, and PE-structural analysis.
 
 ## 1. Epistemic rule
 
@@ -36,8 +36,6 @@ The controlled native runtime is identified by:
 
 The exact local installation path is intentionally excluded from the public record. Build identity is fixed by version, size, and cryptographic hash.
 
-Evidence from another executable, another build, a development archive, or a historical source package must not silently inherit this identity.
-
 ## 3. Script substrate
 
 The AI system consumes `.ai` profile/entry configuration and `.per` rule material. The script layer is a rule-programming substrate whose declarations become runtime rule structures and whose actions mutate AI state or request engine operations.
@@ -50,197 +48,134 @@ The exact native boundaries remain partly unresolved. Source archaeology did not
 
 ## 4. Scheduler model
 
-Native vocabulary supports a rule system containing concepts corresponding to:
+Native vocabulary supports rule identity, priority, minimum/maximum intervals, enabled/disabled state, rule groups, sorted rule collections, current sorted position, rule counts, and scheduler validation/failure diagnostics.
 
-- rule identity and validity;
-- priority;
-- minimum and maximum intervals;
-- enabled/disabled state;
-- rule groups;
-- sorted rule collections;
-- current sorted position;
-- rule counts;
-- scheduler validation and failure diagnostics.
+Runtime execution order must not be modeled as simple lexical source order. Exact comparator behavior, interval mathematics, rebuild triggers, fairness, and starvation remain implementation questions.
 
-The safest conclusion is that runtime execution order is not safely modeled as simple lexical source order. Priority, interval, grouping, and sorting are machine-level scheduling concepts.
+## 5. AI fact semantic layer
 
-Exact comparator behavior, interval mathematics, and rebuild triggers remain implementation questions until directly demonstrated.
+The native corpus contains an explicit `Init AI Facts` boundary, comparison operators, player-scope forms, game-state/environment vocabulary, feasibility predicates, and a distinct persistent-fact evaluation phase.
 
-## 5. Dynamic rule control
+The persistent-fact diagnostic sequence remains:
 
-Native vocabulary exposes rule and rule-group lifecycle controls and dynamic priority/interval operations. These observations support a machine model in which rule lifecycle and scheduling metadata are script-addressable concepts.
+`Evaluating Persistent Facts -> Fact[%d] evaluated persistently to %s -> Finished Evaluating Persistent Facts`
 
-They do not alone establish legal ranges, ordering direction, timing units, or behavior in every rule state. Those propositions require implementation or controlled experimental evidence.
+The existence of this phase is confirmed at vocabulary level. Cache lifetime, refresh cadence, result storage, and snapshot semantics remain open.
 
-## 6. Scheduler failure model
+## 6. UP observation and feasibility
 
-Native diagnostics expose multiple validation boundaries, including invalid rule IDs, duplicate scheduling metadata, rule-group construction failures, sorted-rule insertion failures, interpretation failures, and compilation/sorting failures.
+Recovered UP vocabulary includes fact retrieval and aggregation, focus/player/target facts, object/type/target information, path distance, terrain/elevation/zone, timers, signals, goals, strategic numbers, resource state, pending objects, research status, and engine-feasibility predicates such as build/research/train checks.
 
-Engineering consequence:
+The resulting architecture is:
 
-> malformed scheduler state and execution failure are machine fault classes, not impossible conditions.
+`observation -> representation -> strategic decision -> feasibility -> authorized request -> execution -> result -> verification`
 
-AEGIS must therefore model fault detection, containment, recovery, and verification rather than assuming every accepted command succeeds.
+Feasibility is an execution gate, not a strategic objective function.
 
-## 7. State substrate
+## 7. Search/filter state
 
-The machine exposes a distributed AI state substrate involving facts, goals, strategic numbers, timers, search/filter state, object/group state, player/enemy information, and engine-mediated actions.
+UP exposes reset, filter, create, and find operations. Native AI vocabulary also exposes LOS, search radius, ownership classification, object-interest filtering, defend-target restrictions, pathability, attack range, walls, current-target retention, and better-target selection.
 
-Goals, strategic numbers, timers, and facts are not interchangeable merely because they are represented numerically. Their architectural meaning must be inferred from reads, writes, lifecycle, and downstream consequences.
+Search should therefore be treated as a stateful machine capability with explicit query context. ByzBot should delegate tactical search where the native capability meets the strategic requirement.
 
-## 8. UP observation and actuation
+## 8. UnitAI
 
-Recovered UP vocabulary includes fact retrieval and aggregation, focus/player/target facts, object/type/target information, path distance, terrain/elevation/zone, timers, signals, shared and indirect goals, resource amounts/percentages, pending objects, research status, and engine-feasibility predicates such as build, research, and train checks.
+The native corpus exposes separate vocabulary for `CurrentOrder`, `CurrentAction`, target state, target type/position, notification processing, idle processing, order queues, notification queues, search, retryable orders, retargeting, better-target selection, completion, failure, invalidation, and search-required states.
 
-The resulting architecture is richer than static threshold logic:
+The strongest current model is:
 
-`observation -> representation -> decision -> feasibility -> authorized action -> postcondition verification`
+`durable order intent -> action execution -> target/search management -> completion/failure/invalidation -> recovery or replacement`
 
-Engine feasibility should be treated as an explicit gate rather than inferred from resource totals alone.
+This remains a strong architectural inference until a verified native mutation chain is recovered.
 
-## 9. Search/filter state
+## 9. Identity and lifecycle
 
-UP exposes reset, filter, create, and find operations. This supports an engine-side query workflow in which search/filter context is mutable state.
+Native vocabulary distinguishes unit, object, copy, class, type, owner, game, and unique identity concepts. Numeric equality is not namespace equality. Replay references are observations, not automatic proof of native identity.
 
-Architectural consequence:
+Object lifecycle must distinguish observation, creation, active state, transformation, garrison, ownership change, deletion/destruction, reuse, and observation loss. Production must distinguish request, queue admission, start, completion, object birth, and deployment.
 
-> search procedures must establish their query context explicitly.
+## 10. Action and failure model
 
-A rule that assumes search state is stateless can create nonlocal failures through stale filters or stale query context.
+The machine exposes action completion, failure, invalidation, search requirements, target changes, and pathability constraints. Therefore:
 
-## 10. Identifier discipline
+`proposal != commitment != authorization != execution != success`
 
-Native vocabulary distinguishes unit, object, copy, class, type, game, and unique identity concepts. The existence of names such as unit/object lookup operations and identity fields establishes a rich identity surface, but does not establish equality between the namespaces.
+A command emitted by AI code is not proof of execution, and execution is not proof of strategic success. Failure and recovery must be first-class architectural states.
 
-The governing rule is:
+## 11. Native function geometry — final major structural result
 
-`unit ID != unit-line ID != class ID != object ID != copy ID != game ID != unique ID`
+The controlled PE `.pdata` contains 166,741 physical 12-byte runtime-function slots. 166,730 contain non-zero runtime-function records and 11 are trailing zero padding. Valid starts are unique and monotonically ordered; no interval overlaps were found among valid ranges.
 
-unless a specific relationship has been demonstrated.
+Function interval statistics are: minimum 1 byte, median 91 bytes, mean 275.17 bytes, maximum 106,696 bytes. Aggregate valid interval coverage is 45,879,189 bytes, approximately 88.88% of `.text` raw size.
 
-The same rule applies to replay references: a numeric replay value is not automatically a native object ID.
+This does not mean the binary contains 166,730 semantically meaningful source-level functions. It provides a mechanically bounded coordinate system for targeted native archaeology and an independent cross-check against fragile disassembler function inference.
 
-## 11. Object lifecycle
+## 12. CodeView/PDB
 
-The identity investigation models object lifecycle as:
+The PE debug directory contains CodeView `RSDS` data with PDB GUID `b04f37aa-ccf9-48da-ad19-583ffb4bb36d` and age `1`, with an embedded build-system path ending in `AoE2DE_s.pdb`. No matching local PDB was established. A future PDB is usable only after GUID/age authentication against the controlled executable.
 
-`unknown -> observed -> created/inferred -> active -> state transitions -> terminal/non-observed state`
+## 13. Native reference negative evidence
 
-Relevant transitions include movement, gathering, combat, production, garrison, transformation, ownership change, deletion/destruction, and observation loss.
+Full `.text` Capstone scanning found zero RIP-relative references to seven selected AI diagnostic/source anchors, including `UnitAIModule.cpp`, `TribeUnitAIModule.cpp`, `CurrentAction`, `currentTargetID`, `currentTargetType`, `processNotify`, and `ai::search`. Executable-wide exact 64-bit pointer scanning also found zero occurrences for those addresses.
 
-Absence from an observation is never sufficient to prove destruction. A missing object may be garrisoned, transformed, outside the observation boundary, filtered by a query, deleted, ownership-changed, or absent from parser output.
+This eliminates the tested direct representations. It does not establish absence of the underlying AI code or prove indirect/table-mediated access.
 
-Production must likewise be distinguished into intent, queue admission, queued/started state, completion, object birth, availability, and deployment. A queue command is not a completion event.
+## 14. Metadata-pointer false-positive control
 
-## 12. Action execution
+A correctly section-mapped metadata-area field pointed to `0x1417FF3E0`, which is a valid `.pdata` function start. Direct disassembly showed cleanup/destructor-like behavior, so the association was rejected as an XS API implementation.
 
-The machine distinguishes order/action/target state from result and postcondition. Native vocabulary exposes action completion, failure, invalidation, search requirements, target changes, pathability, and retargeting.
+The permanent rule is:
 
-Therefore:
+`metadata proximity + valid pointer + valid function boundary != semantic ownership`
 
-`PROPOSAL != COMMITMENT != AUTHORIZATION != EXECUTION != SUCCESS`
+Semantic ownership requires caller/callee, data-flow, state-effect, or equivalent independent evidence.
 
-Command issuance is evidence that a request was made. It is not evidence that the machine accepted, completed, or achieved the intended strategic consequence.
+## 15. Ghidra boundary
 
-## 13. Movement and targeting
+Historical Pass33 remains preserved. It contains real analysis activity but substantial function-body repair noise. The separate controlled headless run imported and saved the exact executable but timed out at 1800 seconds during `Disassemble Entry Points` with a `CreateThunkFunctionCmd` / `body must contain the entry point` error.
 
-Native action vocabulary demonstrates that geometry and pathability can invalidate an otherwise reasonable intent. Target selection is dynamic and may preserve, invalidate, or replace targets based on machine conditions.
+Broad Ghidra analysis is therefore treated as index generation, not automatic semantic proof. Targeted `.pdata`-bounded verification is the preferred native method.
 
-AEGIS should therefore separate strategic target intent from native tactical target execution and should treat pathability/feasibility as execution-boundary evidence.
+## 16. Programmer-intent reconstruction
 
-## 14. Production and research
+For significant mechanisms, AEGIS separates observed mechanism, engineering constraint, plausible rationale, supported programmer intent, and AI architectural implication. Repeated data ownership, state lifetime, caller/callee structure, boundary placement, error handling, performance structures, and runtime consequences can strengthen intent claims. When evidence cannot distinguish alternatives, competing hypotheses remain explicit.
 
-Production is best represented as a capability pipeline:
+## 17. Predictive completion standard
 
-`objective -> capability requirement -> composition -> capacity -> prerequisites -> resource demand -> feasibility -> action -> completion -> reinforcement/replacement`
+Layer 1 requires critical causal paths to approach:
 
-Research is likewise a capability transition with feasibility, cost, status, expected return, and postcondition verification.
+`PRECONDITION -> TRIGGER -> DISPATCH -> PROCESSING -> STATE TRANSITION -> POSTCONDITION`
 
-This architecture is materially safer than treating train/research statements as independent unconditional writes.
+The endpoint is predictive: given sufficiently specified state and input, the investigator should be able to predict the relevant machine transition and then test that prediction. The investigation stopped at 89% because the final implementation-level causal edge was not demonstrated.
 
-## 15. Economy as machine state
+## 18. Final architecture handed forward
 
-The machine exposes resource amounts, percentages, cost information, technology/research state, market operations, tribute, and gatherer-related state. The implication is that economic reasoning can be modeled as a state/deficit/opportunity-cost problem rather than a fixed worker-percentage table.
+The most defensible ByzBot authority model is:
 
-The strategic layer must still distinguish machine-observable facts from derived beliefs and policy judgments.
+`OBSERVATION -> BELIEF / MACHINE FACTS -> STRATEGIC INTENT -> TACTICAL REQUEST -> NATIVE VALIDATION / ACCEPTANCE -> EXECUTION -> OBSERVED RESULT -> RECONCILIATION -> RETAIN / RETRY / RETARGET / REPLACE / ABANDON`
 
-## 16. Error taxonomy
+This is an engineering architecture derived from convergent evidence, not a claim that the shipped engine literally implements these exact classes.
 
-A useful cross-layer fault taxonomy is:
+ByzBot should own strategic valuation, prioritization, Byzantine doctrine, opportunity cost, long-horizon planning, conflict arbitration, and reconciliation policy. Native machinery should be exploited for feasibility, tactical search, pathing, target management, action execution, and recovery where appropriate.
 
-`parse/lexical -> rule construction -> registration/scheduling -> interpretation -> feasibility -> execution -> result -> postcondition verification`
+## 19. Final unresolved frontier
 
-A failure at one layer does not imply failure at another. In particular, successful command emission does not establish successful execution, and successful execution does not establish strategic success.
+The remaining 11% is concentrated in:
 
-## 17. Replay boundary
+- rule-loader/parser implementation boundary;
+- rule-representation ownership and mutation;
+- persistent-fact result mutation and freshness/cache semantics;
+- scheduler comparator and interval transitions;
+- rule/handler-to-native-action bridge;
+- `CurrentOrder -> CurrentAction` mutation;
+- action failure/invalidation/completion propagation;
+- required object identity lifecycle edges;
+- one predictive end-to-end `.per` path.
 
-Replay parsing is an observation instrument. It establishes what the recording encoded and what the parser decoded; it does not automatically expose complete internal simulation state.
+These are implementation-closure problems, not invitations to restart vocabulary collection.
 
-For the reference recording, the forensic parser produced 6,858 ACTION records and 27,369 object-reference candidates spanning 4,411 distinct numeric values, with zero malformed JSON records after normalization. Some numeric values are implausibly large, so object identity remains explicitly unresolved.
+## 20. Re-entry
 
-The promotion rule is:
+A future engineer should read `docs/LAYER1_FINAL_INVESTIGATION_HANDOFF_2026-09-03.md`, the final project status, the predictive standard, completion control, evidence matrix, native archaeology/QC documents, open questions, and atomic knowledge ledgers before changing architecture.
 
-`replay observation -> cross-layer correlation -> native/runtime evidence -> identity claim`
-
-not:
-
-`numeric equality -> assumed identity`.
-
-## 18. Ghidra boundary
-
-Broad Ghidra analysis is treated as index generation, not semantic proof. Decompiler output, strings, addresses, symbols, and reference results require evidence classification and, for critical claims, targeted verification.
-
-A previous disassembly-reference experiment was explicitly downgraded after its instruction substrate proved incomplete. Its zero-result reference count is therefore not executable-wide negative evidence.
-
-Native archaeology proceeds by increasing representation fidelity:
-
-`symbol -> defined data -> raw region -> instruction reference -> consumer -> implementation -> runtime corroboration`
-
-## 19. Programmer-intent reconstruction
-
-For significant mechanisms, AEGIS separates:
-
-1. observed mechanism;
-2. engineering constraint;
-3. plausible design rationale;
-4. supported programmer intent;
-5. AI architectural implication.
-
-Repeated patterns, data ownership, state lifetime, caller/callee structure, error handling, performance structures, source remnants, and runtime consequences may strengthen an intent hypothesis. When evidence cannot distinguish alternatives, competing hypotheses remain explicit.
-
-## 20. Predictive completion criterion
-
-Layer 1 is not complete because a vocabulary catalog is large. It is complete only when material AI-facing causal paths have no unacknowledged black boxes that could change implementation decisions.
-
-For critical mechanisms the target trace is:
-
-**PRECONDITION -> TRIGGER -> DISPATCH -> PROCESSING -> STATE TRANSITION -> POSTCONDITION**
-
-The endpoint is predictive: given sufficiently specified state and input, the investigator should be able to predict the relevant machine transition and then test that prediction.
-
-## 21. Public-safety boundary
-
-This public document intentionally omits exact local installation paths and does not redistribute proprietary executables, DLLs, assets, bulk binary dumps, substantial decompiler output, private symbols, or copied source.
-
-Native findings remain subject to the project's independent evidence and publication gates. A fact being technically accurate does not make every representation of that fact appropriate for public release.
-
-The preferred public transformation is:
-
-`source identity -> original observation -> evidence classification -> interpretation -> general principle -> AEGIS abstraction -> independent implementation -> validation`
-
-## 22. Re-entry standard
-
-A future engineer should be able to recover from this repository:
-
-- authoritative runtime identity;
-- evidence definitions;
-- scheduler/state/action model;
-- identity and lifecycle boundaries;
-- replay limitations;
-- Ghidra methodological limitations;
-- programmer-intent reasoning boundaries;
-- architectural consequences;
-- unresolved questions and their promotion tests;
-- publication/safety constraints.
-
-If a claim cannot be traced to evidence, provenance, and an explicit confidence boundary, it is not a completed Layer 1 fact.
+The final investigation position is **89%**. It remains deliberately below completion until the predictive gate is satisfied.
