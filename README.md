@@ -16,7 +16,7 @@ The repository exists so that the answers, evidence, failed experiments, correct
 
 The investigation phase is now **closed for handoff**. It is not certified complete. The remaining work is concentrated in implementation-level causal closure: verified native state mutations, the rule-to-action bridge, scheduler details, failure propagation, required object-lifecycle edges, and at least one experimentally predictive end-to-end path.
 
-The final recovery document is `docs/LAYER1_FINAL_INVESTIGATION_HANDOFF_2026-09-03.md`. The latest three-pass QC is recorded in `docs/QC_THREE_PASS_2026-09-03_PASS1_REPOSITORY_INTEGRITY.md`, `docs/QC_THREE_PASS_2026-09-03_PASS2_EXTERNAL_CROSS_REFERENCE.md`, and `docs/QC_THREE_PASS_2026-09-03_PASS3_PROMOTION_AND_ACTION_PLAN.md`.
+The final recovery document is `docs/LAYER1_FINAL_INVESTIGATION_HANDOFF_2026-09-03.md`. The latest three-pass QC is recorded in `docs/QC_THREE_PASS_2026-09-03_PASS1_REPOSITORY_INTEGRITY.md`, `docs/QC_THREE_PASS_2026-09-03_PASS2_EXTERNAL_CROSS_REFERENCE.md`, and `docs/QC_THREE_PASS_2026-09-03_PASS3_PROMOTION_AND_ACTION_PLAN.md`. The subsequent whole-repository audit is `docs/QC_LIBRARY_INTEGRITY_2026-09-03.md`.
 
 ## Research layers
 
@@ -31,9 +31,13 @@ The layers are ordered intentionally. Later architecture should not depend on un
 
 ## Latest QC disposition
 
-Three independent passes over the repository and latest evidence set **passed**. The review strengthened the stock-AI composition model, XS capability evidence, UnitAI/search boundaries, data namespace distinctions, and build-scoped native conclusions. It did **not** close the implementation-level causal gaps, so the Layer 1 position remains 89%.
+The repository has now passed an additional whole-repository integrity audit. The main tree contains 108 tracked files: 88 Markdown, 10 JSON, and 10 JSONL. All JSON and JSONL records parse successfully, and 51 relative Markdown links were checked with no missing targets. No stale `91%` or retired `7,715` rule-count claim remains in the main tree.
 
-The latest recursive stock-AI measurement is **7,831 syntactically reachable `defrule` definitions across 28 reachable `.per/.per2/.xs` files under conservative conditional-branch inclusion**. This is a corpus statistic, not a claim that 7,831 rules execute in every game. The older 7,715 figure is retired.
+A separate audit of active PR #12 found one concrete documentation defect: its professional handoff referenced a non-existent `07_EXPERIMENTS/AEGIS_LAYER1_LAB/MACHINE_EXPERIMENT_SCHEMA.json`. That path was corrected on the PR branch to the canonical `knowledge/MACHINE_EXPERIMENT_SCHEMA.json` location.
+
+The audit also re-verified the historical FLWL RunList signature against the exact controlled executable using actual hexadecimal bytes. The signature produced **0 matches**. An earlier intermediate probe that rendered escaped byte tokens was invalid as a byte-pattern test and is not used as evidence.
+
+The latest qualified rule-corpus measurement remains **7,831 syntactically reachable `defrule` definitions across 28 reachable `.per/.per2/.xs` files under conservative conditional-branch inclusion**. This is a corpus statistic, not a claim that 7,831 rules execute in every game. The older 7,715 figure is retired.
 
 ## Layer 1 result in one sentence
 
@@ -45,7 +49,7 @@ All native findings are scoped to the controlled `AoE2DE_s.exe` build recorded i
 
 ## What Layer 1 established
 
-- `.ai/.per` are the relevant AI script substrate.
+- The AI pipeline includes bootstrap/profile selection plus `.per` / `.per2` rule material; native diagnostic material also contains `.ai2` terminology. These labels should not be collapsed into one file type without evidence.
 - Native rule state contains IDs, priorities, intervals, sorted-rule state, and rule-group concepts.
 - Native AI vocabulary establishes fact initialization and a distinct persistent-fact evaluation phase.
 - Native feasibility/validation forms a machine-executability boundary separate from strategic desirability.
@@ -54,7 +58,7 @@ All native findings are scoped to the controlled `AoE2DE_s.exe` build recorded i
 - Unit/object/copy/class/type/owner identity concepts must not be conflated merely because they are numeric.
 - The controlled PE contains 166,730 non-zero `.pdata` runtime-function records across 166,741 physical slots, providing an independent function-boundary coordinate system.
 - CodeView `RSDS` data identifies a PDB GUID and age, but no authenticated matching PDB was found locally; it remains a future lead.
-- Direct RIP-relative and exact absolute-pointer searches against selected AI diagnostic/source anchors returned zero results for those representations; this is bounded negative evidence, not proof of absence.
+- Direct RIP-relative and exact absolute-pointer searches against selected AI anchors returned zero results for those representations; this is bounded negative evidence, not proof of absence.
 - A metadata-area pointer to a valid native function was investigated and rejected as an XS API association after direct disassembly showed cleanup/destructor-like behavior.
 
 ## How to navigate this repository
@@ -64,16 +68,18 @@ All native findings are scoped to the controlled `AoE2DE_s.exe` build recorded i
 3. `docs/QC_THREE_PASS_2026-09-03_PASS1_REPOSITORY_INTEGRITY.md` — repository integrity pass.
 4. `docs/QC_THREE_PASS_2026-09-03_PASS2_EXTERNAL_CROSS_REFERENCE.md` — external/source cross-reference pass.
 5. `docs/QC_THREE_PASS_2026-09-03_PASS3_PROMOTION_AND_ACTION_PLAN.md` — promotion and forward-work pass.
-6. `12_RESEARCH/NEW_MATERIAL_INGEST_2026-09-03.md` — latest evidence ingestion record.
-7. `docs/PROJECT_STATUS_2026-09-02.md` — current project position.
-8. `docs/LAYER1_PREDICTIVE_MACHINE_STANDARD_2026-09-02.md` — predictive completion standard.
-9. `docs/LAYER1_COMPLETION_CONTROL_2026-09-02.md` — evidence and completion control.
-10. `docs/MACHINE_EVIDENCE_MATRIX_2026-09-02.md` — claim-by-claim evidence register.
-11. `docs/MACHINE_KNOWLEDGE_MONOGRAPH_2026-09-02.md` — consolidated machine model.
-12. `docs/LAYER1_NATIVE_ARCHAEOLOGY_LOG_2026-09-02.md` and its QC addenda — native investigation history.
-13. `knowledge/` — atomic institutional memory.
-14. `03_HD_ARCHAEOLOGY/` — historical AI archaeology.
-15. `12_RESEARCH/` — supporting research and provenance.
+6. `docs/QC_LIBRARY_INTEGRITY_2026-09-03.md` — whole-repository QC, corrected paths, and new RunList/rule-set corroboration.
+7. `12_RESEARCH/NEW_MATERIAL_INGEST_2026-09-03.md` — latest evidence ingestion record.
+8. `docs/PROJECT_STATUS_2026-09-02.md` — current project position.
+9. `docs/LAYER1_PREDICTIVE_MACHINE_STANDARD_2026-09-02.md` — predictive completion standard.
+10. `docs/LAYER1_COMPLETION_CONTROL_2026-09-02.md` — evidence and completion control.
+11. `docs/MACHINE_EVIDENCE_MATRIX_2026-09-02.md` — claim-by-claim evidence register.
+12. `docs/MACHINE_KNOWLEDGE_MONOGRAPH_2026-09-02.md` — consolidated machine model.
+13. `docs/LAYER1_NATIVE_ARCHAEOLOGY_LOG_2026-09-02.md` and its QC addenda — native investigation history.
+14. `knowledge/` — atomic institutional memory.
+15. `03_HD_ARCHAEOLOGY/` — historical AI archaeology.
+16. `07_EXPERIMENTS/AEGIS_LAYER1_LAB/` — active native experiment tooling and controlled evidence when the adapter branch is promoted.
+17. `12_RESEARCH/` — supporting research and provenance.
 
 ## Central research principle
 
@@ -127,10 +133,10 @@ If native investigation resumes, the highest-value targets are:
 5. required object identity lifecycle closure;
 6. one predictive end-to-end `.per` causal experiment.
 
-These are implementation-closure targets, not invitations to restart broad vocabulary searches.
+The scheduler frontier is now more sharply specified: historical external evidence supports a `RunList(AIExpert*, listId, statsOutput)` architecture in an older DE integration, while current-build signature matching is negative. Public scripting documentation also exposes a rule-set execution context through `up-get-rule-id` and `up-jump-rule`. Neither source proves the current scheduler implementation.
 
 ## Six-month recovery
 
-A returning engineer should read `RESEARCH_INDEX.md`, then `docs/LAYER1_FINAL_INVESTIGATION_HANDOFF_2026-09-03.md`, then the three-pass QC documents, then the predictive standard, completion control, evidence matrix, machine monograph, native archaeology/QC documents, and atomic knowledge ledgers. The final position is **89%**, investigation closed for handoff, completion gate unsatisfied.
+A returning engineer should read `RESEARCH_INDEX.md`, then `docs/LAYER1_FINAL_INVESTIGATION_HANDOFF_2026-09-03.md`, then the three-pass QC documents, then `docs/QC_LIBRARY_INTEGRITY_2026-09-03.md`, the predictive standard, completion control, evidence matrix, machine monograph, native archaeology/QC documents, and atomic knowledge ledgers. The final position is **89%**, investigation closed for handoff, completion gate unsatisfied.
 
 **For contributors:** do not promote a hypothesis to a fact, overwrite an evidence record without preserving provenance, or treat historical code as canonical without an explicit authority decision.
