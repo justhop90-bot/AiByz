@@ -1,9 +1,13 @@
 from __future__ import annotations
 
 import json
+import sys
 import tempfile
 import unittest
 from pathlib import Path
+
+LAB_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(LAB_ROOT))
 
 from aegis_lab.adapter.artifacts import capture_file
 from aegis_lab.adapter.build_guard import verify_executable
