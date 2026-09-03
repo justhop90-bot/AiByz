@@ -43,12 +43,27 @@ This register is deliberately conservative. It records what was actually observe
 | Native source | BXS definitions unavailable in recovered source | Pass 21 negative results | CONFIRMED | absence from shipped binary | Ghidra search |
 | Native source | source archive is not automatically shipped-runtime source | mixed AGE/editor/genieutils provenance | CONFIRMED | no relationship whatsoever | provenance matching |
 | Ghidra | full analysis may produce function-repair noise | Pass 33 log | CONFIRMED | that analysis is invalid | targeted function verification |
+| AIExpert | native rule loader/parser vocabulary exists | `AIExpertEngine.cpp`, `loadRules`, parser/error diagnostics | CONFIRMED at vocabulary level | exact function ownership/call graph | recovered native function boundary |
+| AIExpert | facts and actions are explicit rule-engine definitions | `Defining Fact`, `Defining Action`, indexed IDs | CONFIRMED at vocabulary level | exact registration timing | native definition/registration trace |
+| AIExpert | rule representation contains indexed elements and debug metadata | `ruleElementsPtr`, `rule[j].element`, `ruleDebugInfo[j]` | STRONG | exact struct layout/ownership | data-structure recovery |
+| AIExpert | persistent facts have a distinct evaluation phase | `Evaluating Persistent Facts`, completion, evaluated-fact diagnostic | CONFIRMED at vocabulary level | cadence/storage/snapshot semantics | runtime/native control-flow trace |
+| AIExpert | rule navigation/debugging is explicit | `Next Rule`, `ResolveBreakPoint`, `AIDebugger`, jump bounds | STRONG | exact execution loop | native control-flow trace |
+| AIExpert | native semantic layer exposes broad typed game-state vocabulary | fact, comparison, player-scope, feasibility, resource, unit, research, timer, strategic-number strings | STRONG | all symbols share one implementation table | registration/dispatch trace |
+| UnitAI | update state exposes separate order/action/target/notification concepts | `CurrentOrder`, `CurrentAction`, target fields, queue sizes, update diagnostics | STRONG | exact storage/lifetime | mutation-chain trace |
+| UnitAI | notifications can alter control flow | notify processing diagnostics and `stop or new action, breaking` | STRONG | synchronous vs deferred implementation | native call graph/runtime experiment |
+| UnitAI | retryable work can trigger search/replacement actions | `ProcessRetryableOrder::`, new target, hunt/gather issuance diagnostics | STRONG | exact retry policy | native state transition trace |
+| UnitAI | search is constrained candidate evaluation | LOS, search radius, object care, ownership classification, pathability, range, walls, current-target retention | STRONG | exact score formula | search function recovery |
+| AI architecture | AI is decomposed into expert/rule, UnitAI, action, and search modules | retained native source-path corpus | STRONG inference | recovered programmer intent | caller/ownership/implementation trace |
+| AI diagnostics | tested UnitAI diagnostic string region lacks direct RIP-relative consumers | full `.text` Capstone scan | CONFIRMED negative for tested representation | indirect/indexed/unused alternatives | alternate representation tests |
+| AI diagnostics | tested UnitAI diagnostic string region lacks embedded absolute 64-bit pointers | executable-wide pointer scan | CONFIRMED negative for tested representation | relative/indexed/encoded alternatives | representation archaeology |
 
 ## Negative evidence that must survive
 
 The project repeatedly searched recovered source archives for direct definitions of `BXSRuleModule`, `BXSRuleEntry`, `BXSRuleGroupEntry`, `mRules`, `mSortedRules`, `mRuleGroups`, `mCurrentRuleID`, and related interpreter methods without obtaining a clean source implementation. This is not a failure to be hidden. It establishes a boundary between source-contract archaeology and shipped-binary evidence.
 
 Similarly, broad source searches for intuitively named functions such as `UpdateAI`, `EvaluateRules`, `ExecuteRule`, `ScheduleRule`, `InterpretRule`, and `InterpretTrigger` returned no direct matches in the recovered source material. The absence does not imply those concepts do not exist; it means naming-based source recovery was insufficient.
+
+The latest native pass adds a second negative boundary: the broad AI diagnostic region was scanned for direct RIP-relative and absolute-pointer consumers without finding one. This does not justify declaring the diagnostics dead or the metadata indirect; it only eliminates the tested direct representations and requires competing representations to be enumerated.
 
 ## Machine questions still open
 
@@ -84,6 +99,14 @@ Similarly, broad source searches for intuitively named functions such as `Update
 - What is the exact runtime implementation of rule-control APIs?
 - Are group lifecycle changes immediate or deferred?
 - Does disabling a rule remove it from the sorted structure immediately?
+
+### AIExpert / UnitAI bridge
+- What native function owns `loadRules` and the first rule-list construction?
+- Where does the rule evaluator request or emit an action/order?
+- Which function writes UnitAI `CurrentAction` after an order is accepted?
+- Which function consumes an action result and changes order/target state?
+- Is search invoked by UnitAI directly, by an action object, or through a shared AI search service?
+- What representation connects native fact/action IDs to their callable implementations?
 
 ## Promotion rule
 
