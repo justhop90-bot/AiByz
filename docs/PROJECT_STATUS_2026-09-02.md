@@ -4,7 +4,7 @@
 
 **Current layer: Layer 1 — Machine Understanding**  
 **State: active, not declared complete**  
-**Working completion estimate: 86%**
+**Working completion estimate: 88%**
 
 The project has accumulated a substantial operational and research record, but the completion standard is deliberately stricter than familiarity with AI scripting vocabulary. The remaining work is to turn important machine-facing observations into causal, implementation-level, and experimentally predictive understanding.
 
@@ -35,7 +35,29 @@ The investigation has established a useful native evidence surface around script
 
 High-value script-facing identity interfaces identified in native signature data include object/copy ID, class/type, validity/availability, and garrison-related functions. Native debug/source strings also expose concepts such as `obj->id`, `uniqueID`, and AI module names.
 
-A full executable `.text` instruction scan was used as a discriminating negative test. No direct RIP-relative references were recovered to the tested API signature addresses, the widened signature region, or the selected UnitAI diagnostic strings. This establishes a representation constraint for the tested addressing mode; it does **not** prove that the metadata or diagnostics are unused, nor does it prove that the actual consumer is indirect. Competing representations must be tested rather than assumed.
+### Section-aware address mapping — newly promoted
+
+The native PE section table has now been read directly. The relevant mapping is:
+
+- `.text`: RVA `0x1000`, raw pointer `0x400`;
+- `.rodata`: RVA `0x313b000`, raw pointer `0x313a400`;
+- `.rdata`: RVA `0x313c000`, raw pointer `0x313ac00`.
+
+Therefore the relevant `.rdata` raw/virtual mapping contains a `0x1400` delta. Raw offsets must be converted through the section containing the byte rather than by adding the image base directly.
+
+This resolves the previously dangerous raw-offset/VA ambiguity and is now a mandatory condition for all subsequent native scans.
+
+### XS metadata-addressing pass — newly promoted at observation level
+
+The dense XS API name/signature corpus includes identity, type/class, validity/availability, garrison, map-seed, and technology-attribute interfaces. Around the inspected `xsGetMapSeed` / `xsGetTechAttribute` tail, the raw corpus has the form:
+
+`name → signature → binary fields → source-path/debug data`
+
+The binary fields immediately preceding the source-path string include an all-zero 8-byte field, an 8-byte value in image data/readonly-data address space, and an 8-byte value in the `.text` address range.
+
+The `.text`-range value is `0x1417ff3e0`. This is **not** yet promoted as a function pointer or XS handler. The bytes at that address currently decode to `ret 0xcd04`, so the field requires independent consumer/call-target corroboration.
+
+The important methodological result is that the API registry cannot safely be investigated as a simple string-to-direct-RIP-xref problem. Indirect/indexed metadata and initialization consumers are now the primary search path.
 
 ### AIExpert / rule-engine architecture evidence
 
@@ -92,17 +114,18 @@ and the relationships among unit IDs, object IDs, copy IDs, native object identi
 
 ## Immediate work sequence
 
-1. Use the completed `.text` disassembly when available to recover the first defensible `AIExpertEngine` function boundary around rule loading/evaluation.
-2. Recover the first defensible UnitAI mutation chain for `CurrentAction` or `CurrentOrder`.
-3. Recover the actual search function boundary associated with `ai::search` / `aisearch.cpp` vocabulary.
-4. Enumerate competing metadata representations before selecting a dispatch hypothesis.
-5. Identify the initialization/registration structure that owns or transforms the API metadata.
-6. Trace `xsGetUnitObjectId` end-to-end as the first representative identity path once its consumer/dispatch chain is located.
-7. Test whether `CurrentAction` and `currentOrder` have distinct ownership/lifetime using native mutation evidence rather than vocabulary alone.
-8. Trace related copy-ID, type/class, validity/availability, and garrison interfaces.
-9. Design discriminating runtime experiments for target invalidation, action recovery, identity conversion, and lifecycle behavior.
-10. Update the evidence matrix, atomic machine facts, predictive tests, and QC amendments from demonstrated results.
-11. Reassess Layer 1 completion only after the predictive gate is satisfied.
+1. Use section-aware virtual-address mapping for every native artifact and discard any result produced by `imagebase + raw_offset` in `.rdata`.
+2. Recover the first real consumer of the XS metadata region using indirect/indexed representation searches.
+3. Recover the first defensible UnitAI mutation chain for `CurrentAction` or `CurrentOrder`.
+4. Recover the first defensible `AIExpertEngine` function boundary around rule loading/evaluation.
+5. Recover the actual search function boundary associated with `ai::search` / `aisearch.cpp` vocabulary.
+6. Identify the initialization/registration structure that owns or transforms the API metadata.
+7. Trace `xsGetUnitObjectId` end-to-end as the first representative identity path once its consumer/dispatch chain is located.
+8. Test whether `CurrentAction` and `currentOrder` have distinct ownership/lifetime using native mutation evidence rather than vocabulary alone.
+9. Trace related copy-ID, type/class, validity/availability, and garrison interfaces.
+10. Design discriminating runtime experiments for target invalidation, action recovery, identity conversion, and lifecycle behavior.
+11. Update the evidence matrix, atomic machine facts, predictive tests, and QC amendments from demonstrated results.
+12. Reassess Layer 1 completion only after the predictive gate is satisfied.
 
 ## Downstream layers
 
@@ -116,7 +139,7 @@ The project currently passes the **documentation/re-entry** requirement more str
 
 A repository can be excellent institutional memory while still documenting an unfinished investigation. Status must say so plainly.
 
-The 86% working estimate is not a completion claim. It reflects the additional native constraints recovered this pass while preserving the major implementation-closure gaps.
+The 88% working estimate is not a completion claim. It reflects the new section-mapping and metadata-structure constraints while preserving the major implementation-closure gaps.
 
 ## Six-month re-entry instructions
 
@@ -131,9 +154,10 @@ A returning engineer should:
 7. read `LAYER1_NATIVE_PASS_2026-09-02_UNITAI_CONTROL_LOOP_DEEPENING.md`;
 8. read `LAYER1_NATIVE_PASS_2026-09-03_AIEXPERT_UNITAI_ARCHITECTURE.md`;
 9. read `LAYER1_QC_AMENDMENT_2026-09-02_UNITAI_AND_METADATA.md`;
-10. read `OPEN_NATIVE_QUESTIONS_LAYER1.md`;
-11. inspect the atomic machine ledgers;
-12. continue from the immediate work sequence above.
+10. read `LAYER1_NATIVE_PASS_2026-09-03_METADATA_ADDRESSING_AND_RULE_LOADER_QC.md`;
+11. read `OPEN_NATIVE_QUESTIONS_LAYER1.md`;
+12. inspect the atomic machine ledgers;
+13. continue from the immediate work sequence above.
 
 ## Status rule
 
