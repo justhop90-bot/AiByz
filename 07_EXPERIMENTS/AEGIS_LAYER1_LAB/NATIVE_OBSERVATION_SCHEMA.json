@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AEGIS Native Observation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["experiment_id", "phase", "timestamp", "measurements"],
+  "properties": {
+    "experiment_id": {"type": "string", "minLength": 1},
+    "phase": {"type": "string", "enum": ["S0", "MUTATION", "S1", "POST"]},
+    "timestamp": {"type": "string", "minLength": 1},
+    "measurements": {"type": "object"},
+    "source_artifacts": {"type": "array", "items": {"type": "string"}},
+    "build_sha256": {"type": "string", "pattern": "^[A-Fa-f0-9]{64}$"}
+  }
+}
