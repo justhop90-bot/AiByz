@@ -33,9 +33,15 @@ These are not defects in the operational contract. They are the highest-value un
 29. **Rule-to-UnitAI bridge:** which native path turns a rule/handler result into an action or order request.
 30. **Action-result feedback:** which native path carries completion, failure, invalidation, or search-required results back into UnitAI and/or the rule scheduler.
 31. **Search ownership:** whether `ai::search` is a shared service, an AIExpert helper, or a UnitAI-owned subsystem in the target build.
+32. **XS metadata record geometry:** exact record boundaries, stride, field meanings, and whether name/signature storage is parallel to implementation metadata.
+33. **Candidate code-address field:** whether the `.text`-range value observed near `xsGetTechAttribute` is a genuine handler reference, a thunk/stub, or unrelated metadata.
+34. **Metadata initialization consumer:** which verified `.text` routine reads the XS metadata region and establishes the runtime registry.
+35. **Identifier-to-handler resolution:** how a script-visible XS name or numeric identifier reaches the callable implementation after loading.
 
 ## Research priority
 
 Prioritize questions by architectural leverage rather than curiosity. Scheduler determinism, action atomicity, resource reservation, target lifetime, loader/execution closure, API metadata dispatch, AIExpert rule-list ownership, the rule-to-UnitAI bridge, and concrete UnitAI state mutation chains have the highest downstream impact because they constrain virtually every future subsystem.
 
-The latest full-text instruction scan produced no direct RIP-relative references to the tested API and UnitAI diagnostic strings, and an executable-wide absolute-pointer scan produced no 64-bit absolute pointers into the tested AI diagnostic region. This is now a methodological constraint: further research should target indirect tables, relative/indexed metadata, initialization consumers, dispatch structures, and state mutation chains rather than repeating broad direct-string xref scans.
+The latest native pass established the PE section mapping needed to prevent raw-offset/virtual-address confusion. The `.rdata` section uses RVA `0x313c000` with raw pointer `0x313ac00`, producing the relevant `0x1400` mapping delta. Further native scans must use section-aware mapping rather than `imagebase + raw_offset`.
+
+Direct RIP-relative absence remains only a negative result for the tested representation. The next metadata search should target indirect tables, relative/indexed metadata, initialization consumers, dispatch structures, and state mutation chains rather than repeating broad direct-string xref scans.
