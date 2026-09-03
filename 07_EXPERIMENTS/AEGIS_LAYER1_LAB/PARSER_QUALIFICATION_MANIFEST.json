@@ -1,0 +1,44 @@
+{
+  "qualification_id": "ASP-QUAL-2026-09-03-01",
+  "status": "qualified_lab_capability",
+  "runtime_boundary": "pure_per",
+  "parser": {
+    "name": "AoE2ScenarioParser",
+    "source_root": "AoE2ScenarioParser-master",
+    "source_tree_files": 295,
+    "source_tree_sha256": "1F3B47E916C296EFF4A18E809B5B2D392D8382B4FD2680B04784BD1E57ED0652",
+    "archive_sha256": "3B3F81A92E6B68544A28D357245BC21ABD261F8D64A4AEB02AA579273246CC4D",
+    "declared_package_version": "<VERSION_HERE>",
+    "scenario_version": "1.58"
+  },
+  "environment": {
+    "python": "3.13.14",
+    "game_build": "101.103.48987.0",
+    "game_sha256": "6378CA6F1FBD2F230B5B7F2CD048198331848AF70F44B5CD13CEB89420A321A4"
+  },
+  "tests": {
+    "bundled_parser_tests": "106/106 PASS",
+    "round_trip": "PASS",
+    "pure_per_fixture_structure": "PASS",
+    "native_game_load": "NOT_TESTED",
+    "native_observation": "NOT_TESTED"
+  },
+  "fixture": {
+    "id": "P0A-CAL-001",
+    "initial_p1_unit_count": 1,
+    "mutation": "scenario trigger creates one P1 male villager at t=5s",
+    "script_call_conditions": 0,
+    "script_call_effects": 0
+  },
+  "excluded_capabilities": [
+    "XS runtime",
+    "XS script embedding",
+    "xs-check execution",
+    "DLL injection",
+    "process hooks"
+  ],
+  "promotion": {
+    "layer1_percentage_change": false,
+    "causal_claim_promoted": false
+  }
+}

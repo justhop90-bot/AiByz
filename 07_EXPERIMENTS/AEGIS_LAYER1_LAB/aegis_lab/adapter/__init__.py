@@ -3,6 +3,11 @@
 from .build_guard import BuildIdentity, verify_executable
 from .runtime_controller import AoE2DERuntime, RuntimeResult
 from .scenario_contract import ScenarioContract, write_contract
+from .scenario_provider import (
+    build_p0a_calibration_fixture,
+    load_qualified_parser,
+    validate_p0a_fixture,
+)
 
 __all__ = [
     "AoE2DERuntime",
@@ -11,4 +16,7 @@ __all__ = [
     "ScenarioContract",
     "verify_executable",
     "write_contract",
+    "build_p0a_calibration_fixture",
+    "load_qualified_parser",
+    "validate_p0a_fixture",
 ]
