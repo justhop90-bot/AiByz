@@ -1,8 +1,8 @@
 # AiByz — Full Repository Quality-Control Audit
 
-**Date:** 2026-09-04  
-**Audited branch:** `aegis/layer2-hd-methodology-coding-2026-09-04`  
-**Final verification target:** current branch HEAD after handoff documentation updates  
+**Date:** 2026-09-04
+**Audited branch:** `aegis/layer2-hd-methodology-coding-2026-09-04`
+**Final verification target:** current branch HEAD after handoff documentation updates
 **Purpose:** final handoff integrity audit after conversational context termination
 
 ## Audit result
@@ -85,10 +85,10 @@ No repository-integrity blocker was found. Remaining risks are substantive:
 
 1. Layer-1 implementation closure remains incomplete.
 2. Current AoE2DE builds can invalidate build-specific machine conclusions.
-3. Historical HD/Promisory contains valuable strategy plus historical implementation debt.
+3. Historical HD/Promisory is a strong strategic specimen but contains implementation debt and engine-era assumptions.
 4. Strategic interpretations require continued edge-level provenance.
 5. Replay lifecycle completion remains unresolved at W1/W2/W3.
-6. CADE's clean external replay→state extraction contract remains unresolved.
+6. CADE's clean external replay→state extraction boundary remains unresolved.
 7. Byzantine doctrine is not yet fully formalized.
 8. AEGIS runtime implementation is not yet complete.
 
@@ -102,10 +102,10 @@ The repository is suitable as the **professional handoff baseline**.
 
 The next action is engineering, not cleanup:
 
-> **Formalize C1 — Threat → Capability — as a testable AEGIS strategic transition specification and build the first minimal end-to-end strategic controller around it.**
+> **Formalize C1 — Threat → Capability — as the first executable AEGIS strategic transition specification, then build a minimal end-to-end implementation around it.**
 
 ## Audit principle
 
 `WHAT WE KNOW → WHY WE KNOW IT → WHAT WE THINK IT MEANS → WHAT WE DO NOT KNOW → WHAT WE STOPPED → WHAT WE BUILD NEXT`
 
-The repository should continue to function as an executable intellectual map rather than a memory dump.
+That is the standard this handoff is intended to preserve.
