@@ -1,73 +1,94 @@
-# AoE2DE Observation / Replay Information-Boundary Archaeology — Pass 19
+# AoE2DE Observation / Replay Information-Boundary Archaeology — Pass 19 (AMENDED)
 
 **Date:** 2026-09-04
 **Layer:** 2 — HD / Promisory strategic-code archaeology
-**Status:** Working canon — parser boundary identified
+**Status:** Working canon — parser boundary characterized; raw-format lifecycle archaeology remains open
+
+## Amendment reason
+Deep QC found that the original pass correctly identified the parser/state boundary but used language that could be read as proving more about the raw `.aoe2record` format than the inspected evidence establishes. This amendment separates four layers: raw recording bytes, parser decoding, normalized replay representation, and state reconstruction.
 
 ## Mission
-Determine whether the missing runtime W2 bridge is caused by an information-loss problem in the normalized replay parser, or by the recorded-game representation itself.
+Determine whether the missing runtime W2 bridge is caused by information loss in the normalized replay parser, by limitations of the inspected parser/model, or by the recorded-game representation itself.
+
+## Four-layer forensic model
+1. **L0 — Raw recording:** bytes and encoded operations actually present in the `.aoe2record`.
+2. **L1 — Parser decoding:** structures and events understood by a parser implementation.
+3. **L2 — Normalized representation:** the JSONL/action/SYNC surface exposed to our forensic pipeline.
+4. **L3 — Stateful reconstruction:** a validated interpreter that applies recorded events through game semantics and produces world state at time T.
+
+The strongest established boundary is **L2 != L3**. The inspected parser implementations also do not establish that L1 automatically supplies L3. L0 has not yet been exhaustively exhausted.
 
 ## External parser evidence
-The maintained `aoc-mgz` project explicitly distinguishes a fast parser from a fuller parser. The fast parser skips data considered rarely needed; the full parser attempts to parse substantially more. Its current support table also shows full-body support is version-dependent, while newer DE builds may lack full-body support.
+The maintained `aoc-mgz` project explicitly distinguishes a fast parser from a fuller parser. The fast parser is intentionally stripped down; the fuller parser parses materially richer information. The fuller model includes initial player/gaia object records and substantially richer object metadata than the normalized ACTION JSONL.
 
-The full model parses initial player/gaia objects from the replay header and constructs object records containing dataset object type, class, object id, instance id, index, and position. During body processing it records actions and SYNC-derived aggregate player time-series values. It does not reconstruct a continuously mutated per-object world model from the action stream.
+The fuller implementation processes body operations/actions and SYNC-derived aggregate values. The inspected implementation does not provide a continuously mutated per-object world-state database equivalent to the live object observation surface available to `.per` AI code.
+
+These are **external secondary technical evidence**, not Layer-2 historical authority.
 
 ## Critical distinction
-The replay parser's `get_objects()` surface is derived from header objects. Those are objects that exist at the start of the recorded game. This is not equivalent to a chronological object-lifecycle database.
+Header object records are not equivalent to a chronological object-lifecycle database. Likewise, body commands such as DE_QUEUE, RESEARCH, BUILD, and DE_ATTACK_MOVE contain identifiers useful for command interpretation but do not themselves constitute complete post-command object-state snapshots.
 
-The body parser records commands such as DE_QUEUE, RESEARCH, BUILD, and DE_ATTACK_MOVE. These commands contain identifiers useful for command interpretation, but they do not themselves supply a complete post-command object-state snapshot.
-
-Therefore upgrading from `mgz-fast` to the full parser is valuable for richer header/object metadata and model enrichment, but it should not be assumed to solve dynamic W2 lifecycle attribution.
+Therefore switching from `mgz-fast` to a fuller parser is valuable for richer initial-object metadata and model enrichment, but it is not demonstrated to close dynamic W2 lifecycle attribution.
 
 ## Object-state archaeology
-The parser's historical object structure demonstrates that replay/header object records can contain fields corresponding to the kinds of state the AI's `object-data-*` vocabulary reasons about: object identity, hitpoints, object state, owner context, position, under-attack state, movement/path data, target IDs, action/order state, AI state, building `built`, `build_points`, unique build ID, production queue, and research/action structures.
+The inspected fuller parser/model contains fields corresponding to many categories relevant to the AI's `object-data-*` vocabulary: identity, type, ownership context, position, hitpoints/state, movement/path information, target/action state, and building production/construction/research structures.
 
-This is powerful evidence that the replay format/parser ecosystem knows substantially more about object state than the normalized ACTION JSONL exposes. However, the source inspected places these rich structures in the header object parser. It does not establish that equivalent snapshots are emitted throughout the replay body.
+This establishes that the parser ecosystem understands substantially more object metadata than the normalized ACTION JSONL exposes. It does **not** establish that equivalent dynamic snapshots are emitted throughout the replay body.
 
-## W2 hypothesis adjudication
-Three hypotheses were tested conceptually:
-
+## Hypothesis adjudication
 ### H1 — mgz-fast normalization is the only limitation
-**DISPROVEN / too strong.** The fuller parser exposes substantially richer initial-object structures than mgz-fast.
+**REJECTED AS A SUFFICIENT EXPLANATION.** The fuller parser exposes substantially richer initial-object structures than mgz-fast. This does not prove mgz-fast is never responsible for information loss; it proves only that it is not the whole explanation.
 
 ### H2 — switching to full mgz may expose enough dynamic state to close W2
-**NOT SUPPORTED.** Full parsing enriches initial object structures and parses more body information, but the inspected architecture still processes the body as operations/actions rather than replaying a continuously mutable object database.
+**NOT SUPPORTED by the inspected implementation.** Full parsing enriches initial-object structures and parses more body information, but the inspected architecture does not itself provide a continuously reconstructed dynamic object database. This remains an implementation finding, not a proof about every possible parser/runtime.
 
-### H3 — the recording itself is primarily an action log plus initial state, requiring replay execution to reconstruct arbitrary dynamic state
-**SUPPORTED by available parser documentation and implementation architecture.** The recorded-game description explicitly characterizes the header as an initial-state snapshot and the body as moves that the game applies to mutate state. The parser can parse those moves, but arbitrary world-state reconstruction requires applying game semantics to those moves.
+### H3 — arbitrary dynamic state requires state reconstruction from initial state, recorded events, and game semantics
+**COMPOSED / PROBABLE.** Available parser documentation describes the recording as an initial state followed by recorded moves/events that the game applies to mutate state. A parser can decode those inputs; reconstructing arbitrary world state requires applying validated game semantics or an equivalent authoritative runtime.
 
-## New strategic conclusion
-The W2 problem is therefore not simply “we haven't found the right JSON field.” The correct conceptual model is:
+## CREATE and unknown-opcode boundary
+The local `mgz-fast` enum contains CREATE and multiple `DE_UNKNOWN_*` action IDs. CREATE is decoded by the inspected implementation only into limited fields such as player and coordinates; this does not prove that CREATE is an object-birth event for the reference DE recording.
 
-`INITIAL WORLD SNAPSHOT + ACTION STREAM + GAME SEMANTICS = RECONSTRUCTED WORLD STATE`
+Unknown DE opcodes are therefore legitimate raw-format reverse-engineering targets. Their presence in parser code proves parser recognition, not semantic closure. Their absence/presence in a particular recording must be measured independently.
 
-A static parser can expose inputs. A replay engine can reconstruct state by executing those inputs.
+## Correct conceptual model
+`INITIAL WORLD SNAPSHOT + RECORDED EVENT STREAM + VALIDATED GAME SEMANTICS = RECONSTRUCTED WORLD STATE`
 
-This explains why the historical AI has access to live `object-data-*` observations while our replay JSONL does not: the AI runs inside the game engine against live objects; the replay parser is primarily decoding recorded inputs and selected snapshots/aggregates.
+This is an engineering model supported by the inspected architecture, not a claim that the raw recording has been exhaustively specified.
 
 ## Architecture implication for AEGIS
-Do not design the forensic replay layer as if it were inherently a world-state database.
+Maintain two explicit forensic layers:
 
-Use two distinct layers:
+1. **Replay evidence layer:** immutable commands/events, raw/decoded temporal order, initial objects, available SYNC aggregates, and parser-derived facts.
+2. **Replay reconstruction layer:** a stateful interpreter/runtime surface that applies recorded events and exposes postconditions.
 
-1. **Replay evidence layer:** immutable commands, timestamps, initial objects, available sync aggregates, and parser-derived facts.
-2. **Replay simulation layer:** a stateful interpreter that applies recorded commands against a validated game model and produces object/world postconditions.
+Do not treat inferred pending state as W1 unless the recording/parser provides authoritative evidence for that pending state. Likewise, aggregate SYNC fields whose semantics remain parser-level guesses must retain that uncertainty.
 
-Only the second layer can legitimately attempt broad W2/W3 reconstruction.
+## Evidence discipline
+Use the following distinctions permanently:
+
+`PARSER CAPABILITY != RECORDING EVIDENCE != SEMANTIC INTERPRETATION != RECONSTRUCTED WORLD STATE`
+
+Never write “the replay contains no object state.” State instead that the **tested normalized body surface does not expose sufficient dynamic object-state lineage for the requested W2 claims**.
+
+Never write “full mgz cannot reconstruct state.” State only that the **inspected full parser/model does not itself provide a continuously reconstructed dynamic world-state database**.
+
+Never promote external parser implementation details to Layer-2 historical authority.
 
 ## What remains open
-A full replay simulator remains an engineering project and is not justified merely by the need to close one evidence gap. Before building one, we should determine whether existing engine-compatible replay playback, genie-rs/recage-style implementations, or another authoritative runtime surface can provide state observations more efficiently.
+Raw `.aoe2record` opcode/lifecycle archaeology has not yet exhausted the possibility of additional undocumented or poorly decoded lifecycle signals. In particular, CREATE and unknown DE opcodes require systematic occurrence, payload, temporal-neighborhood, SYNC-delta, and object-ID correlation analysis.
 
-The immediate next investigation should therefore inventory existing replay-playback/state-reconstruction implementations and compare their actual object-lifecycle coverage against the AEGIS W0-W4 evidence ladder.
+If raw-format archaeology fails to reveal sufficient lifecycle evidence, the next escalation is to inventory existing replay playback/state-reconstruction implementations before considering a bespoke interpreter.
 
 ## Evidence grades
 - Fast/full parser distinction: **DIRECT — EXTERNAL SECONDARY**.
 - Rich object fields in parser source: **DIRECT — EXTERNAL SECONDARY**.
-- Header initial objects vs body actions architecture: **DIRECT — EXTERNAL SECONDARY**.
-- H1 adjudication: **COMPOSED**.
-- H2 adjudication: **COMPOSED / UNCERTAIN**.
+- Header initial objects vs body operations: **DIRECT — EXTERNAL SECONDARY**.
+- L2 != L3: **COMPOSED / CONFIRMED for the tested pipeline**.
+- H1: **REJECTED AS SUFFICIENT EXPLANATION**.
+- H2: **NOT SUPPORTED / UNCERTAIN beyond inspected implementation**.
 - H3: **COMPOSED / PROBABLE**.
 - AEGIS two-layer replay architecture: **AEGIS-GENERALIZATION**.
 
 ## Disposition
-**Pass 19: ACCEPT WITH CORRECTIONS — W2 remains open, but the information boundary is now materially better characterized.**
+**Pass 19 amended: ACCEPT WITH CORRECTIONS — WORKING CANON.**
+The amendment narrows the claims without weakening the central finding: the current normalized replay surface does not close W2, the inspected parser does not automatically supply L3 state reconstruction, and raw-format lifecycle archaeology remains the proper next experiment.
