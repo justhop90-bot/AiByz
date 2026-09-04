@@ -1,0 +1,34 @@
+{
+  "schema": "AEGIS-L2-P23-v1",
+  "input": "06_REPLAYS/08_FORENSIC_RUNS/2026-09-02_REFERENCE/body_fresh.jsonl",
+  "sha256": "3a5ceff2654d86155407dfe98acbab37c3c8432121228d5d0a5959b68c78b9f3",
+  "events_seen": 597681,
+  "actions_seen": 6858,
+  "opaque_unsupported_actions": 616,
+  "players": 2,
+  "delete_targets_observed": 30,
+  "pending_total": 2115,
+  "pending_by_command": {
+    "BUILD": 471,
+    "DELETE": 33,
+    "DE_QUEUE": 1493,
+    "RESEARCH": 118
+  },
+  "promoted_w1": 0,
+  "promoted_w2": 0,
+  "promoted_w3": 0,
+  "negative_tests": {
+    "queue_not_spawned": true,
+    "build_not_completed": true,
+    "research_not_completed": true,
+    "no_individual_birth_from_aggregate": true,
+    "no_aggregate_death_lineage": true
+  },
+  "closure": {
+    "W0": "CLOSED",
+    "W1": "OPEN",
+    "W2": "OPEN",
+    "W3": "OPEN"
+  },
+  "invariant": "unsupported transitions remain unresolved"
+}
