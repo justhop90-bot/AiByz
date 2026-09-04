@@ -2,7 +2,6 @@
 
 **Date:** 2026-09-04
 **Audited branch:** `aegis/layer2-hd-methodology-coding-2026-09-04`
-**Final verification target:** current branch HEAD after handoff documentation updates
 **Purpose:** final handoff integrity audit after conversational context termination
 
 ## Audit result
@@ -10,7 +9,6 @@
 The branch was freshly cloned and audited across the entire tracked working tree.
 
 - **158 tracked files** at final verification
-- **1,551,969 working-tree bytes** at final verification
 - every tracked file decoded as UTF-8
 - zero NUL bytes
 - zero unexpected ASCII control-byte files
@@ -25,7 +23,7 @@ The branch was freshly cloned and audited across the entire tracked working tree
 - `git diff --check` clean for the recent handoff commits
 - no tested private-key/GitHub-token/AWS-key/password credential patterns
 
-A final checkout was performed after all handoff updates. The root README was explicitly restored and verified after transient accidental truncation during editing. No project data was intentionally removed by those incidents.
+The root README was explicitly restored and verified after transient accidental truncation during editing. No project data was intentionally removed by those incidents.
 
 ## Full-tree whitespace finding
 
@@ -93,7 +91,7 @@ No repository-integrity blocker was found. Remaining risks are substantive:
 
 **REPOSITORY QC: PASS WITH KNOWN HISTORICAL WHITESPACE.**
 
-No byte-level encoding, syntax, path-collision, Git-object, or structured-data blocker was found in the final 158-file snapshot. The only repository-wide static hygiene finding is 52 files with trailing whitespace, intentionally left untouched to preserve historical artifacts and avoid a provenance-distorting mass diff.
+No byte-level encoding, syntax, path-collision, Git-object, or structured-data blocker was found in the final audited snapshot. The only repository-wide static hygiene finding is 52 files with trailing whitespace, intentionally left untouched to preserve historical artifacts and avoid a provenance-distorting mass diff.
 
 The repository is suitable as the **professional handoff baseline**.
 
