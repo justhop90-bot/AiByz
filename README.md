@@ -51,7 +51,7 @@ Key findings include:
 - The controlled `AoE2DE_s.exe` build SHA-256 is `6378CA6F1FBD2F230B5B7F2CD048198331848AF70F44B5CD13CEB89420A321A4`.
 - The latest qualified stock-AI corpus measurement is **7,831 syntactically reachable `defrule` definitions across 28 reachable `.per/.per2/.xs` files**, under conservative conditional-branch inclusion. The former 7,715 figure is retired.
 
-Layer-1 completion targets remain explicitly recorded rather than guessed closed: persistent-fact mutation/freshness, `CurrentOrder -> CurrentAction`, rule/handler-to-action bridge, failure/completion propagation, required object lifecycle edges, and one predictive end-to-end `.per` experiment.
+Layer-1 completion targets remain explicitly recorded rather than guessed closed: persistent-fact mutation/freshness, `CurrentOrder -> CurrentAction`, rule/handler-to-native-action bridge, failure/completion propagation, required object lifecycle edges, and one predictive end-to-end `.per` experiment.
 
 ## Layer 2 — the programmer's strategic model
 
