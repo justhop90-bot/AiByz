@@ -81,6 +81,14 @@ Why would an experienced AoE2 programmer choose these abstractions, timers, rese
 
 Primary artifact: `HD_META_KNOWLEDGE_PASS3_2026-09-04.md`.
 
+### Pass 4 — State-channel / writer-reader reconstruction
+
+Which strategic state channels exist, who appears to write them, who reads them, what game decision they mediate, and where conflicting writers can destabilize the controller?
+
+Primary artifact: `HD_STATE_CHANNEL_GRAPH_PASS4_2026-09-04.md`.
+
+This pass converts the programmer-mind reconstruction into an explicit logical architecture and identifies the highest-value end-to-end causal chains for the next investigation.
+
 ### Practical coding catalogue
 
 The archaeology is now paired with `AOE2DE_PRACTICAL_CODING_KNOWLEDGE_BASE.md`, which starts from common AoE2 game problems and records what the historical HD/Promisory code needed to solve them, the coding patterns used, and the AEGIS generalization.
