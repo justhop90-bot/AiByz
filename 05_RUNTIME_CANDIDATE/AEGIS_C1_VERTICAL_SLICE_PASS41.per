@@ -1,0 +1,201 @@
+; AEGIS C1 vertical slice — cavalry pressure -> camel capability.
+; Pass 41 candidate runtime adapter.
+; Production execution remains downstream of this controller.
+;
+; State contract:
+;   pressure -> target -> verified -> deficit -> commitment -> authority
+;   -> traincamel -> world verification -> recovery/reassessment.
+;
+(defconst aegis-c1-cycle-goal 3830)
+(defconst aegis-c1-pressure-goal 3831)
+(defconst aegis-c1-target-goal 3832)
+(defconst aegis-c1-verified-goal 3833)
+(defconst aegis-c1-deficit-goal 3834)
+(defconst aegis-c1-commit-goal 3835)
+(defconst aegis-c1-prev-verified-goal 3836)
+(defconst aegis-c1-stall-goal 3837)
+(defconst aegis-c1-result-goal 3838)
+(defconst aegis-c1-authority-goal 3839)
+(defconst aegis-c1-observe 0)
+(defconst aegis-c1-plan 1)
+(defconst aegis-c1-authorize 2)
+(defconst aegis-c1-verify 3)
+(defconst aegis-c1-result-idle 0)
+(defconst aegis-c1-result-active 1)
+(defconst aegis-c1-result-satisfied 2)
+(defconst aegis-c1-result-stalled 3)
+
+(defrule
+    (true)
+=>
+    (set-goal aegis-c1-cycle-goal aegis-c1-observe)
+    (set-goal aegis-c1-pressure-goal 0)
+    (set-goal aegis-c1-target-goal 0)
+    (set-goal aegis-c1-verified-goal 0)
+    (set-goal aegis-c1-deficit-goal 0)
+    (set-goal aegis-c1-commit-goal 0)
+    (set-goal aegis-c1-prev-verified-goal 0)
+    (set-goal aegis-c1-stall-goal 0)
+    (set-goal aegis-c1-result-goal aegis-c1-result-idle)
+    (set-goal aegis-c1-authority-goal 0)
+    (disable-self))
+
+; Measurement uses the proven focus-player predicate rather than the known
+; validator-sensitive up-get-focus-fact knight-line combination.
+; Pressure is deliberately bucketed for this first executable slice.
+(defrule
+    (timer-triggered fifteensec)
+    (players-unit-type-count focus-player knight-line >= 40)
+=>
+    (set-goal aegis-c1-pressure-goal 40)
+    (up-get-fact unit-type-count-total camel-line temporary-goal2)
+    (up-modify-goal aegis-c1-verified-goal g:= temporary-goal2)
+    (set-goal aegis-c1-cycle-goal aegis-c1-plan))
+(defrule
+    (timer-triggered fifteensec)
+    (players-unit-type-count focus-player knight-line >= 25)
+    (players-unit-type-count focus-player knight-line < 40)
+=>
+    (set-goal aegis-c1-pressure-goal 25)
+    (up-get-fact unit-type-count-total camel-line temporary-goal2)
+    (up-modify-goal aegis-c1-verified-goal g:= temporary-goal2)
+    (set-goal aegis-c1-cycle-goal aegis-c1-plan))
+(defrule
+    (timer-triggered fifteensec)
+    (players-unit-type-count focus-player knight-line >= 15)
+    (players-unit-type-count focus-player knight-line < 25)
+=>
+    (set-goal aegis-c1-pressure-goal 15)
+    (up-get-fact unit-type-count-total camel-line temporary-goal2)
+    (up-modify-goal aegis-c1-verified-goal g:= temporary-goal2)
+    (set-goal aegis-c1-cycle-goal aegis-c1-plan))
+(defrule
+    (timer-triggered fifteensec)
+    (players-unit-type-count focus-player knight-line >= 7)
+    (players-unit-type-count focus-player knight-line < 15)
+=>
+    (set-goal aegis-c1-pressure-goal 7)
+    (up-get-fact unit-type-count-total camel-line temporary-goal2)
+    (up-modify-goal aegis-c1-verified-goal g:= temporary-goal2)
+    (set-goal aegis-c1-cycle-goal aegis-c1-plan))
+(defrule
+    (timer-triggered fifteensec)
+    (players-unit-type-count focus-player knight-line >= 4)
+    (players-unit-type-count focus-player knight-line < 7)
+=>
+    (set-goal aegis-c1-pressure-goal 4)
+    (up-get-fact unit-type-count-total camel-line temporary-goal2)
+    (up-modify-goal aegis-c1-verified-goal g:= temporary-goal2)
+    (set-goal aegis-c1-cycle-goal aegis-c1-plan))
+(defrule
+    (timer-triggered fifteensec)
+    (players-unit-type-count focus-player knight-line < 4)
+=>
+    (set-goal aegis-c1-pressure-goal 0)
+    (up-get-fact unit-type-count-total camel-line temporary-goal2)
+    (up-modify-goal aegis-c1-verified-goal g:= temporary-goal2)
+    (set-goal aegis-c1-cycle-goal aegis-c1-plan))
+
+; Requirement ladder is calibrated from the historical C1 envelope.
+(defrule
+    (goal aegis-c1-cycle-goal aegis-c1-plan)
+    (up-compare-goal aegis-c1-pressure-goal >= c:40)
+=>
+    (set-goal aegis-c1-target-goal 58))
+(defrule
+    (goal aegis-c1-cycle-goal aegis-c1-plan)
+    (up-compare-goal aegis-c1-pressure-goal >= c:25)
+    (up-compare-goal aegis-c1-pressure-goal < c:40)
+=>
+    (set-goal aegis-c1-target-goal 40))
+(defrule
+    (goal aegis-c1-cycle-goal aegis-c1-plan)
+    (up-compare-goal aegis-c1-pressure-goal >= c:15)
+    (up-compare-goal aegis-c1-pressure-goal < c:25)
+=>
+    (set-goal aegis-c1-target-goal 24))
+(defrule
+    (goal aegis-c1-cycle-goal aegis-c1-plan)
+    (up-compare-goal aegis-c1-pressure-goal >= c:7)
+    (up-compare-goal aegis-c1-pressure-goal < c:15)
+=>
+    (set-goal aegis-c1-target-goal 11))
+(defrule
+    (goal aegis-c1-cycle-goal aegis-c1-plan)
+    (up-compare-goal aegis-c1-pressure-goal >= c:4)
+    (up-compare-goal aegis-c1-pressure-goal < c:7)
+=>
+    (set-goal aegis-c1-target-goal 6))
+(defrule
+    (goal aegis-c1-cycle-goal aegis-c1-plan)
+    (up-compare-goal aegis-c1-pressure-goal < c:4)
+    (up-compare-goal aegis-c1-commit-goal == c:0)
+=>
+    (set-goal aegis-c1-target-goal 0))
+
+; Deficit is a planning quantity, not a production command.
+(defrule
+    (goal aegis-c1-cycle-goal aegis-c1-plan)
+    (up-compare-goal aegis-c1-target-goal g:> aegis-c1-verified-goal)
+=>
+    (up-modify-goal aegis-c1-deficit-goal g:= aegis-c1-target-goal)
+    (up-modify-goal aegis-c1-deficit-goal g:- aegis-c1-verified-goal)
+    (set-goal aegis-c1-result-goal aegis-c1-result-active)
+    (set-goal aegis-c1-cycle-goal aegis-c1-authorize))
+(defrule
+    (goal aegis-c1-cycle-goal aegis-c1-plan)
+    (up-compare-goal aegis-c1-target-goal g:<= aegis-c1-verified-goal)
+=>
+    (set-goal aegis-c1-deficit-goal 0)
+    (set-goal aegis-c1-commit-goal 0)
+    (set-goal aegis-c1-authority-goal 0)
+    (set-goal aegis-c1-result-goal aegis-c1-result-satisfied)
+    (set-goal aegis-c1-cycle-goal aegis-c1-verify))
+
+; Authorization requires the existing production feasibility gates.
+(defrule
+    (goal aegis-c1-cycle-goal aegis-c1-authorize)
+    (up-compare-goal aegis-c1-deficit-goal >= c:1)
+    (up-compare-goal aegis-c1-commit-goal == c:0)
+    (goal milunits yes)
+    (food-amount >= cm-buffer-f)
+=>
+    (set-goal aegis-c1-commit-goal 1)
+    (set-goal aegis-c1-authority-goal 1)
+    (set-goal aegis-c1-stall-goal 0)
+    (set-goal traincamel yes)
+    (set-goal aegis-c1-cycle-goal aegis-c1-verify))
+
+; Hysteresis: pressure 2–3 does not release an active commitment.
+(defrule
+    (up-compare-goal aegis-c1-commit-goal == c:1)
+    (up-compare-goal aegis-c1-pressure-goal < c:2)
+=>
+    (set-goal aegis-c1-commit-goal 0)
+    (set-goal aegis-c1-authority-goal 0)
+    (set-goal aegis-c1-result-goal aegis-c1-result-satisfied))
+
+; Verification observes world capability rather than command issuance.
+; Three no-growth observations are allowed because camel training is ~22 seconds.
+(defrule
+    (goal aegis-c1-cycle-goal aegis-c1-verify)
+    (up-compare-goal aegis-c1-verified-goal g:> aegis-c1-prev-verified-goal)
+=>
+    (set-goal aegis-c1-stall-goal 0)
+    (up-modify-goal aegis-c1-prev-verified-goal g:= aegis-c1-verified-goal)
+    (set-goal aegis-c1-cycle-goal aegis-c1-observe))
+(defrule
+    (goal aegis-c1-cycle-goal aegis-c1-verify)
+    (up-compare-goal aegis-c1-commit-goal == c:1)
+    (up-compare-goal aegis-c1-verified-goal g:<= aegis-c1-prev-verified-goal)
+=>
+    (up-modify-goal aegis-c1-stall-goal g:+ 1)
+    (up-modify-goal aegis-c1-prev-verified-goal g:= aegis-c1-verified-goal)
+    (set-goal aegis-c1-cycle-goal aegis-c1-observe))
+(defrule
+    (up-compare-goal aegis-c1-commit-goal == c:1)
+    (up-compare-goal aegis-c1-stall-goal >= c:3)
+=>
+    (set-goal aegis-c1-commit-goal 0)
+    (set-goal aegis-c1-authority-goal 0)
+    (set-goal aegis-c1-result-goal aegis-c1-result-stalled))
