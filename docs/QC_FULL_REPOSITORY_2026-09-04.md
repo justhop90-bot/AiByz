@@ -10,7 +10,7 @@
 The branch was freshly cloned and audited across the entire tracked working tree.
 
 - **158 tracked files** at final verification
-- **1,554,105 working-tree bytes** at final verification
+- **1,551,969 working-tree bytes** at final verification
 - every tracked file decoded as UTF-8
 - zero NUL bytes
 - zero unexpected ASCII control-byte files
@@ -25,7 +25,7 @@ The branch was freshly cloned and audited across the entire tracked working tree
 - `git diff --check` clean for the recent handoff commits
 - no tested private-key/GitHub-token/AWS-key/password credential patterns
 
-A final checkout was performed after all handoff updates. The root README was explicitly restored and verified after a transient accidental truncation during editing. No project data was intentionally removed by that incident.
+A final checkout was performed after all handoff updates. The root README was explicitly restored and verified after transient accidental truncation during editing. No project data was intentionally removed by those incidents.
 
 ## Full-tree whitespace finding
 
