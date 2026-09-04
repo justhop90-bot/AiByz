@@ -110,3 +110,21 @@ The historical source is a strategic knowledge fossil and engineering case study
 The target architecture is:
 
 `WORLD -> OBSERVATION -> BELIEF/CLASSIFICATION -> REQUIREMENT -> CAPABILITY CANDIDATES -> RESOURCE/TIMING EVALUATION -> COMMITMENT -> AUTHORIZED ACTION -> POSTCONDITION -> RECOVERY/REASSESSMENT`.
+
+## Pass 12 — Cross-system control graph
+
+Pass 12 promotes the archaeology from isolated downstream closures to a cross-system causal network. The primary artifact is `AOE2DE_CROSS_SYSTEM_CONTROL_GRAPH_PASS12_2026-09-04.md`.
+
+The graph connects economy, threat, production, technology, military, scouting/map position, attack, and recovery through their shared goals, strategic numbers, flags, timers, search state, and action consumers.
+
+The key methodological result is that closure is now tracked at three levels:
+
+`CONTROL -> WORLD -> STRATEGIC`.
+
+A rule reaching an action proves control causality; it does not automatically prove that the intended game-state change occurred or that the strategic objective was achieved.
+
+Pass 12 therefore establishes the historical AI as a **distributed strategic control network** rather than a centralized planner. Its repeated motif is:
+
+`game relationship -> measurement -> compact state -> threshold/context -> capability response -> search/selection -> action -> reset/reassessment`.
+
+The cross-system graph is a reconstruction. It must not be mistaken for an explicit architectural diagram authored by the original programmer. Strategic interpretations remain evidence-graded, and world-state closure remains an open requirement for the next pass.
