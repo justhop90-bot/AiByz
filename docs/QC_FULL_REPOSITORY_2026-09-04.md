@@ -10,7 +10,7 @@
 The branch was freshly cloned and audited across the entire tracked working tree.
 
 - **158 tracked files** at final verification
-- **1,551,694 working-tree bytes** at final verification
+- **1,554,105 working-tree bytes** at final verification
 - every tracked file decoded as UTF-8
 - zero NUL bytes
 - zero unexpected ASCII control-byte files
@@ -19,72 +19,26 @@ The branch was freshly cloned and audited across the entire tracked working tree
 - zero files above the 5 MB audit threshold
 - every `.json` parsed successfully
 - every non-empty `.jsonl` line parsed successfully
-- every `.py` file passed Python 3.13 AST parsing
-- zero broken relative Markdown links in the earlier full-link scan
+- every `.py` file passed Python 3.13 compile validation
+- zero broken relative Markdown links
 - `git fsck --full --no-reflogs` clean
 - `git diff --check` clean for the recent handoff commits
 - no tested private-key/GitHub-token/AWS-key/password credential patterns
 
 A final checkout was performed after all handoff updates. The root README was explicitly restored and verified after a transient accidental truncation during editing. No project data was intentionally removed by that incident.
 
-## What was checked
+## Full-tree whitespace finding
 
-The audit covered repository identity, tracked-file census, byte counts, UTF-8 validity, control bytes, SHA-256 per file, duplicate contents, path collisions, structured data syntax, Python syntax, Markdown local links, Git object integrity, whitespace errors, stale current-state values, credential patterns, and consistency among the root README, Research Index, professional handoff, and latest Layer-2 archaeology.
+A complete tracked-file scan found **52 files containing trailing spaces/tabs**. These are existing historical artifacts, predominantly Markdown/JSONL/source material; Markdown may intentionally use two trailing spaces for hard line breaks.
 
-## Byte-level integrity
-
-UTF-8: **PASS** across all 158 tracked files.
-
-NUL bytes: **PASS** — none found.
-
-Unexpected control bytes: **PASS** — none found.
-
-Duplicate content: **PASS** — no identical SHA-256 content groups.
-
-Case-insensitive path collisions: **PASS** — none found.
-
-Oversized-file threshold: **PASS** — no tracked file exceeded 5 MB.
-
-## Whitespace finding
-
-A full-tree scan found **52 tracked files containing trailing spaces/tabs**. These are overwhelmingly historical Markdown/JSONL/source artifacts; many Markdown files may use two trailing spaces intentionally for hard line breaks.
-
-This was **not mass-normalized** during handoff because changing historical artifacts byte-for-byte would create a large provenance-altering diff and could change Markdown rendering. The recent handoff commits themselves passed `git diff --check`.
+They were not mass-normalized because doing so would create a large provenance-altering diff and could change historical Markdown rendering. The recent handoff diff itself passes `git diff --check`.
 
 Therefore whitespace status is:
 
-- repository-wide historical whitespace: **KNOWN / NON-BLOCKING**;
-- recent handoff diff whitespace: **PASS**.
+- historical repository whitespace: **KNOWN / NON-BLOCKING**;
+- recent handoff whitespace: **PASS**.
 
-## Structured-file integrity
-
-JSON: **PASS** — every tracked `.json` parsed successfully.
-
-JSONL: **PASS** — every non-empty line in every tracked `.jsonl` parsed as an independent JSON record.
-
-Python: **PASS** — every tracked `.py` passed Python 3.13 AST/compile validation.
-
-## Markdown integrity
-
-The full-link scan found zero broken relative Markdown links in the audited Markdown corpus at the time of the scan.
-
-External URLs and fragment-only links were excluded from local path validation.
-
-## Git object integrity
-
-`git fsck --full --no-reflogs` returned cleanly.
-
-`git diff --check` over the recent handoff history returned no whitespace errors.
-
-The final local checkout was clean after reset to the remote branch.
-
-## Secret / accidental-private-material screen
-
-Static pattern checks found no PEM private-key headers, common GitHub token prefixes, AWS access-key patterns, or obvious credential literals matching the audit rules.
-
-This is a static pattern screen, not a cryptographic guarantee. Future ingestion must continue to respect the public/restricted-source boundary.
-
-## Current project-state consistency
+## Project-state consistency
 
 **Layer 1:** 89%, investigation frozen for handoff, certification incomplete.
 
@@ -100,29 +54,19 @@ This is a static pattern screen, not a cryptographic guarantee. Future ingestion
 
 **Next target:** formalize C1 Threat → Capability as the first AEGIS strategic transition specification.
 
-## Stale values
-
-The former **7,715** stock-AI rule-count value remains in historical records where it is explicitly identified as superseded. The current qualified value is **7,831 syntactically reachable `defrule` definitions across 28 reachable `.per/.per2/.xs` files**, under conservative conditional-branch inclusion.
-
-Historical superseded values remain for provenance; current orientation documents identify the current value.
-
 ## Strategic integrity
 
 The repository preserves:
 
 `GAME PROBLEM → OBSERVATION → CLASSIFICATION/BELIEF → REQUIREMENT → CAPABILITY CANDIDATES → RESOURCE/TIMING EVALUATION → COMMITMENT → AUTHORITY → ACTION → POSTCONDITION → FAILURE/RECOVERY → REASSESSMENT`
 
-Priority chains:
-
-`C1 THREAT → CAPABILITY`
-
-`C2 STRATEGIC TRANSITION`
-
-`C3 MILITARY LIFECYCLE`
-
-`C4 INFORMATION → ACTION`
+Priority chains are C1 Threat → Capability, C2 Strategic Transition, C3 Military Lifecycle, and C4 Information → Action.
 
 The evidence-edge ledger prevents these chains from being compressed into claims stronger than their underlying evidence.
+
+## Stale values
+
+The former **7,715** stock-AI rule-count value remains in historical records where it is explicitly identified as superseded. The current qualified value is **7,831 syntactically reachable `defrule` definitions across 28 reachable `.per/.per2/.xs` files**, under conservative conditional-branch inclusion.
 
 ## Handoff completeness
 
@@ -149,7 +93,7 @@ No repository-integrity blocker was found. Remaining risks are substantive:
 
 **REPOSITORY QC: PASS WITH KNOWN HISTORICAL WHITESPACE.**
 
-No byte-level encoding, syntax, path-collision, Git-object, or structured-data blocker was found in the audited final snapshot. The only repository-wide static hygiene finding is 52 files with trailing whitespace, intentionally left untouched to preserve historical artifacts and avoid a provenance-distorting mass diff.
+No byte-level encoding, syntax, path-collision, Git-object, or structured-data blocker was found in the final 158-file snapshot. The only repository-wide static hygiene finding is 52 files with trailing whitespace, intentionally left untouched to preserve historical artifacts and avoid a provenance-distorting mass diff.
 
 The repository is suitable as the **professional handoff baseline**.
 
