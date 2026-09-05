@@ -155,7 +155,7 @@ Remove from the active workflow:
 
 Substantive work enters through a work branch and reviewable PR, then merges to `main`. CODEOWNERS and the PR template establish minimum review context.
 
-GitHub recommends protected important branches, pull-request review, code ownership, and security controls for repositories where stability matters. This repository adopts those principles as operating standards. citehttps://docs.github.com/en/pull-requests/reference/managing-and-standardizing-pull-requests
+GitHub's repository guidance recommends protected important branches, pull-request review, code ownership, and security controls for repositories where stability matters. This repository adopts those principles as operating standards.
 
 ## 12. Final verdict
 
