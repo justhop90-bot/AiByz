@@ -34,6 +34,9 @@ def load_manifest(path: Path) -> dict[str, Any]:
     forbidden = [a for a in args if any(a.startswith(x) for x in FORBIDDEN_FLAGS)]
     if forbidden:
         raise ValueError(f"embedded test-harness controls are prohibited: {forbidden}")
+    expected = data.get("launch", {}).get("expected_process_state", "running_at_timeout")
+    if expected not in {"running_at_timeout", "exited"}:
+        raise ValueError("expected_process_state must be running_at_timeout or exited")
     return data
 
 
@@ -57,16 +60,10 @@ def run(manifest_path: Path, output_root: Path) -> int:
     build = capture_build(manifest)
     run_dir = output_root / manifest["experiment_id"]
     run_dir.mkdir(parents=True, exist_ok=True)
-    (run_dir / "manifest.json").write_text(
-        json.dumps(manifest, indent=2), encoding="utf-8"
-    )
-    (run_dir / "build.json").write_text(
-        json.dumps(build, indent=2), encoding="utf-8"
-    )
+    (run_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    (run_dir / "build.json").write_text(json.dumps(build, indent=2), encoding="utf-8")
     if not build["sha256_match"]:
-        verdict = "FAIL_HARNESS"
-        reason = "executable fingerprint mismatch"
-        _write_verdict(run_dir, verdict, reason)
+        _write_verdict(run_dir, "FAIL_HARNESS", "executable fingerprint mismatch")
         return 2
 
     args = [manifest["build"]["executable"], *manifest["launch"]["args"]]
@@ -85,11 +82,9 @@ def run(manifest_path: Path, output_root: Path) -> int:
         return 3
 
     try:
-        stdout, stderr = proc.communicate(
-            timeout=float(manifest["launch"]["timeout_seconds"])
-        )
+        stdout, stderr = proc.communicate(timeout=float(manifest["launch"]["timeout_seconds"]))
         timed_out = False
-    except subprocess.TimeoutExpired as exc:
+    except subprocess.TimeoutExpired:
         proc.kill()
         stdout, stderr = proc.communicate()
         timed_out = True
@@ -102,20 +97,29 @@ def run(manifest_path: Path, output_root: Path) -> int:
         "returncode": proc.returncode,
         "timed_out": timed_out,
         "elapsed_seconds": elapsed,
+        "expected_process_state": manifest["launch"].get("expected_process_state", "running_at_timeout"),
     }
-    (run_dir / "lifecycle.json").write_text(
-        json.dumps(lifecycle, indent=2), encoding="utf-8"
-    )
+    (run_dir / "lifecycle.json").write_text(json.dumps(lifecycle, indent=2), encoding="utf-8")
 
-    # Process success is never treated as semantic/runtime success.
-    if timed_out:
-        verdict = "FAIL_RUNTIME_BEHAVIOR"
-        reason = "supervisor timeout"
-    else:
+    expected_state = manifest["launch"].get("expected_process_state", "running_at_timeout")
+    if timed_out and expected_state == "running_at_timeout":
         verdict = "OBSERVED_WITH_LIMITATIONS"
-        reason = "retail process lifecycle observed; semantic postconditions require replay evidence"
+        reason = "process remained running through observation window; semantic postconditions require replay/live evidence"
+        rc = 0
+    elif timed_out:
+        verdict = "FAIL_RUNTIME_BEHAVIOR"
+        reason = "process exceeded timeout despite expected exit"
+        rc = 4
+    elif expected_state == "exited" and proc.returncode == 0:
+        verdict = "OBSERVED_WITH_LIMITATIONS"
+        reason = "expected process exit observed; semantic postconditions require replay/live evidence"
+        rc = 0
+    else:
+        verdict = "FAIL_RUNTIME_BEHAVIOR"
+        reason = f"unexpected process exit code {proc.returncode}"
+        rc = 4
     _write_verdict(run_dir, verdict, reason)
-    return 0 if not timed_out else 4
+    return rc
 
 
 def _write_verdict(run_dir: Path, verdict: str, reason: str) -> None:
@@ -124,9 +128,7 @@ def _write_verdict(run_dir: Path, verdict: str, reason: str) -> None:
         "reason": reason,
         "evidence_level": "runtime_observed" if verdict != "FAIL_HARNESS" else "harness_failure",
     }
-    (run_dir / "verdict.json").write_text(
-        json.dumps(payload, indent=2), encoding="utf-8"
-    )
+    (run_dir / "verdict.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
 
 def main(argv: list[str]) -> int:
