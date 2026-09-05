@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "experiment_id": "CAL_BUILD_001",
+  "build": {
+    "executable": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\AoE2DE_s.exe",
+    "sha256": "6378CA6F1FBD2F230B5B7F2CD048198331848AF70F44B5CD13CEB89420A321A4",
+    "version": "101.103.48987.0",
+    "steam_build_id": "24094652"
+  },
+  "launch": {
+    "args": ["-SKIPINTRO"],
+    "timeout_seconds": 20,
+    "working_directory": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE"
+  },
+  "evidence_policy": {
+    "allow_injection": false,
+    "allow_memory_write": false,
+    "require_replay": false
+  }
+}
