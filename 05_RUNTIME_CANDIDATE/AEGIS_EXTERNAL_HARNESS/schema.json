@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AEGIS External Harness Run Manifest",
+  "type": "object",
+  "required": ["schema_version", "experiment_id", "build", "launch", "evidence_policy"],
+  "properties": {
+    "schema_version": {"type": "string", "const": "1.0"},
+    "experiment_id": {"type": "string", "minLength": 1},
+    "build": {
+      "type": "object",
+      "required": ["executable", "sha256"],
+      "properties": {
+        "executable": {"type": "string"},
+        "sha256": {"type": "string", "pattern": "^[0-9a-fA-F]{64}$"},
+        "version": {"type": ["string", "null"]},
+        "steam_build_id": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "launch": {
+      "type": "object",
+      "required": ["args", "timeout_seconds"],
+      "properties": {
+        "args": {"type": "array", "items": {"type": "string"}},
+        "timeout_seconds": {"type": "number", "exclusiveMinimum": 0},
+        "working_directory": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "evidence_policy": {
+      "type": "object",
+      "required": ["allow_injection", "allow_memory_write"],
+      "properties": {
+        "allow_injection": {"type": "boolean", "const": false},
+        "allow_memory_write": {"type": "boolean", "const": false},
+        "require_replay": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
