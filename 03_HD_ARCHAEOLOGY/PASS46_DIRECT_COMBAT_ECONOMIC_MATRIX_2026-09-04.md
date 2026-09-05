@@ -463,7 +463,7 @@ and
 Byzantine Fire Ship / Dromon strategic role
 ```
 
-The February 2026 update's Byzantine Fire Ship/Dromon attack-speed bonus remains relevant as a direct civilization modifier, while strategic naval control remains an empirical question.
+The February 2026 update's Byzantine Fire Ship/Dromon attack-speed bonus remains relevant as a direct civilization modifier, while strategic naval control remains an empirical question. 
 
 No naval "best counter" is assigned in Pass 46.
 
