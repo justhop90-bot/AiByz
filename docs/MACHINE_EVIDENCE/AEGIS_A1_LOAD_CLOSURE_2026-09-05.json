@@ -1,0 +1,16 @@
+{
+  "captured_utc": "2026-09-05T06:52:28.809389+00:00",
+  "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\ai",
+  "entrypoint": "AI (HD version).per",
+  "closure": [
+    {
+      "path": "AI (HD version).per",
+      "bytes": 1167238,
+      "sha256": "8a554a90a18f7983a949f7bef3b767e09732bce87dca3b9546fe782f098de51c",
+      "loads": [[18,"Promisory\\defaultConstants.per"],[19,"Promisory\\finalingConstants.per"],[36140,"Promisory\\finaling.per"]]
+    },
+    {"path":"Promisory\\finaling.per","bytes":29232,"sha256":"95e18eb8b765a7f87ea499c25ed944d0e04c9abf932b70d8821ef1154d872e52","loads":[]},
+    {"path":"Promisory\\finalingConstants.per","bytes":10515,"sha256":"ce7a804a9855742cf4329c0fa44e603a5d19655951bf8e6bc5cf689264e07455","loads":[]},
+    {"path":"Promisory\\defaultConstants.per","bytes":33628,"sha256":"187980fd34f5a5626955b20dd97114dc2212c9e7e86356014a7976dd1ae310ad","loads":[]}
+  ]
+}
