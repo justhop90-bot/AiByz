@@ -18,11 +18,16 @@ def test_replay_index_preserves_command_boundary(tmp_path: Path):
     result = build_index(source, events)
     assert result["records_by_operation"]["ACTION"] == 3
     assert result["lifecycle_commands_indexed"] == 2
-    assert result["replay_duration_ms_from_sync_increments"] == 117
+    assert result["replay_duration_raw_units"] == 117
+    assert result["temporal_boundary"]["millisecond_claim"] == "NOT_MADE"
     parsed = [json.loads(line) for line in events.read_text(encoding="utf-8").splitlines()]
     assert [row["command"] for row in parsed] == ["DE_QUEUE", "BUILD"]
-    assert parsed[0]["replay_time_ms"] == 13
-    assert parsed[1]["replay_time_ms"] == 117
+    assert parsed[0]["nearest_prior_sync_elapsed_raw"] == 13
+    assert parsed[1]["nearest_prior_sync_elapsed_raw"] == 117
+    assert parsed[0]["action_sequence"] == 1200
+    assert parsed[1]["action_sequence"] == 1300
+    assert parsed[0]["source_line"] == 2
+    assert parsed[1]["source_line"] == 4
     assert all(row["semantic_status"] == "ISSUED" for row in parsed)
     assert all(row["event_kind"] == "COMMAND_ISSUED" for row in parsed)
 

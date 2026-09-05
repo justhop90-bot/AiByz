@@ -7,7 +7,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
-SCHEMA = "AEGIS-REPLAY-INDEX-v2"
+SCHEMA = "AEGIS-REPLAY-INDEX-v3"
 LIFECYCLE_ACTIONS = {"BUILD", "DE_QUEUE", "RESEARCH", "DELETE"}
 
 
@@ -30,8 +30,9 @@ def iter_rows(path: Path) -> Any:
                 raise ValueError(f"invalid JSON at line {line_no}: {exc}") from exc
 
 
-def normalize_action(sequence: int, command: str, data: dict[str, Any],
-                     replay_time_ms: int, ordinal: int) -> dict[str, Any]:
+def normalize_action(record_ordinal: int, source_line: int, sequence: int,
+                     command: str, data: dict[str, Any],
+                     prior_sync_elapsed_raw: int, ordinal: int) -> dict[str, Any]:
     target = None
     if command == "BUILD":
         target = data.get("building_id")
@@ -41,8 +42,10 @@ def normalize_action(sequence: int, command: str, data: dict[str, Any],
         target = data.get("unit_id")
     return {
         "ordinal": ordinal,
-        "sequence": sequence,
-        "replay_time_ms": replay_time_ms,
+        "record_ordinal": record_ordinal,
+        "source_line": source_line,
+        "action_sequence": sequence,
+        "nearest_prior_sync_elapsed_raw": prior_sync_elapsed_raw,
         "event_kind": "COMMAND_ISSUED",
         "command": command,
         "player_id": data.get("player_id"),
@@ -60,31 +63,49 @@ def build_index(input_path: Path, output_path: Path) -> dict[str, Any]:
     op_counts: Counter[str] = Counter()
     normalized: list[dict[str, Any]] = []
     sync_count = 0
-    sync_increment_total_ms = 0
+    sync_elapsed_raw_total = 0
     sync_payloads_with_state = 0
     ordinal = 0
+    record_ordinal = 0
+    previous_sequence: int | None = None
+    sequence_regressions = 0
+    equal_adjacent_sequence_pairs = 0
 
-    for _, row in iter_rows(input_path):
+    for source_line, row in iter_rows(input_path):
+        record_ordinal += 1
         op = row.get("op")
         op_counts[str(op)] += 1
         payload = row.get("payload")
         if op == "SYNC" and isinstance(payload, list):
             sync_count += 1
-            # mgz-fast defines SYNC payload[0] as the elapsed-time increment.
-            # payload[2] is parser metadata; on the calibration replay it is {}.
+            # mgz-fast payload[0] is the parser's elapsed-time increment.
+            # Its physical unit is deliberately not asserted here.
             increment = payload[0] if payload and isinstance(payload[0], int) else 0
-            sync_increment_total_ms += increment
+            sync_elapsed_raw_total += increment
             if len(payload) > 2 and isinstance(payload[2], dict) and payload[2]:
                 sync_payloads_with_state += 1
         elif op == "ACTION" and isinstance(payload, list) and len(payload) == 2:
             command, data = payload
             if isinstance(command, str) and isinstance(data, dict):
                 action_counts[command] += 1
+                sequence = data.get("sequence")
+                if isinstance(sequence, int):
+                    if previous_sequence is not None:
+                        if sequence < previous_sequence:
+                            sequence_regressions += 1
+                        if sequence == previous_sequence:
+                            equal_adjacent_sequence_pairs += 1
+                    previous_sequence = sequence
                 if command in LIFECYCLE_ACTIONS:
                     ordinal += 1
                     normalized.append(normalize_action(
-                        int(data.get("sequence", -1)), command, data,
-                        sync_increment_total_ms, ordinal,
+                        record_ordinal,
+                        source_line,
+                        int(sequence) if isinstance(sequence, int) else -1,
+                        command,
+                        data,
+                        sync_elapsed_raw_total,
+                        ordinal,
                     ))
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -100,8 +121,11 @@ def build_index(input_path: Path, output_path: Path) -> dict[str, Any]:
         "actions_by_command": dict(action_counts),
         "sync_records": sync_count,
         "sync_payloads_with_nonempty_metadata": sync_payloads_with_state,
-        "replay_duration_ms_from_sync_increments": sync_increment_total_ms,
+        "replay_duration_raw_units": sync_elapsed_raw_total,
         "lifecycle_commands_indexed": len(normalized),
+        "action_sequence_monotonic_on_observed_records": sequence_regressions == 0,
+        "action_sequence_regressions": sequence_regressions,
+        "equal_adjacent_action_sequence_pairs": equal_adjacent_sequence_pairs,
         "semantic_boundary": {
             "ACTION": "COMMAND_ISSUED_ONLY",
             "SYNC": "ELAPSED_TIME_INCREMENT_ONLY",
@@ -110,7 +134,13 @@ def build_index(input_path: Path, output_path: Path) -> dict[str, Any]:
             "created_to_available": "NOT_INFERRED",
             "effective": "NOT_INFERRED",
         },
-        "evidence_policy": "Replay ACTION records establish issued commands; SYNC establishes replay time progression. Neither alone proves world-state completion.",
+        "temporal_boundary": {
+            "action_sequence": "RAW_ACTION_SEQUENCE_FIELD",
+            "nearest_prior_sync_elapsed_raw": "CUMULATIVE_PARSER_TIME_BEFORE_ACTION; NOT_ACTION_TIMESTAMP",
+            "replay_duration_raw_units": "SUM_OF_SYNC_PAYLOAD_0; PHYSICAL_UNIT_UNQUALIFIED",
+            "millisecond_claim": "NOT_MADE",
+        },
+        "evidence_policy": "Replay ACTION records establish issued commands; SYNC establishes parser time progression. Neither alone proves world-state completion.",
     }
 
 
