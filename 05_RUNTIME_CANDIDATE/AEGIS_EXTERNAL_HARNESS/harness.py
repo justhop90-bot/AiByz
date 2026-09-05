@@ -9,7 +9,7 @@ import time
 from pathlib import Path
 from typing import Any
 
-SCHEMA_VERSION = "1.0"
+SCHEMA_VERSION = "1.1"
 FORBIDDEN_FLAGS = ("-TEST_HARNESS_COMM", "-TEST_HARNESS_ADDRESS")
 
 
@@ -23,7 +23,7 @@ def sha256_file(path: Path) -> str:
 
 def load_manifest(path: Path) -> dict[str, Any]:
     data = json.loads(path.read_text(encoding="utf-8"))
-    if data.get("schema_version") != SCHEMA_VERSION:
+    if data.get("schema_version") not in {"1.0", SCHEMA_VERSION}:
         raise ValueError("unsupported harness manifest schema")
     policy = data.get("evidence_policy", {})
     if policy.get("allow_injection") is not False:
@@ -81,13 +81,23 @@ def run(manifest_path: Path, output_root: Path) -> int:
         _write_verdict(run_dir, "FAIL_HARNESS", f"launch failed: {exc}")
         return 3
 
+    alive_at_timeout = False
+    terminated_after_observation = False
     try:
         stdout, stderr = proc.communicate(timeout=float(manifest["launch"]["timeout_seconds"]))
         timed_out = False
     except subprocess.TimeoutExpired:
-        proc.kill()
-        stdout, stderr = proc.communicate()
         timed_out = True
+        alive_at_timeout = proc.poll() is None
+        if alive_at_timeout:
+            proc.terminate()
+            terminated_after_observation = True
+        try:
+            stdout, stderr = proc.communicate(timeout=5)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            terminated_after_observation = True
+            stdout, stderr = proc.communicate()
 
     elapsed = time.time() - start
     (run_dir / "stdout.log").write_text(stdout or "", encoding="utf-8")
@@ -96,19 +106,21 @@ def run(manifest_path: Path, output_root: Path) -> int:
         "pid": proc.pid,
         "returncode": proc.returncode,
         "timed_out": timed_out,
+        "alive_at_timeout": alive_at_timeout,
+        "terminated_after_observation": terminated_after_observation,
         "elapsed_seconds": elapsed,
         "expected_process_state": manifest["launch"].get("expected_process_state", "running_at_timeout"),
     }
     (run_dir / "lifecycle.json").write_text(json.dumps(lifecycle, indent=2), encoding="utf-8")
 
     expected_state = manifest["launch"].get("expected_process_state", "running_at_timeout")
-    if timed_out and expected_state == "running_at_timeout":
+    if timed_out and expected_state == "running_at_timeout" and alive_at_timeout:
         verdict = "OBSERVED_WITH_LIMITATIONS"
-        reason = "process remained running through observation window; semantic postconditions require replay/live evidence"
+        reason = "process was alive at observation timeout; termination occurred only after lifecycle observation"
         rc = 0
     elif timed_out:
         verdict = "FAIL_RUNTIME_BEHAVIOR"
-        reason = "process exceeded timeout despite expected exit"
+        reason = "process exceeded timeout but was not observed alive at timeout"
         rc = 4
     elif expected_state == "exited" and proc.returncode == 0:
         verdict = "OBSERVED_WITH_LIMITATIONS"

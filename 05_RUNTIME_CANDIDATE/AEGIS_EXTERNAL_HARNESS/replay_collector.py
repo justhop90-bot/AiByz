@@ -8,7 +8,7 @@ import time
 from pathlib import Path
 from typing import Any
 
-SCHEMA = "AEGIS-REPLAY-COLLECT-v1"
+SCHEMA = "AEGIS-REPLAY-COLLECT-v2"
 
 
 def sha256_file(path: Path) -> str:
@@ -19,7 +19,8 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
-def candidates(root: Path, started_at: float, build_version: str) -> list[Path]:
+def candidates(root: Path, started_at: float, build_version: str,
+               match_filename_version: bool = False) -> list[Path]:
     if not root.exists():
         return []
     rows = []
@@ -28,13 +29,18 @@ def candidates(root: Path, started_at: float, build_version: str) -> list[Path]:
             stat = path.stat()
         except OSError:
             continue
-        if stat.st_mtime >= started_at and build_version in path.name:
-            rows.append(path)
+        if stat.st_mtime < started_at:
+            continue
+        if match_filename_version and build_version not in path.name:
+            continue
+        rows.append(path)
     return sorted(rows, key=lambda p: p.stat().st_mtime, reverse=True)
 
 
-def collect(root: Path, output_dir: Path, started_at: float, build_version: str) -> dict[str, Any]:
-    matches = candidates(root, started_at, build_version)
+def collect(root: Path, output_dir: Path, started_at: float,
+            build_version: str, stability_seconds: float = 1.0,
+            match_filename_version: bool = False) -> dict[str, Any]:
+    matches = candidates(root, started_at, build_version, match_filename_version)
     output_dir.mkdir(parents=True, exist_ok=True)
     if not matches:
         return {
@@ -43,10 +49,35 @@ def collect(root: Path, output_dir: Path, started_at: float, build_version: str)
             "root": str(root),
             "started_at": started_at,
             "build_version": build_version,
+            "filename_version_filter_enabled": match_filename_version,
             "candidates": [],
         }
 
     source = matches[0]
+    initial = source.stat()
+    time.sleep(max(0.0, stability_seconds))
+    try:
+        final = source.stat()
+    except OSError as exc:
+        return {
+            "schema": SCHEMA,
+            "status": "SOURCE_DISAPPEARED",
+            "source": str(source),
+            "error": str(exc),
+        }
+    stable = (final.st_size == initial.st_size and
+              final.st_mtime_ns == initial.st_mtime_ns)
+    if not stable:
+        return {
+            "schema": SCHEMA,
+            "status": "SOURCE_STILL_WRITING",
+            "source": str(source),
+            "initial_size": initial.st_size,
+            "final_size": final.st_size,
+            "initial_mtime_ns": initial.st_mtime_ns,
+            "final_mtime_ns": final.st_mtime_ns,
+        }
+
     destination = output_dir / source.name
     shutil.copy2(source, destination)
     return {
@@ -59,6 +90,10 @@ def collect(root: Path, output_dir: Path, started_at: float, build_version: str)
         "source_mtime": source.stat().st_mtime,
         "candidate_count": len(matches),
         "candidates": [str(p) for p in matches],
+        "build_version_filter": build_version,
+        "filename_version_filter_enabled": match_filename_version,
+        "stability_seconds": stability_seconds,
+        "source_stable_before_copy": True,
     }
 
 
@@ -68,11 +103,16 @@ def main() -> int:
     parser.add_argument("output_dir", type=Path)
     parser.add_argument("--started-at", type=float, default=time.time())
     parser.add_argument("--build-version", default="101.103.48987.0")
+    parser.add_argument("--stability-seconds", type=float, default=1.0)
+    parser.add_argument("--match-filename-version", action="store_true")
     parser.add_argument("--report", type=Path, required=True)
     args = parser.parse_args()
-    result = collect(args.root, args.output_dir, args.started_at, args.build_version)
+    result = collect(args.root, args.output_dir, args.started_at,
+                     args.build_version, args.stability_seconds,
+                     args.match_filename_version)
     args.report.parent.mkdir(parents=True, exist_ok=True)
-    args.report.write_text(json.dumps(result, indent=2, sort_keys=True), encoding="utf-8")
+    args.report.write_text(json.dumps(result, indent=2, sort_keys=True),
+                           encoding="utf-8")
     print(json.dumps(result, indent=2, sort_keys=True))
     return 0 if result["status"] == "COLLECTED" else 1
 
