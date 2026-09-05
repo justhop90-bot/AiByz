@@ -25,15 +25,27 @@ The four-file closure contains:
 
 This is direct target-package evidence and supersedes estimates derived from partial source inspection.
 
-## 3. Candidate AEGIS goal namespace collision result
+## 3. Candidate AEGIS goal namespace — corrected interpretation
 
 The Layer-2 reserved candidate scalar-goal namespace is `10000–15999`.
 
-A direct scan of the exact four-file HD runtime closure found:
+A raw declaration scan finds two numeric `defconst` values in that numeric range:
 
-- **0** occupied numeric values in `10000–15999`.
+- `heavy-wood = 10000`
+- `heavy-wood = 14000`
 
-This is strong collision evidence for the HD closure, but it is not by itself final ABI clearance. The complete allocation gate still requires the broader stock/package inventory, validator compatibility, and target-build operation-specific legality.
+These are **constant values**, not automatically goal identifiers. The exact four-file closure was then re-audited by parameter position using `set-goal`, `goal`, `up-modify-goal`, and `up-compare-goal` operands.
+
+Result:
+
+- **5,490** resolved goal operands;
+- **0** resolved high goal operands in `512–16000`.
+
+Therefore the defensible statement is:
+
+> The exact normal HD runtime closure contains no resolved high numeric goal operand in the audited goal-typed operations.
+
+This is static evidence, not final ABI clearance.
 
 ## 4. Typed identifier finding: `knight-line`
 
@@ -48,7 +60,7 @@ Examples from `AI (HD version).per` include conditional definitions such as:
 
 `knight` is separately defined in at least the WEI block as `hei-kuang-cavalry`.
 
-This is decisive static evidence against treating `knight-line` as synonymous with concrete unit ID `knight 38` or with a fixed universal line ID. It is a symbolic, conditionally defined unit-line alias in the stock HD AI package.
+This is decisive static evidence against treating `knight-line` as synonymous with concrete unit ID `knight 38` or with one fixed universal line ID. It is a symbolic, conditionally defined unit-line alias in the stock HD AI package.
 
 ### Engineering consequence
 
@@ -82,7 +94,8 @@ Therefore Q-02 and Q-06 must treat these as typed fact semantics, not merely int
 | Finding | Evidence | Status |
 |---|---|---|
 | Exact HD closure | direct installed source | STATIC PASS |
-| 10000–15999 unoccupied in closure | direct installed source | STATIC PASS / ABI candidate evidence |
+| No resolved high goal operands in audited goal operations | direct installed source + channel-aware audit | STATIC PASS / ABI candidate evidence |
+| Raw high numeric defconst values exist | direct installed source | STATIC CONTEXT — NOT GOAL COLLISION BY ITSELF |
 | `knight-line` conditional aliasing | direct installed source | STATIC PASS |
 | `knight` distinct from `knight-line` | direct installed source | STATIC PASS |
 | temporary scratch goals not necessarily defconsted | direct installed source/comment | STATIC PASS |
