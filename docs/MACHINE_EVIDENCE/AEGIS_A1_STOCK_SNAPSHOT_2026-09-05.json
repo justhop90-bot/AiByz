@@ -1,0 +1,12 @@
+{
+  "capture_utc":"2026-09-05T06:48:14.5862664Z",
+  "executable":"C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\AoE2DE_s.exe",
+  "file_version":"101.103.48987.0",
+  "product_version":"101.103.48987.0",
+  "executable_sha256":"6378CA6F1FBD2F230B5B7F2CD048198331848AF70F44B5CD13CEB89420A321A4",
+  "ai_root":"C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\ai",
+  "file_count":516,
+  "artifact":"The complete 516-file recursive stock AI manifest is preserved separately as AEGIS_A1_STOCK_MANIFEST_2026-09-05.jsonl; this JSON records the snapshot identity and points to that complete manifest.",
+  "complete_manifest_sha256":"see AEGIS_A1_STOCK_MANIFEST_2026-09-05.jsonl",
+  "provenance":"Captured from the restored, untouched stock Steam AI installation on Weebo."
+}
