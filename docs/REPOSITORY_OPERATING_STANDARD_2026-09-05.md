@@ -44,7 +44,7 @@ Future implementation or evidence changes should normally follow:
 
 Direct mutation of `main` should be reserved for emergency corrections or repository administration. Important changes should have a reviewable commit/PR trail.
 
-GitHub recommends protected important branches, pull-request review, status checks, and code ownership for repositories where stability matters. This project adopts those principles. citehttps://docs.github.com/en/repositories/creating-and-managing-repositories/best-practices-for-repositories
+GitHub's repository guidance recommends protected important branches, pull-request review, status checks, and code ownership where stability matters. AEGIS adopts those principles.
 
 ## 4. Branch taxonomy
 
