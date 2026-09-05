@@ -1,94 +1,93 @@
 # AiByz / AEGIS — Canonical Professional Engineering Handoff
 
-**Date:** 2026-09-05  
-**Repository:** `justhop90-bot/AiByz`  
-**Canonical handoff branch:** `aegis/canonical-handoff-2026-09-05`  
-**Canonical pre-handoff branch:** `aegis/layer2-hd-methodology-coding-2026-09-04` @ `d492ba1c776e2408f97fae0684402519b7635861`  
-**Project authority:** GitHub repository state; this document supersedes conversational memory when conflicts exist.
+**Effective:** 2026-09-05
+**Repository:** `justhop90-bot/AiByz`
+**Canonical branch:** `main`
+**Status:** authoritative starting record
+
+> This document is the current handoff. The previous version is preserved in Git history. The key correction is that the installed AoE2DE AI directory has now been explicitly designated by the project owner as a restored, untouched stock Steam baseline.
 
 ## 1. Mission
 
-Build AEGIS, a high-quality Byzantine AI for Age of Empires II: Definitive Edition. The intended system is a stateful strategic controller that observes the game, maintains bounded beliefs and commitments, derives capability requirements, evaluates feasible responses, executes through verified `.per` primitives, verifies world postconditions, recovers from failure, and reassesses.
+Build AEGIS, a high-quality Byzantine AI for Age of Empires II: Definitive Edition. AEGIS is intended to be a stateful strategic controller that observes the game, maintains bounded beliefs and commitments, derives capability requirements, evaluates feasible responses, executes through verified `.per` primitives, verifies world postconditions, recovers from failure, and reassesses.
 
 AEGIS is not a transcription of HD/Promisory and is not a static build order.
 
-## 2. Binding layer boundaries
+## 2. Current layer status
 
-### Layer 1 — Machine
+| Layer | Status | Authority |
+|---|---|---|
+| Layer 1 — Machine/runtime | **89%, frozen for handoff** | Current target-build evidence |
+| Layer 2 — HD/strategy archaeology | **Major reconstruction closed; targeted evidence only** | Historical HD/Promisory source |
+| Layer 3 — AEGIS architecture | **Active; symbolic contract defined; numeric ABI blocked** | Current architecture passes |
+| Layer 4 — Runtime implementation | **Blocked by design** | Cleared only after ABI gate |
 
-Frozen at **89%**. Broad archaeology is closed. Scenario-loader automation/testing is permanently retired. Re-entry is permitted only when a specific implementation requirement needs one of the explicitly recorded closure targets.
+Permanent boundaries:
 
-### Layer 2 — HD / strategy archaeology
+- Scenario-loader automation/testing is retired.
+- XS is outside AEGIS scope.
+- CADE is secondary validation infrastructure.
+- Historical source is evidence, not automatic implementation authority.
+- Commands are not completion proof.
+- Validator acceptance is not engine semantics.
+- Apparent numeric gaps are not safe ABI allocation.
 
-The major strategic reconstruction is effectively closed. The historical HD/Promisory source remains the archaeology authority; Layer-1 evidence remains the machine-semantics authority. Further Layer-2 work is permitted only for targeted evidence gaps that can change Layer-3 design.
+## 3. Current target build
 
-### Layer 3 — Architecture
+The authorized workstation capture identifies:
 
-The current workstream. The symbolic first-slice architecture is defined and hostile-QC'd, but the numeric ABI is **not cleared**.
+- executable: `C:\Program Files (x86)\Steam\steamapps\common\AoE2DE\AoE2DE_s.exe`
+- FileVersion: `101.103.48987.0`
+- ProductVersion: `101.103.48987.0`
+- SHA-256: `6378CA6F1FBD2F230B5B7F2CD048198331848AF70F44B5CD13CEB89420A321A4`
+- Steam BuildID: `24094652`
+- Update: `#180059`
 
-### Layer 4 — Runtime implementation
+This is the current A1 executable identity for the engineering target.
 
-**0% / blocked by design** until the numeric ABI and target-build primitive evidence are cleared.
+## 4. Current stock AI package baseline
 
-XS is permanently outside AEGIS scope.
+The project owner has restored the complete directory:
 
-## 3. Current architecture direction
+`C:\Program Files (x86)\Steam\steamapps\common\AoE2DE\resources\_common\ai`
+
+from Steam and states that it has not been modified since restoration.
+
+**Disposition: CURRENT STOCK-RUNTIME BASELINE.**
+
+This correction supersedes older repository language suggesting that the installed AI tree was necessarily contaminated or that the live package had not been acquired. Names appearing inside this restored directory — including `Promisory`, `AiBuilder`, or `testharness` — are not evidence of project modification by themselves.
+
+The directory is evidence to be captured, not edited. The next pass must produce an immutable file manifest, hashes, entrypoint record, and recursive import closure from this exact tree.
+
+## 5. Architecture
 
 The central AEGIS control chain is:
 
-`ABSTRACT STRATEGIC NEED → CAPABILITY → FEASIBLE PLAN → VERIFIED AOE2DE RUNTIME PRIMITIVES → EXECUTION → POSTCONDITION → REASSESSMENT`
+`WORLD → OBSERVE → CLASSIFY/BELIEVE → OBJECTIVE → REQUIREMENT → CAPABILITY → COMMIT → AUTHORIZE → EXECUTE → VERIFY → RESULT CLASSIFICATION → RECOVER/RE-ARBITRATE → REASSESS`
 
 The first executable vertical slice is **Cavalry Threat Containment**:
 
 `OBSERVE ENEMY → CLASSIFY CAVALRY THREAT → DEFINE CAMEL REQUIREMENT → CHECK CAPABILITY/RESOURCES → SELECT PRODUCER → COMMIT → EXECUTE → VERIFY → RECOVER/RE-ARBITRATE → REASSESS`
 
-The architecture explicitly separates strategic vocabulary from AoE2DE runtime vocabulary and never treats command issuance as proof of world-state completion.
+Mandatory state envelope:
 
-## 4. Current ABI gate
+`VALID + OWNER + GENERATION + STAGE + PAYLOAD + EVIDENCE_LEVEL`
 
-Passes 92–94 establish the first-slice symbolic contract and the deterministic allocation procedure.
+## 6. ABI gate
 
-Frozen symbolic fields:
+The symbolic first-slice contract is defined by Passes 92–94. The numeric ABI remains blocked until current package inventory is complete.
 
-`OBS.ENEMY_CAVALRY`  
-`OBS.ENEMY_CAVALRY_AGE`  
-`THREAT.CAVALRY_ACTIVE`  
-`CAP.CAMEL_CURRENT`  
-`CAP.CAMEL_REQUIRED`  
-`CAP.CAMEL_DEFICIT`  
-`CAND.PRODUCER`  
-`CAND.STATUS`  
-`COMMIT.VALID`  
-`COMMIT.OWNER`  
-`COMMIT.GEN`  
-`COMMIT.STAGE`  
-`EXEC.STAGE`  
-`EXEC.EXPECTED_GEN`  
-`RES.RESERVED`  
-`RES.DISCRETIONARY`  
-`ARB.EPOCH`  
-`ARB.DIRTY`  
-`VERIFY.LEVEL`
+Authority hierarchy:
 
-This is provisionally 16 goal-like fields + 3 flags. The representation may change only through an explicit ABI decision if authoritative inventory proves a safer native channel.
+`A1 exact installed target package/build > A2 verified package snapshot > A3 byte/content-equivalent repository snapshot > A4 historical/source > A5 inference`
 
-### Numeric ABI status
+Only A1–A3 can clear numeric allocation.
 
-**BLOCKED.** Do not invent goal/SN/flag/timer numbers from apparent gaps or partial source inspection.
-
-Required authority hierarchy:
-
-`A1 exact installed target package/build > A2 verified package snapshot > A3 byte/content-equivalent repository snapshot > A4 historical/source material > A5 inference`
-
-Only A1–A3 can clear a numeric allocation.
-
-## 5. Deterministic ABI audit
-
-Pass 94 defines the required pipeline:
+Required deterministic sequence:
 
 `TARGET PACKAGE → IMMUTABLE SNAPSHOT → FILE MANIFEST → SYMBOL EXTRACTION → REFERENCE EXTRACTION → CHANNEL NORMALIZATION → COLLISION JOIN → WRITER/READER MATRIX → BUILD/VALIDATOR JOIN → ABI DECISION`
 
-Non-negotiable invariants:
+Non-negotiable rules:
 
 - parser failure is not absence;
 - numeric equality across channels is not identity;
@@ -96,121 +95,77 @@ Non-negotiable invariants:
 - validator acceptance is not engine semantics;
 - engine documentation is not validator acceptance;
 - A5 inference cannot produce `CLEAR`;
-- allocation is reproducible from immutable inputs;
-- no `.per` source is changed by the audit itself.
+- allocation must be reproducible from immutable inputs;
+- the audit must not modify the stock baseline.
 
-Required machine-readable outputs are specified in Pass 94 and include snapshot manifest, symbol/reference inventories, import closure, channel occupancy, writer/reader matrix, validator findings, build profile, candidates, decisions, audit report, and run hash manifest.
+## 7. Historical strategic reconstruction
 
-## 6. Build identity
-
-Project evidence repeatedly fingerprints the target as **AoE2DE `101.103.48987.0` / Update #180059**. This is the current target build for engineering purposes.
-
-Important qualification: the replay/build fingerprint and public update evidence are not a substitute for an A1 installed-executable capture. Until the exact installed executable/version/hash is recorded from the authorized workstation, the build remains a target identity rather than a fully cleared A1 machine fact.
-
-## 7. Workstation status
-
-Authorized workstation: **Weebo** (`1aa2f154-9f15-4d83-94d1-dd0121f6bd29`).
-
-The project has established that the device can report online/ping successfully, while the remote process/filesystem execution channel has intermittently failed with `Not connected`. A successful connection must capture the exact executable/version/hash and the live `resources\\_common\\ai` package before numeric ABI clearance.
-
-Do not mark A1 complete merely because Weebo is online.
-
-## 8. Evidence discipline
-
-Evidence grades:
-
-- **E0 / DIRECT:** directly observed in authoritative source or snapshot.
-- **E1 / COMPOSED:** deterministic derivation from direct evidence.
-- **E2 / AEGIS-GENERALIZATION:** new architecture derived from evidence.
-- **E3 / HYPOTHESIS:** open or weakly supported.
-
-Strategic closure and runtime closure are separate:
-
-`CONTROL → WORLD → STRATEGIC`
-
-A command can be controllably issued without proving that the world changed, and a world change can occur without proving strategic success.
-
-## 9. Historical strategic model retained
-
-The strongest durable reconstruction is:
+The recovered historical model is:
 
 `GAME PROBLEM → OBSERVATION → CLASSIFICATION/BELIEF → REQUIREMENT → CAPABILITY CANDIDATES → RESOURCE/TIMING EVALUATION → COMMITMENT → AUTHORITY → ACTION → POSTCONDITION → FAILURE/RECOVERY → REASSESSMENT`
 
-Historical motifs directly supported by the archaeology include measure-to-state compression, guard-before-side-effect, search-before-commitment, escrow/protected transitions, production as a capability pipeline, threat-state/camel response, attack/retreat/restart lifecycle, geometric scouting, timers/persistent state, and fallback/recovery behavior.
+Major evidence-backed motifs include measure-to-state compression, guard-before-side-effect, search-before-commitment, protected transitions/escrow, production as capability acquisition, threat-driven camel response, attack/retreat/restart lifecycle, geometric scouting, timers/persistent state, and fallback/recovery.
 
-Do not describe HD/Promisory as strategically empty. The project assessment is that it is a capable bot with meaningful strategic structure, materially below a decent human player. Static source alone cannot prove a particular match outcome.
+The project assessment is that the historical HD AI is a capable strategic controller, materially below a decent human player. Static source archaeology does not prove individual match outcomes.
 
-## 10. Replay and CADE disposition
+## 8. Evidence discipline
 
-Reference replay evidence remains useful for corroboration. The normalized replay corpus and minimal deterministic interpreter intentionally preserve uncertainty around BUILD/DE_QUEUE/RESEARCH/DELETE lifecycle completion.
+Use these distinctions:
 
-CaptureAge/CADE remains a **secondary validation adapter candidate**, not a primary research dependency. Scenario-loader automation remains retired.
+- **DIRECT:** directly observed in authoritative source or snapshot.
+- **COMPOSED:** deterministic composition of direct evidence.
+- **AEGIS-GENERALIZATION:** project-owned design derived from evidence.
+- **HYPOTHESIS:** unresolved interpretation.
 
-## 11. Hostile-QC findings that remain binding
+Keep closure separate:
 
-The following shortcuts are prohibited:
+`CONTROL → WORLD → STRATEGIC`
 
-- arbitrary unused numeric ABI allocation;
-- treating goals/SNs/flags/timers as interchangeable namespaces;
-- equating rule order with ownership without evidence;
-- assuming atomic handoff/transaction semantics;
-- treating `sn-resource-control` as a universal mutex;
-- treating `uniqueId` as a proven persistent entity ID;
-- treating replay command order as proof of causal intent;
-- treating deficit zero as objective success;
-- treating candidate selection as an optimizer without an explicit policy;
-- treating command issuance as completion;
-- collapsing mechanical unit class into strategic role;
-- silently aliasing or remapping legacy state;
-- allowing parser convenience or validator behavior to become engine truth.
+Do not collapse a command, a world transition, and a strategic result into one claim.
 
-## 12. Next executable engineering action
+## 9. Repository organization
 
-The next pass is **authoritative package acquisition and ABI clearance**, not more abstract architecture.
+```text
+03_HD_ARCHAEOLOGY/       Historical strategy/programmer archaeology
+04_LAYER3_ARCHITECTURE/  Current AEGIS architecture and ABI work
+05_RUNTIME_CANDIDATE/    Runtime/replay candidates and research instruments
+07_EXPERIMENTS/          Experimental infrastructure
+12_RESEARCH/             External research and source provenance
+knowledge/               Durable atomic institutional memory
 
-Required sequence:
+docs/                    Governance, handoffs, QC, evidence, procedures
+.github/                 Ownership and contribution controls
+```
 
-1. Capture exact installed AoE2DE executable/version/hash on Weebo.
-2. Snapshot the exact imported AI package without mutation.
-3. Resolve entrypoint/import closure.
-4. Extract declarations, reads, writes, timers, flags, searches, aliases, and control topology.
-5. Build channel occupancy maps and legacy overlap decisions.
-6. Join engine, validator, and AEGIS status independently.
-7. Produce the 19-field allocation candidate set.
-8. Clear or reject each field deterministically.
-9. Freeze the resulting numeric ABI as the sole implementation allocation source.
-10. Only then begin the first `.per` vertical slice.
+Historical directory numbering is retained for path stability and provenance.
 
-## 13. Authority rule for future engineers/models
+## 10. Historical work
 
-When conversational memory conflicts with GitHub, **GitHub wins**.
+Older handoffs, QC passes, experimental branches, and failed approaches are retained because they explain how the project arrived here. They are not alternate authority.
 
-When two GitHub documents conflict, prefer the newer committed artifact only after checking whether it explicitly supersedes the older one. Evidence-grade rules still apply.
+See `docs/ARCHIVED_WORK_AND_BRANCHES_2026-09-05.md`.
 
-When a current machine fact conflicts with an older repository statement, create a dated correction artifact, preserve the old evidence, and update the canonical status rather than silently rewriting history.
+## 11. Immediate next engineering action
 
-No research result is considered durable unless it is committed and verifiable in GitHub.
+Do not begin `.per` implementation yet.
 
-## 14. Canonical reading order
+Execute:
 
-1. This document.
-2. `docs/CANONICAL_QC_2026-09-05.md`.
-3. `04_LAYER3_ARCHITECTURE/PASS94_DETERMINISTIC_ABI_AUDIT_HARNESS_SPEC_2026-09-05.md`.
-4. `04_LAYER3_ARCHITECTURE/PASS93_AUTHORITATIVE_ABI_INVENTORY_SPEC_2026-09-05.md`.
-5. `04_LAYER3_ARCHITECTURE/PASS92_ABI_FINALIZATION_AND_ALLOCATION_GATE_2026-09-05.md`.
-6. `04_LAYER3_ARCHITECTURE/PASS91_CROSS_MODULE_CONTRACT_MATRIX_2026-09-05.md`.
-7. `04_LAYER3_ARCHITECTURE/PASS91_FAILURE_TOPOLOGY_AND_INTEGRATION_TEST_PLAN_2026-09-05.md`.
-8. `03_HD_ARCHAEOLOGY/PASS87_END_TO_END_EVIDENCE_GRAPH_2026-09-05.md`.
-9. `docs/PROJECT_HANDOFF_2026-09-04.md` for historical handoff context.
+1. Snapshot the restored stock `resources\\_common\\ai` tree without mutation.
+2. Record file sizes, hashes, timestamps, and acquisition metadata.
+3. Identify the actual AI entrypoint.
+4. Resolve recursive load/import closure.
+5. Extract declarations, reads, writes, timers, flags, searches, aliases, and control topology.
+6. Build channel occupancy and legacy-overlap maps.
+7. Join engine semantics, validator behavior, and AEGIS design status independently.
+8. Produce ABI candidates and deterministic clear/reject decisions.
+9. Freeze the numeric ABI.
+10. Only then write the first production `.per` vertical slice.
 
-## 15. Handoff verdict
+## 12. Handoff rule
 
-**Project is professionally handoff-ready at the repository/evidence level.**
+A future engineer/model starts from `main`, not from an arbitrary branch, PR, or old handoff.
 
-**Architecture is sufficiently specified for numeric ABI acquisition.**
+When a current machine observation corrects an older document, the correction is committed explicitly and the older record remains recoverable in Git history.
 
-**Numeric ABI is not cleared.**
-
-**Runtime implementation is intentionally blocked until the ABI/build gates are satisfied.**
-
-**GitHub is the authoritative project record.**
+**Current starting point:** stock package acquisition and ABI clearance.
