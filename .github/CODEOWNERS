@@ -1,0 +1,10 @@
+# AEGIS repository ownership
+# Keep the project owner responsible for changes to authority, architecture,
+# evidence policy, and runtime implementation.
+
+* @justhop90-bot
+/.github/ @justhop90-bot
+/CANONICAL_AUTHORITY.md @justhop90-bot
+/docs/ @justhop90-bot
+/04_LAYER3_ARCHITECTURE/ @justhop90-bot
+/05_RUNTIME_CANDIDATE/ @justhop90-bot
