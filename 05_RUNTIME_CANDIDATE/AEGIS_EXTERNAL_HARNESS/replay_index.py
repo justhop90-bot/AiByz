@@ -5,9 +5,9 @@ import hashlib
 import json
 from collections import Counter
 from pathlib import Path
-from typing import Any, TextIO
+from typing import Any
 
-SCHEMA = "AEGIS-REPLAY-INDEX-v1"
+SCHEMA = "AEGIS-REPLAY-INDEX-v2"
 LIFECYCLE_ACTIONS = {"BUILD", "DE_QUEUE", "RESEARCH", "DELETE"}
 
 
@@ -31,7 +31,7 @@ def iter_rows(path: Path) -> Any:
 
 
 def normalize_action(sequence: int, command: str, data: dict[str, Any],
-                     last_sync_time: int | None, ordinal: int) -> dict[str, Any]:
+                     replay_time_ms: int, ordinal: int) -> dict[str, Any]:
     target = None
     if command == "BUILD":
         target = data.get("building_id")
@@ -42,7 +42,7 @@ def normalize_action(sequence: int, command: str, data: dict[str, Any],
     return {
         "ordinal": ordinal,
         "sequence": sequence,
-        "replay_time": last_sync_time,
+        "replay_time_ms": replay_time_ms,
         "event_kind": "COMMAND_ISSUED",
         "command": command,
         "player_id": data.get("player_id"),
@@ -60,26 +60,22 @@ def build_index(input_path: Path, output_path: Path) -> dict[str, Any]:
     op_counts: Counter[str] = Counter()
     normalized: list[dict[str, Any]] = []
     sync_count = 0
-    nonempty_sync_count = 0
-    last_sync_time: int | None = None
-    first_time: int | None = None
-    last_time: int | None = None
+    sync_increment_total_ms = 0
+    sync_payloads_with_state = 0
     ordinal = 0
 
     for _, row in iter_rows(input_path):
         op = row.get("op")
         op_counts[str(op)] += 1
         payload = row.get("payload")
-        if op == "SYNC" and isinstance(payload, list) and len(payload) > 2:
+        if op == "SYNC" and isinstance(payload, list):
             sync_count += 1
-            state = payload[2]
-            if isinstance(state, dict):
-                value = state.get("current_time")
-                if isinstance(value, int):
-                    last_sync_time = value
-                    first_time = value if first_time is None else first_time
-                    last_time = value
-                    nonempty_sync_count += 1
+            # mgz-fast defines SYNC payload[0] as the elapsed-time increment.
+            # payload[2] is parser metadata; on the calibration replay it is {}.
+            increment = payload[0] if payload and isinstance(payload[0], int) else 0
+            sync_increment_total_ms += increment
+            if len(payload) > 2 and isinstance(payload[2], dict) and payload[2]:
+                sync_payloads_with_state += 1
         elif op == "ACTION" and isinstance(payload, list) and len(payload) == 2:
             command, data = payload
             if isinstance(command, str) and isinstance(data, dict):
@@ -88,7 +84,7 @@ def build_index(input_path: Path, output_path: Path) -> dict[str, Any]:
                     ordinal += 1
                     normalized.append(normalize_action(
                         int(data.get("sequence", -1)), command, data,
-                        last_sync_time, ordinal,
+                        sync_increment_total_ms, ordinal,
                     ))
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -103,18 +99,18 @@ def build_index(input_path: Path, output_path: Path) -> dict[str, Any]:
         "records_by_operation": dict(op_counts),
         "actions_by_command": dict(action_counts),
         "sync_records": sync_count,
-        "sync_records_with_current_time": nonempty_sync_count,
-        "first_replay_time_observed": first_time,
-        "last_replay_time_observed": last_time,
+        "sync_payloads_with_nonempty_metadata": sync_payloads_with_state,
+        "replay_duration_ms_from_sync_increments": sync_increment_total_ms,
         "lifecycle_commands_indexed": len(normalized),
         "semantic_boundary": {
             "ACTION": "COMMAND_ISSUED_ONLY",
-            "SYNC": "AGGREGATE_SNAPSHOT_ONLY",
+            "SYNC": "ELAPSED_TIME_INCREMENT_ONLY",
+            "world_object_state": "NOT_PRESENT_IN_CALIBRATION_SYNC_PAYLOADS",
             "pending_to_created": "NOT_INFERRED",
             "created_to_available": "NOT_INFERRED",
             "effective": "NOT_INFERRED",
         },
-        "evidence_policy": "Replay observations do not prove acceptance or world-state completion without corroborating evidence.",
+        "evidence_policy": "Replay ACTION records establish issued commands; SYNC establishes replay time progression. Neither alone proves world-state completion.",
     }
 
 
