@@ -10,7 +10,8 @@
   "launch": {
     "args": ["-SKIPINTRO"],
     "timeout_seconds": 20,
-    "working_directory": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE"
+    "working_directory": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE",
+    "expected_process_state": "running_at_timeout"
   },
   "evidence_policy": {
     "allow_injection": false,
