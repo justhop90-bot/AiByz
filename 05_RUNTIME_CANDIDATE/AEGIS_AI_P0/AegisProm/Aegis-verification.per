@@ -1,0 +1,60 @@
+; AEGIS Verification — production skeleton
+; Boundary: execution evidence -> qualified operational result
+; Verification never issues commands and never becomes World Model truth.
+
+(defconst aegis-ver-stage-init 0)
+(defconst aegis-ver-stage-waiting 1)
+(defconst aegis-ver-stage-qualified 2)
+(defconst aegis-ver-stage-unknown 3)
+(defconst aegis-ver-stage-partial 4)
+
+(defconst aegis-ver-generation 381)
+(defconst aegis-ver-valid 382)
+(defconst aegis-ver-stage 383)
+(defconst aegis-ver-expected 384)
+(defconst aegis-ver-observed 385)
+(defconst aegis-ver-result 386)
+(defconst aegis-ver-evidence 387)
+(defconst aegis-ver-partial 388)
+(defconst aegis-ver-action-id 389)
+(defconst aegis-ver-cycle 390)
+
+(defconst aegis-ver-result-none 0)
+(defconst aegis-ver-result-unknown 1)
+(defconst aegis-ver-result-failure 2)
+(defconst aegis-ver-result-operational-success 3)
+
+(defrule
+    (game-time < 10)
+    (up-compare-goal aegis-ver-cycle == 0)
+=>
+    (set-goal aegis-ver-generation 0)
+    (set-goal aegis-ver-valid 0)
+    (set-goal aegis-ver-stage aegis-ver-stage-init)
+    (set-goal aegis-ver-expected 0)
+    (set-goal aegis-ver-observed 0)
+    (set-goal aegis-ver-result aegis-ver-result-none)
+    (set-goal aegis-ver-evidence 0)
+    (set-goal aegis-ver-partial 0)
+    (set-goal aegis-ver-action-id 0)
+    (set-goal aegis-ver-cycle 0)
+)
+
+; Verification accepts only current Execution evidence. Operationalization
+; alone cannot establish an outcome.
+(defrule
+    (up-compare-goal aegis-exec-valid == 1)
+    (up-compare-goal aegis-exec-generation == aegis-wm-generation)
+    (up-compare-goal aegis-exec-stage == aegis-exec-stage-evidence)
+    (up-compare-goal aegis-ver-generation != aegis-exec-generation)
+=>
+    (up-modify-goal aegis-ver-generation g:= aegis-exec-generation)
+    (up-modify-goal aegis-ver-action-id g:= aegis-exec-action-id)
+    (up-modify-goal aegis-ver-cycle g:= aegis-exec-cycle)
+    (up-modify-goal aegis-ver-expected g:= aegis-exec-result)
+    (set-goal aegis-ver-valid 1)
+    (set-goal aegis-ver-stage aegis-ver-stage-waiting)
+)
+
+; No completion transition is installed yet. An action-specific evidence
+; contract must establish what observation qualifies as success/failure.
