@@ -18,6 +18,13 @@
 ; Shared World Model symbols are declared BEFORE any loaded module is parsed.
 ; AoE2 .per load processing does not make later declarations retroactively
 ; visible to an already-parsed child file.
+;
+; IMPORTANT RUNTIME RULE:
+; Carpenter must acquire the native observation before the Architect publication
+; coordinator runs, and every downstream layer must parse after that coordinator.
+; This makes one World Model generation consumable by the complete downstream
+; pipeline in the same rule-evaluation pass rather than leaving all consumers
+; one generation behind.
 
 ; Local goal IDs are implementation candidates for this standalone package.
 ; They are intentionally kept in a low, currently unoccupied stock band.
@@ -50,16 +57,11 @@
 (defconst aegis-evidence-unknown 0)
 (defconst aegis-evidence-current 1)
 
+; ============================================================================
+; ENGINE CARPENTER — native acquisition must precede publication
+; ============================================================================
+
 (load "AegisProm\\AEGIS-BYZ-Engine-Carpenter-P2")
-(load "AegisProm\\Aegis-belief")
-(load "AegisProm\\Aegis-situation")
-(load "AegisProm\\Aegis-objectives")
-(load "AegisProm\\Aegis-planning")
-(load "AegisProm\\Aegis-decision")
-(load "AegisProm\\Aegis-commitment")
-(load "AegisProm\\Aegis-execution")
-(load "AegisProm\\Aegis-verification")
-(load "AegisProm\\Aegis-recovery")
 
 ; ============================================================================
 ; BOOTSTRAP — establish an owned state envelope
@@ -134,6 +136,24 @@
 =>
     (set-goal aegis-wm-enemy-present 0)
 )
+
+; ============================================================================
+; DOWNSTREAM MODULE ORDER
+; ============================================================================
+;
+; Each consumer is parsed after its producer. In particular, the publication
+; coordinator and WM qualification are parsed before Belief, so the current
+; generation is available to the downstream state machine in the same pass.
+
+(load "AegisProm\\Aegis-belief")
+(load "AegisProm\\Aegis-situation")
+(load "AegisProm\\Aegis-objectives")
+(load "AegisProm\\Aegis-planning")
+(load "AegisProm\\Aegis-decision")
+(load "AegisProm\\Aegis-commitment")
+(load "AegisProm\\Aegis-execution")
+(load "AegisProm\\Aegis-verification")
+(load "AegisProm\\Aegis-recovery")
 
 ; ============================================================================
 ; ARCHITECTURAL FIREWALL
