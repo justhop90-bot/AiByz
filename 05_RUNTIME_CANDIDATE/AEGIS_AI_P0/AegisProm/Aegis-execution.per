@@ -1,0 +1,71 @@
+; AEGIS Execution — production skeleton
+; Boundary: Commitment -> operationalization -> issuance -> evidence
+; Native actuator issuance is intentionally disabled until one command contract
+; is target-build qualified. This module may record authorization and readiness,
+; but it must never manufacture ISSUED/ACCEPTED/PENDING/CREATED/EFFECTIVE.
+
+(defconst aegis-exec-stage-init 0)
+(defconst aegis-exec-stage-ready 1)
+(defconst aegis-exec-stage-operationalized 2)
+(defconst aegis-exec-stage-issued 3)
+(defconst aegis-exec-stage-evidence 4)
+
+(defconst aegis-exec-generation 371)
+(defconst aegis-exec-valid 372)
+(defconst aegis-exec-stage 373)
+(defconst aegis-exec-type 374)
+(defconst aegis-exec-action-id 375)
+(defconst aegis-exec-attempt 376)
+(defconst aegis-exec-result 377)
+(defconst aegis-exec-evidence 378)
+(defconst aegis-exec-observed-at 379)
+(defconst aegis-exec-cycle 380)
+
+(defconst aegis-exec-type-none 0)
+(defconst aegis-exec-type-monitor 1)
+(defconst aegis-exec-type-contain 2)
+
+(defrule
+    (game-time < 10)
+    (up-compare-goal aegis-exec-cycle == 0)
+=>
+    (set-goal aegis-exec-generation 0)
+    (set-goal aegis-exec-valid 0)
+    (set-goal aegis-exec-stage aegis-exec-stage-init)
+    (set-goal aegis-exec-type aegis-exec-type-none)
+    (set-goal aegis-exec-action-id 0)
+    (set-goal aegis-exec-attempt 0)
+    (set-goal aegis-exec-result 0)
+    (set-goal aegis-exec-evidence 0)
+    (set-goal aegis-exec-observed-at 0)
+    (set-goal aegis-exec-cycle 0)
+)
+
+; Only a current Commitment may authorize execution state.
+(defrule
+    (up-compare-goal aegis-commitment-valid == 1)
+    (up-compare-goal aegis-wm-valid == 1)
+    (up-compare-goal aegis-commitment-generation == aegis-wm-generation)
+    (up-compare-goal aegis-exec-generation != aegis-commitment-generation)
+=>
+    (up-modify-goal aegis-exec-generation g:= aegis-commitment-generation)
+    (up-modify-goal aegis-exec-type g:= aegis-commitment-type)
+    (up-modify-goal aegis-exec-action-id g:= aegis-commitment-action-id)
+    (up-modify-goal aegis-exec-cycle g:= aegis-commitment-cycle)
+    (set-goal aegis-exec-valid 1)
+    (set-goal aegis-exec-stage aegis-exec-stage-ready)
+    (set-goal aegis-exec-attempt 0)
+    (set-goal aegis-exec-result 0)
+    (set-goal aegis-exec-evidence 0)
+)
+
+; Operationalization is not issuance. No native command is emitted here.
+(defrule
+    (up-compare-goal aegis-exec-valid == 1)
+    (up-compare-goal aegis-exec-stage == aegis-exec-stage-ready)
+=>
+    (set-goal aegis-exec-stage aegis-exec-stage-operationalized)
+)
+
+; The ISSUED state remains unreachable until a qualified actuator contract is
+; installed. This is deliberate: authorization != issuance.
