@@ -4,6 +4,10 @@
 ;   Consumes evaluated Belief Model state.
 ;   Produces bounded situation classification.
 ;   Does not select objectives, units, buildings, resources, or commands.
+;
+; Publication marker contract:
+;   Upstream modules preserve the published World Model marker (2).
+;   Situation accepts only marker 2, never the pre-publication sensor marker 1.
 
 (defconst aegis-situation-generation 331)
 (defconst aegis-situation-valid 332)
@@ -79,7 +83,7 @@
 
 (defrule
     (up-compare-goal aegis-situation-generation == aegis-belief-generation)
-    (up-compare-goal aegis-situation-observed-at == 1)
+    (up-compare-goal aegis-situation-observed-at == 2)
 =>
     (set-goal aegis-situation-stage aegis-situation-stage-classified)
     (set-goal aegis-situation-valid 1)
