@@ -2,20 +2,16 @@
 ; AEGIS-BYZ — BELIEF MODEL
 ; PERSONALITY PASS: BELIEF / STATE INTERPRETATION
 ; ============================================================================
-;
+
 ; Belief consumes World Model state and maintains bounded beliefs.
 ; It does not issue commands, select producers, or spend resources.
 ; No stock .per dependency is introduced.
-;
+
 ; Semantic boundary:
 ;   WORLD FACT -> BELIEF -> SITUATION ANALYSIS
-;
+
 ; A belief is an interpretation of qualified world state, not a raw sensor.
 ; This first implementation deliberately uses deterministic thresholds.
-;
-; ============================================================================
-; BELIEF LOCAL STATE
-; ============================================================================
 
 (defconst aegis-belief-generation 322)
 (defconst aegis-belief-valid 323)
@@ -36,10 +32,6 @@
 (defconst aegis-belief-confidence-medium 60)
 (defconst aegis-belief-confidence-high 90)
 
-; ============================================================================
-; BELIEF UPDATE
-; ============================================================================
-
 (defrule
     (up-compare-goal aegis-wm-valid == 1)
     (up-compare-goal aegis-wm-generation != aegis-belief-generation)
@@ -52,10 +44,6 @@
     (up-modify-goal aegis-belief-generation g:= aegis-wm-generation)
     (up-modify-goal aegis-belief-cycle c:+ 1)
 )
-
-; ============================================================================
-; CAVALRY INTERPRETATION
-; ============================================================================
 
 (defrule
     (up-compare-goal aegis-belief-generation == aegis-wm-generation)
@@ -82,10 +70,6 @@
     (set-goal aegis-belief-cavalry-confidence aegis-belief-confidence-high)
 )
 
-; ============================================================================
-; COMMIT BELIEF
-; ============================================================================
-
 (defrule
     (up-compare-goal aegis-belief-generation == aegis-wm-generation)
     (up-compare-goal aegis-belief-observed-at == 1)
@@ -94,17 +78,7 @@
     (set-goal aegis-belief-valid 1)
 )
 
-; ============================================================================
-; ARCHITECTURAL FIREWALL
-; ============================================================================
-;
 ; Belief does not create objectives or commands.
 ; Belief does not choose a counter unit.
 ; Belief does not reserve resources.
 ; Belief does not mutate World Model ownership.
-;
-; Output is bounded interpretation for Situation Analysis.
-;
-; ============================================================================
-; END — AEGIS BELIEF MODEL
-; ============================================================================
