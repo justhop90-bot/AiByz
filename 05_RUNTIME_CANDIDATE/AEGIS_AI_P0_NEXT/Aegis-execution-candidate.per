@@ -1,0 +1,70 @@
+; AEGIS Execution candidate — NOT PRODUCTION
+; Boundary: Commitment -> operationalization -> evidence -> Verification
+; This module intentionally issues no native build/train/research command.
+
+(defconst aegis-exec-stage-init 0)
+(defconst aegis-exec-stage-ready 1)
+(defconst aegis-exec-stage-operationalized 2)
+(defconst aegis-exec-stage-attempted 3)
+(defconst aegis-exec-stage-evidence 4)
+
+(defconst aegis-exec-generation 371)
+(defconst aegis-exec-valid 372)
+(defconst aegis-exec-stage 373)
+(defconst aegis-exec-type 374)
+(defconst aegis-exec-action-id 375)
+(defconst aegis-exec-attempt 376)
+(defconst aegis-exec-result 377)
+(defconst aegis-exec-evidence 378)
+(defconst aegis-exec-observed-at 379)
+(defconst aegis-exec-cycle 380)
+
+(defconst aegis-exec-type-none 0)
+(defconst aegis-exec-type-monitor 1)
+(defconst aegis-exec-type-contain 2)
+
+(defrule
+    (game-time < 10)
+    (up-compare-goal aegis-exec-cycle == 0)
+=>
+    (set-goal aegis-exec-generation 0)
+    (set-goal aegis-exec-valid 0)
+    (set-goal aegis-exec-stage aegis-exec-stage-init)
+    (set-goal aegis-exec-type aegis-exec-type-none)
+    (set-goal aegis-exec-action-id 0)
+    (set-goal aegis-exec-attempt 0)
+    (set-goal aegis-exec-result 0)
+    (set-goal aegis-exec-evidence 0)
+    (set-goal aegis-exec-observed-at 0)
+    (set-goal aegis-exec-cycle 0)
+)
+
+; A Commitment is current only when it is valid and belongs to the current
+; qualified World Model generation. Stale authority is rejected here.
+(defrule
+    (up-compare-goal aegis-commitment-valid == 1)
+    (up-compare-goal aegis-wm-valid == 1)
+    (up-compare-goal aegis-commitment-generation == aegis-wm-generation)
+    (up-compare-goal aegis-exec-generation != aegis-commitment-generation)
+=>
+    (up-modify-goal aegis-exec-generation g:= aegis-commitment-generation)
+    (up-modify-goal aegis-exec-type g:= aegis-commitment-type)
+    (up-modify-goal aegis-exec-cycle g:= aegis-commitment-cycle)
+    (set-goal aegis-exec-valid 1)
+    (set-goal aegis-exec-stage aegis-exec-stage-ready)
+    (set-goal aegis-exec-attempt 0)
+    (set-goal aegis-exec-result 0)
+    (set-goal aegis-exec-evidence 0)
+)
+
+; Operationalization is deliberately bounded: no strategic substitution,
+; producer selection, resource reservation, or engine command is performed.
+(defrule
+    (up-compare-goal aegis-exec-valid == 1)
+    (up-compare-goal aegis-exec-stage == aegis-exec-stage-ready)
+=>
+    (set-goal aegis-exec-stage aegis-exec-stage-operationalized)
+)
+
+; No ATTEMPT transition exists until a qualified native actuator contract is
+; installed. Therefore this candidate cannot manufacture issuance evidence.

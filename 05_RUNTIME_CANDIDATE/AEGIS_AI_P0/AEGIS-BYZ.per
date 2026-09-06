@@ -124,7 +124,7 @@
 
 (defrule
     (up-compare-goal aegis-carpenter-sensor-pass == 1)
-    (up-compare-goal aegis-wm-observed-at == 2)
+    (up-compare-goal aegis-wm-observed-at == 1)
 =>
     (set-goal aegis-wm-valid 0)
     (set-goal aegis-wm-stage aegis-wm-stage-observe)
@@ -138,7 +138,7 @@
 
 (defrule
     (up-compare-goal aegis-wm-stage == aegis-wm-stage-observe)
-    (up-compare-goal aegis-wm-observed-at == 1)
+    (up-compare-goal aegis-wm-observed-at == 2)
 =>
     (set-goal aegis-wm-stage aegis-wm-stage-qualified)
     (set-goal aegis-wm-valid 1)

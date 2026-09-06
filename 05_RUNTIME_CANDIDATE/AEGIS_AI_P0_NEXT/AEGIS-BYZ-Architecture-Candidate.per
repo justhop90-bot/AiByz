@@ -1,0 +1,14 @@
+; AEGIS full architecture candidate entrypoint — NOT PRODUCTION
+; Loads the authoritative P0 state machine, then the three non-actuating
+; candidate completion layers.
+
+(load "AEGIS-BYZ")
+(load "Aegis-execution-candidate")
+(load "Aegis-verification-candidate")
+(load "Aegis-recovery-candidate")
+
+; Candidate ABI is provisional:
+; Execution      371–380
+; Verification   381–390
+; Recovery      391–400
+; No native actuator is installed by this candidate.
