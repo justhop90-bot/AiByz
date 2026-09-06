@@ -9,10 +9,9 @@
 ;   Produces a bounded objective state.
 ;   Does NOT plan units, buildings, resources, production, or commands.
 ;
-; Learning note:
-;   This module intentionally uses only simple native goal operations.
-;   The objective is to establish the architectural handoff before adding
-;   planning or execution complexity.
+; Publication marker contract:
+;   The objective inherits the upstream published observation marker (2).
+;   Marker 1 belongs only to the pre-publication native acquisition boundary.
 
 (defconst aegis-objective-generation 339)
 (defconst aegis-objective-valid 340)
@@ -87,7 +86,7 @@
 
 (defrule
     (up-compare-goal aegis-objective-generation == aegis-situation-generation)
-    (up-compare-goal aegis-objective-observed-at == 1)
+    (up-compare-goal aegis-objective-observed-at == 2)
 =>
     (set-goal aegis-objective-stage aegis-objective-stage-issued)
     (set-goal aegis-objective-valid 1)
