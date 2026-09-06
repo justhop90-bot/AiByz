@@ -1,178 +1,171 @@
 ; ============================================================================
-; AEGIS-BYZ — Autonomous Byzantine AI
-; P0 native entry-point candidate
+; AEGIS-BYZ — AUTONOMOUS BYZANTINE AI
+; FIRST PERSONALITY PASS: ARCHITECT / WORLD MODEL
 ; ============================================================================
 ;
-; PURPOSE
-;   This file is the AEGIS-owned native AI entry point.
-;   P0 deliberately has NO external .per dependencies.
-;   It does not load AI (HD version).per, Promisory, or stock AI logic.
+; This is the first real implementation pass of AEGIS.
+; Personality 1 owns the World Model: observe -> qualify -> retain.
+; It does not decide strategy, authorize production, or issue commands.
 ;
-; ENGINEERING RULE
-;   Architecture is represented here first. Native behavior is added only when
-;   the corresponding engine primitive has been qualified for the target build.
+; AEGIS is autonomous. No stock .per file is loaded.
+; Target: AoE2DE 101.103.48987.0 / Steam BuildID 24094652.
 ;
-; TARGET
-;   AoE2DE 101.103.48987.0 / Steam BuildID 24094652
+; The World Model is capability-oriented, aggregate, time-indexed state
+; with bounded causal memory. It is deliberately not an object database.
+;
+; Semantic envelope:
+;   VALID + OWNER + GENERATION + STAGE + PAYLOAD + EVIDENCE_LEVEL
+;
+; Evidence is never promoted merely because an observation was attempted.
 ;
 ; ============================================================================
-; AEGIS IDENTITY
+; AEGIS WORLD-MODEL LOCAL STATE
 ; ============================================================================
 
-(defconst aegis-entrypoint-version 1)
+; Local goal IDs are implementation candidates for this standalone package.
+; They are intentionally kept in a low, currently unoccupied stock band.
+; They are not declared cross-system ABI until runtime qualification freezes them.
+(defconst aegis-wm-valid 300)
+(defconst aegis-wm-generation 301)
+(defconst aegis-wm-stage 302)
+(defconst aegis-wm-evidence 303)
+(defconst aegis-wm-time 304)
+(defconst aegis-wm-cavalry 305)
+(defconst aegis-wm-camel 306)
+(defconst aegis-wm-food 307)
+(defconst aegis-wm-wood 308)
+(defconst aegis-wm-stone 309)
+(defconst aegis-wm-gold 310)
+(defconst aegis-wm-population 311)
+(defconst aegis-wm-population-cap 312)
+(defconst aegis-wm-age 313)
+(defconst aegis-wm-focus-player 314)
+(defconst aegis-wm-enemy-present 315)
+(defconst aegis-wm-cycle 316)
+(defconst aegis-wm-observed-at 317)
+(defconst aegis-wm-cavalry-age 318)
+
+; Timer ownership belongs to the World Model coordinator, not to consumers.
+(defconst aegis-wm-timer 40)
+
+; Concrete engine identity used only as an observation type in this pass.
+; Knight is unit ID 38 in the target ruleset. Unit-line qualification follows.
+(defconst aegis-knight 38)
+(defconst aegis-camel 92)
+
+; Stages
+(defconst aegis-wm-stage-init 0)
+(defconst aegis-wm-stage-observe 1)
+(defconst aegis-wm-stage-qualified 2)
+
+; Evidence levels for this first implementation.
+(defconst aegis-evidence-unknown 0)
+(defconst aegis-evidence-current 1)
 
 ; ============================================================================
-; RUNTIME ROOT
+; BOOTSTRAP — establish an owned state envelope
 ; ============================================================================
-;
-; This rule is intentionally minimal. It establishes a valid AEGIS-owned
-; executable rule without importing any stock implementation.
-;
+
 (defrule
-    (true)
+    (game-time < 10)
+    (up-compare-goal aegis-wm-cycle == 0)
 =>
-    (disable-self)
+    (set-goal aegis-wm-valid 0)
+    (set-goal aegis-wm-generation 0)
+    (set-goal aegis-wm-stage aegis-wm-stage-observe)
+    (set-goal aegis-wm-evidence aegis-evidence-unknown)
+    (set-goal aegis-wm-time 0)
+    (set-goal aegis-wm-cavalry 0)
+    (set-goal aegis-wm-camel 0)
+    (set-goal aegis-wm-food 0)
+    (set-goal aegis-wm-wood 0)
+    (set-goal aegis-wm-stone 0)
+    (set-goal aegis-wm-gold 0)
+    (set-goal aegis-wm-population 0)
+    (set-goal aegis-wm-population-cap 0)
+    (set-goal aegis-wm-age 0)
+    (set-goal aegis-wm-focus-player 0)
+    (set-goal aegis-wm-enemy-present 0)
+    (set-goal aegis-wm-observed-at 0)
+    (set-goal aegis-wm-cavalry-age 0)
+    (set-goal aegis-wm-cycle 1)
+    (enable-timer aegis-wm-timer 15)
 )
 
 ; ============================================================================
-; WORLD MODEL
+; OBSERVATION — acquire only facts owned by the World Model
 ; ============================================================================
-;
-; Engine observations belong here conceptually. The World Model does not
-; decide strategy. It records only qualified observations required by AEGIS.
-;
-; Required semantic distinctions:
-;   CURRENT / LAST-KNOWN / UNKNOWN / UNRESOLVED
-;   observation scope
-;   observation age where decision-relevant
-;   selective identity
-;   lifecycle state
-;
-; No numeric state channel is allocated in P0.
+
+(defrule
+    (timer-triggered aegis-wm-timer)
+=>
+    (set-goal aegis-wm-valid 0)
+    (set-goal aegis-wm-stage aegis-wm-stage-observe)
+    (up-get-fact game-time 0 aegis-wm-time)
+    (up-get-fact population 0 aegis-wm-population)
+    (up-get-fact population-cap 0 aegis-wm-population-cap)
+    (up-get-fact food-amount 0 aegis-wm-food)
+    (up-get-fact wood-amount 0 aegis-wm-wood)
+    (up-get-fact stone-amount 0 aegis-wm-stone)
+    (up-get-fact gold-amount 0 aegis-wm-gold)
+    (up-get-fact current-age 0 aegis-wm-age)
+    (up-get-fact unit-type-count-total aegis-camel aegis-wm-camel)
+    (up-get-fact-max any-enemy unit-type-count aegis-knight aegis-wm-cavalry)
+    (up-find-player enemy find-closest aegis-wm-focus-player)
+    (set-goal aegis-wm-observed-at 1)
+    (up-modify-goal aegis-wm-generation c:+ 1)
+    (up-modify-goal aegis-wm-cycle c:+ 1)
+)
 
 ; ============================================================================
-; BELIEF MODEL
+; QUALIFICATION — observation is retained only after the acquisition pass
 ; ============================================================================
-;
-; Converts qualified observations into bounded strategic beliefs.
-; Belief is not raw world state and is not enemy intent.
-;
-; Mandatory cross-system envelope where applicable:
-;   VALID + OWNER + GENERATION + STAGE + PAYLOAD + EVIDENCE_LEVEL
-;
-; No numeric state channel is allocated in P0.
+
+(defrule
+    (up-compare-goal aegis-wm-stage == aegis-wm-stage-observe)
+    (up-compare-goal aegis-wm-observed-at == 1)
+=>
+    (set-goal aegis-wm-stage aegis-wm-stage-qualified)
+    (set-goal aegis-wm-valid 1)
+    (set-goal aegis-wm-evidence aegis-evidence-current)
+    (up-modify-goal aegis-wm-cavalry-age g:= aegis-wm-time)
+)
+
+; Enemy presence is a world fact, not a strategic conclusion.
+(defrule
+    (up-compare-goal aegis-wm-stage == aegis-wm-stage-qualified)
+    (up-compare-goal aegis-wm-focus-player > 0)
+=>
+    (set-goal aegis-wm-enemy-present 1)
+)
+
+(defrule
+    (up-compare-goal aegis-wm-stage == aegis-wm-stage-qualified)
+    (up-compare-goal aegis-wm-focus-player <= 0)
+=>
+    (set-goal aegis-wm-enemy-present 0)
+)
 
 ; ============================================================================
-; SITUATION ANALYSIS
+; NEXT-CYCLE RESET — the timer owns observation cadence
 ; ============================================================================
 ;
-; Classifies the current strategic situation from World State and Belief.
-; Situation is not authorization and is not an engine command.
-
-; ============================================================================
-; OBJECTIVES
-; ============================================================================
-;
-; Converts material situations into explicit strategic objectives.
-; Objective demand is not a production order and not execution authority.
-
-; ============================================================================
-; PLANNING
-; ============================================================================
-;
-; Generates feasible capability responses to active objectives.
-; Hard feasibility precedes soft evaluation.
-
-; ============================================================================
-; DECISION
-; ============================================================================
-;
-; Selects among feasible alternatives according to explicit policy.
-; Rule order must never accidentally become undocumented optimization policy.
-
-; ============================================================================
-; COMMITMENT
-; ============================================================================
-;
-; Owns consequential strategic commitment state.
-; Commitment requires explicit owner, generation, stage, and validity semantics.
-; A resource reservation is not itself execution authority.
-
-; ============================================================================
-; EXECUTION
-; ============================================================================
-;
-; Sole consequential command authority for AEGIS capabilities.
-; Command issuance is recorded as ISSUED, never silently upgraded to success.
-
-; ============================================================================
-; VERIFICATION
-; ============================================================================
-;
-; Verifies world postconditions independently of command issuance.
-; Evidence ladder:
-;   INTENTION -> AUTHORIZED -> ISSUED -> ACCEPTED/QUEUED -> PENDING
-;   -> CREATED -> AVAILABLE -> DEPLOYED -> EFFECTIVE
-;
-; No evidence upgrade is implicit.
-
-; ============================================================================
-; RECOVERY / RE-ARBITRATION
-; ============================================================================
-;
-; Failed, contradicted, superseded, or stale execution evidence returns to
-; controlled arbitration. Failure does not imply blind retry.
-
-; ============================================================================
-; RESOURCE PORTFOLIO
-; ============================================================================
-;
-; Tracks resource availability, reservations, and discretionary capacity.
-; Affordability is not a guaranteed queue slot.
-
-; ============================================================================
-; PRODUCTION CAPACITY
-; ============================================================================
-;
-; Represents production capability and availability separately from demand.
-; A capability deficit is derived state, not strategic success.
-
-; ============================================================================
-; FORCE COMPOSITION
-; ============================================================================
-;
-; Converts capability requirements into force requirements and preserves
-; required mass separately from current and surplus capability.
-
-; ============================================================================
-; PRODUCTION / ECONOMIC CONVERSION
-; ============================================================================
-;
-; Converts authorized capability requirements into executable production
-; decisions after feasibility, resource, and arbitration checks.
-
-; ============================================================================
-; FIRST VERTICAL SLICE
-; ============================================================================
-;
-; Cavalry Threat Containment:
-;   OBSERVE ENEMY
-;       -> CLASSIFY CAVALRY THREAT
-;       -> DEFINE CAMEL REQUIREMENT
-;       -> CHECK CAPABILITY / RESOURCES
-;       -> SELECT PRODUCER
-;       -> COMMIT
-;       -> EXECUTE
-;       -> VERIFY
-;       -> RECOVER / RE-ARBITRATE
-;       -> REASSESS
+; The observation rule re-arms through the timer mechanism. No consumer
+; owns a second clock and no world fact is fabricated between observations.
 ;
 ; ============================================================================
-; P0 BOUNDARY
+; ARCHITECTURAL FIREWALL
 ; ============================================================================
 ;
-; This entry point intentionally proves only package ownership and native
-; entry-point structure. It does not pretend that unqualified ABI semantics
-; are already runtime-proven.
+; No strategic objective is selected here.
+; No producer is selected here.
+; No resource reservation is made here.
+; No build/train/research/attack command is issued here.
+; World Model output is state for downstream personalities.
 ;
-; End of AEGIS-BYZ P0 entry point.
+; First personality objective:
+;   make the machine observe and retain a bounded, qualified world state.
+;
+; ============================================================================
+; END — ARCHITECT / WORLD MODEL PASS 1
+; ============================================================================
