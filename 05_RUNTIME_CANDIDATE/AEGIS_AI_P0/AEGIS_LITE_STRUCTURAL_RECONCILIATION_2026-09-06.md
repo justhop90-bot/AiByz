@@ -1,31 +1,29 @@
 # AEGIS-Lite Structural Reconciliation — 2026-09-06
 
-**Status:** P0 structural audit / authoritative working record  
+**Status:** P0 structural reconciliation completed; runtime generation qualification remains open  
 **Target:** AoE2DE `101.103.48987.0`, Steam BuildID `24094652`  
 **Repository:** `justhop90-bot/AiByz`  
 **Branch:** `aegis/external-harness-v1-2026-09-05`  
-**Audited HEAD:** `21fe30f8949f2b8659f61e3b47ed4042afc2f22a`
+**Reconciled HEAD:** `447b086bbbe9915988c6f13f3428126053625d0b`
 
 ## Executive result
 
-A fresh run of `tools/aegis_abi_audit_v2.py` against the exact current AEGIS-Lite package resolved the recursive `load` graph correctly.
+The AEGIS-Lite source package has been structurally reconciled without adding native Execution.
 
-The current package closure is **8 files**, not the 1-file closure recorded by the older P2 audit artifact.
+The prior candidate had two copies of the World Model and two Carpenter source artifacts. The reconciliation establishes:
 
-The fresh audit returned:
+- **Architect / `AEGIS-BYZ.per`** owns World Model meaning, state, qualification, evidence state, and generation semantics.
+- **Engine Carpenter / `AegisProm/AEGIS-BYZ-Engine-Carpenter-P2.per`** is the sole loaded native sensor adapter. It acquires native facts and writes into Architect-owned World Model goals.
+- The superseded unloaded `AegisProm/Aegis-carpenter.per` artifact was removed after its source hash was recorded. Its Git history remains the preservation record.
+- The generation probe remains separate instrumentation and is not part of the production eight-file load closure.
 
-| Metric | Result |
-|---|---:|
-| Closure files | 8 |
-| Declaration rows | 156 |
-| Numeric declarations | 156 |
-| Unique symbols | 129 |
-| Resolved goal operands | 356 |
-| Resolved high-goal operands | 0 |
+The exact pre-reconciliation machine-tested P2 artifact was preserved in Git history before modification. Its previously recorded SHA-256 was:
 
-The audit additionally identified **27 duplicate declarations**. All 27 are World Model symbols duplicated verbatim between the root entrypoint and the machine-tested `AEGIS-BYZ-Engine-Carpenter-P2.per` artifact.
+`667F7C6F36A7537606DD087E52DAC7147DE34F7B927852E49D6F2CF0088629A`
 
-## Resolved load graph
+The reconciled P2 source is a new artifact and must not be described as the exact pre-reconciliation file.
+
+## Final eight-file load closure
 
 ```text
 AEGIS-BYZ.per
@@ -38,149 +36,162 @@ AEGIS-BYZ.per
 └── AegisProm/Aegis-commitment.per
 ```
 
-The eight-file closure is therefore:
+The generation probe is intentionally not loaded.
 
-1. `AEGIS-BYZ.per`
-2. `AegisProm/AEGIS-BYZ-Engine-Carpenter-P2.per`
-3. `AegisProm/Aegis-belief.per`
-4. `AegisProm/Aegis-commitment.per`
-5. `AegisProm/Aegis-decision.per`
-6. `AegisProm/Aegis-objectives.per`
-7. `AegisProm/Aegis-planning.per`
-8. `AegisProm/Aegis-situation.per`
+## Final recursive audit
 
-## Duplicate declaration inventory
+A fresh target-machine run of `tools/aegis_abi_audit_v2.py` against reconciled HEAD `447b086bbbe9915988c6f13f3428126053625d0b` returned:
 
-The 27 duplicated symbols are:
+| Metric | Result |
+|---|---:|
+| Closure files | 8 |
+| Declaration rows | 129 |
+| Numeric declarations | 129 |
+| Unique symbols | 129 |
+| Resolved goal operands | 237 |
+| Resolved high-goal operands | 0 |
+| Duplicate declarations | **0** |
+
+The equality of declaration rows and unique symbols is the direct audit indication that the prior 27 duplicate declarations have been removed from the loaded closure.
+
+## Ownership decision
+
+### World Model
+
+**Authoritative owner: `AEGIS-BYZ.per`.**
+
+The Architect retains:
+
+- World Model goal declarations 300–318;
+- timer identity and cadence ownership;
+- bootstrap state envelope;
+- qualification transition;
+- evidence-level transition;
+- cavalry-age observation retention;
+- enemy-presence interpretation;
+- downstream semantic boundary.
+
+The Architect no longer performs native sensor acquisition itself. This prevents two independent observation implementations from mutating the same state envelope.
+
+### Engine Carpenter
+
+**Authoritative loaded owner: `AegisProm/AEGIS-BYZ-Engine-Carpenter-P2.per`.**
+
+The Carpenter retains:
+
+- native sensor expression;
+- native fact acquisition into Architect-owned goals;
+- Carpenter heartbeat/runtime markers;
+- bounded diagnostics.
+
+The Carpenter does not declare World Model state, qualify World Model evidence, select objectives, reserve resources, or issue commands.
+
+### Superseded standalone Carpenter
+
+`AegisProm/Aegis-carpenter.per` was an unloaded duplicate/alternate Carpenter implementation. It was removed from the active branch during reconciliation rather than left as an ambiguous second implementation.
+
+Recorded source SHA-256 before removal:
+
+`27A97A7C3C2195E1F83E6142DFF67F7977140D3D0881662D91A470B263F5A2BD`
+
+The removal is reversible through Git history; it is not an unrecorded destruction of evidence.
+
+## Why this ownership model is correct
+
+The architecture separates **meaning** from **native expression**:
 
 ```text
-aegis-wm-valid 300
-aegis-wm-generation 301
-aegis-wm-stage 302
-aegis-wm-evidence 303
-aegis-wm-time 304
-aegis-wm-cavalry 305
-aegis-wm-camel 306
-aegis-wm-food 307
-aegis-wm-wood 308
-aegis-wm-stone 309
-aegis-wm-gold 310
-aegis-wm-population 311
-aegis-wm-population-cap 312
-aegis-wm-age 313
-aegis-wm-focus-player 314
-aegis-wm-enemy-present 315
-aegis-wm-cycle 316
-aegis-wm-observed-at 317
-aegis-wm-cavalry-age 318
-aegis-wm-timer 40
-aegis-knight 38
-aegis-camel 92
-aegis-wm-stage-init 0
-aegis-wm-stage-observe 1
-aegis-wm-stage-qualified 2
-aegis-evidence-unknown 0
-aegis-evidence-current 1
+Architect
+  owns WHAT the World Model means
+          ↓
+Carpenter
+  owns HOW native engine primitives populate it
+          ↓
+World Model state
+  is consumed by downstream semantic layers
 ```
 
-Each appears once in `AEGIS-BYZ.per` and once in `AEGIS-BYZ-Engine-Carpenter-P2.per` with the same value.
+This is materially cleaner than either of the two rejected arrangements:
 
-This is not a theoretical concern. It is a concrete source/package coherence defect in the current candidate.
+1. two World Model owners mutating the same goals; or
+2. Carpenter owning the semantic World Model itself.
 
-## Important distinction: audit defect vs source defect
+The Carpenter's native adapter is therefore an implementation mechanism, not the semantic authority for the resulting state.
 
-The older artifact under `audit_p2_carpenter` reported a one-file closure. That artifact is stale for the current modular package.
+## Remaining semantic limitations
 
-The audit implementation itself is capable of recursively following native `load` directives. When run against the current eight-file package on the target workstation, it resolved all eight files.
+The reconciliation does **not** upgrade sensor semantics to PROVEN.
 
-Therefore the present evidence does **not** justify claiming that the audit algorithm itself failed to understand `load`. The earlier one-file result is more properly classified as a stale or incorrectly scoped audit snapshot until its original invocation is reconstructed.
+Current observation remains:
 
-## Canonical Carpenter status
+- `aegis-knight = 38`: concrete Knight-unit probe, not a qualified `knight-line` observation;
+- `up-get-fact-max any-enemy unit-type-count aegis-knight`: current cavalry signal is not established as a total across all enemies;
+- `aegis-wm-observed-at = 1`: observation marker, not a timestamp;
+- `aegis-wm-time`: sampled game-time channel, whose exact semantic units remain separately qualified;
+- `aegis-wm-valid = 1`: architectural qualification transition, not independent corroboration of sensor truth.
 
-Two Carpenter-related source files exist:
+The public AoE2 AI scripting reference confirms `up-get-fact`, `up-get-fact-max`, and the native AI scripting model, but documentation does not by itself prove the target-build semantics of these specific AEGIS probes. citeturn0search1turn0search2
 
-- `AegisProm/AEGIS-BYZ-Engine-Carpenter-P2.per`
-- `AegisProm/Aegis-carpenter.per`
+The scripting data-limit reference also confirms the relevant broad limits: 10,000 rules, 32 elements per rule in DE, goals 1–16,000, timers 1–50, and nested loads up to 10 files. These are background constraints, not proof of AEGIS runtime behavior. citeturn0search3
 
-Only the P2 artifact is loaded by the current entrypoint.
+## Provenance binding
 
-The P2 artifact is also the artifact explicitly preserved by the machine-tested handoff. The standalone Carpenter file must therefore not be silently promoted to canonical status or deleted during this reconciliation.
+The reconciled eight-file source closure has deterministic per-file hashes and the closure manifest hash:
 
-The correct next action is an explicit ownership decision after preserving the machine-tested P2 source.
+`6F9533CFD5DF3B3BD9C0AE95AA16A6DEBA153AABDDA0814E8AED00C3076EA4EC`
 
-## World Model ownership defect
+Target executable SHA-256:
 
-The current P2 artifact contains a complete copy of the World Model before its Carpenter section. The root entrypoint also contains the complete World Model implementation.
+`6378CA6F1BFD2F230B5B7F2CD048198331848AF70F44B5CD13CEB89420A321A4`
 
-Consequently the effective source package contains two declarations and two rule sets for the World Model state envelope.
+The full source/hash record is stored in:
 
-This creates unresolved questions about:
+`AEGIS_LITE_RECONCILED_SOURCE_HASH_2026-09-06.md`
 
-- duplicate declaration ownership;
-- duplicate observation execution;
-- timer-triggered rule ordering;
-- generation increments;
-- state mutation order;
-- diagnostic attribution;
-- future semantic authority.
+## Runtime state after reconciliation
 
-No semantic conclusion about which duplicate wins should be inferred from static source alone. The correct disposition is **RECONCILE BEFORE EXTENSION**.
+No reconciled package has yet been promoted to PROVEN runtime semantics.
 
-## Additional semantic findings
+The target machine currently has no active `AEGIS-P0-Entry` local mod package; the previous disposable package was removed. This reconciliation therefore has not silently overwritten the user's machine package.
 
-The current World Model uses `up-get-fact-max any-enemy unit-type-count aegis-knight`, so its current cavalry value is not established as an aggregate count across all enemies. The safe interpretation for the current 1v1-oriented probe is a maximum over the selected enemy scope; broader aggregation semantics remain a qualification item.
+The next runtime operation is deliberately controlled package installation and launch using the reconciled eight-file closure, followed by generation propagation qualification.
 
-`aegis-knight = 38` is a concrete Knight-unit probe. It is not a qualified substitute for a Knight-line observation.
+## Required generation experiment
 
-`aegis-wm-observed-at = 1` is currently an observation marker, not a timestamp. The actual sampled game time is separately stored in `aegis-wm-time`.
-
-`aegis-wm-valid = 1` currently records an architectural qualification transition after the observation rule runs. It must not be promoted to independently corroborated semantic truth.
-
-## What is NOT concluded
-
-This audit does not prove:
-
-- that the seven-layer state pipeline executes end-to-end;
-- that duplicate rules currently produce an observable runtime failure;
-- that every sensor has its intended semantics;
-- that `aegis-wm-valid = 1` is semantically corroborated truth;
-- that Knight ID `38` is a valid substitute for a Knight-line query;
-- that generation N+1 rejects stale N authority at runtime;
-- that Commitment causes any engine action.
-
-Those remain separate qualification questions.
-
-## Required next experiment
-
-Before native Execution adapters are added, create a single reconciled package with one authoritative World Model and one authoritative Carpenter, then run:
+The next gate is:
 
 ```text
-source hash
+reconciled source
     ↓
-package hash
+reconciled eight-file closure
     ↓
-AoE2 executable hash
+closure hash
+    ↓
+exact AoE2 executable hash
     ↓
 engine load
     ↓
-controlled generation N
+generation N
     ↓
-controlled generation N+1
+generation N+1
     ↓
-downstream propagation audit
+World Model → Belief → Situation → Objectives → Planning → Decision → Commitment
     ↓
-stale-N rejection test
+stale-generation rejection
     ↓
 verdict
 ```
 
-The UNKNOWN/zero/absence experiment must be kept separate from the generation experiment so that a failed observation cannot be mistaken for a stale-state failure.
+The UNKNOWN/zero/absence experiment remains separate. A missing or zero sensor value must not be confused with stale-generation rejection.
 
-## Disposition
+## Gate disposition
 
-**P0-STRUCT-001 — OPEN:** duplicate World Model implementation.  
-**P0-STRUCT-002 — OPEN:** two Carpenter source artifacts with one loaded.  
-**P0-AUDIT-001 — RESOLVED FOR CURRENT HEAD:** recursive load closure now verified at 8 files.  
-**P0-AUDIT-002 — OPEN:** replace or supersede stale one-file audit artifacts with a current closure record.
+- **P0-STRUCT-001 — CLOSED:** duplicate World Model implementation removed from active closure.
+- **P0-STRUCT-002 — CLOSED:** one loaded Carpenter owner established; superseded unloaded alternate removed.
+- **P0-AUDIT-001 — CLOSED:** recursive eight-file load closure verified on target machine.
+- **P0-AUDIT-002 — CLOSED:** stale one-file audit snapshot superseded by reconciled closure record.
+- **P0-RUNTIME-GEN-001 — OPEN:** generation N → N+1 propagation remains unqualified.
+- **P0-RUNTIME-STALE-001 — OPEN:** stale-generation rejection remains unqualified.
+- **P0-RUNTIME-SENSOR-001 — OPEN:** sensor semantic qualification remains separate.
 
-**Gate:** structural reconciliation precedes Execution.
+**Gate:** native Execution adapters remain blocked until generation propagation and stale-generation qualification are complete.
