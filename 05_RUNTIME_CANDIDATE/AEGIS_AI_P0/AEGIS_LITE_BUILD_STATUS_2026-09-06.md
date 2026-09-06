@@ -27,19 +27,19 @@ The entrypoint is AEGIS-owned and does not load stock Promisory modules.
 
 Owns aggregate, time-indexed world state and establishes the initial
 semantic envelope `VALID + OWNER + GENERATION + STAGE + PAYLOAD + EVIDENCE_LEVEL`.
-It maintains a 15-second observation cadence and keeps strategy, production,
-and direct commands outside the World Model boundary.
+It owns timer cadence, World Model state, qualification, and evidence-state
+transitions. Native fact acquisition is delegated to the Engine Carpenter.
 
 ### Engine Carpenter — Pass 2
 
-The current **machine-tested published artifact** is
-`AegisProm/AEGIS-BYZ-Engine-Carpenter-P2.per`. It contains the exact P2
-continuation that was reconciled from the machine-tested package.
+The canonical loaded artifact is `AegisProm/AEGIS-BYZ-Engine-Carpenter-P2.per`.
+It is the sole production native sensor adapter. It acquires native engine facts
+and writes them into Architect-owned World Model goals. It does not define the
+semantic meaning of those goals or authorize downstream behavior.
 
-A separate `AegisProm/Aegis-carpenter.per` also exists in the repository but
-is not part of the current entrypoint load graph. It is therefore not to be
-silently treated as the canonical runtime Carpenter until reconciliation is
-completed.
+The former unloaded `AegisProm/Aegis-carpenter.per` was removed during the
+2026-09-06 structural reconciliation after its SHA-256 was recorded. Git
+history preserves the source for forensic recovery.
 
 ### Belief Model — Pass 3
 
@@ -92,47 +92,65 @@ Commitment: `363–370`
 
 These remain implementation candidates, not frozen cross-system ABI.
 
+## Structural reconciliation — COMPLETED
+
+The 2026-09-06 reconciliation established one authoritative owner for each
+boundary and removed the duplicated World Model implementation from the
+active closure.
+
+Final target-machine audit result:
+
+| Metric | Result |
+|---|---:|
+| Closure files | 8 |
+| Declaration rows | 129 |
+| Unique symbols | 129 |
+| Resolved goal operands | 237 |
+| Resolved high-goal operands | 0 |
+| Duplicate declarations | 0 |
+
+The equality of declaration rows and unique symbols is the audit indication
+that the prior 27 duplicate declarations are gone from the loaded package.
+
+The authoritative closure is documented in:
+
+`AEGIS_LITE_STRUCTURAL_RECONCILIATION_2026-09-06.md`
+
+Source/executable binding is documented in:
+
+`AEGIS_LITE_RECONCILED_SOURCE_HASH_2026-09-06.md`
+
 ## Qualification posture
 
-The modules have been individually machine-tested during development, but
-that does not constitute end-to-end semantic qualification of the complete
-seven-layer state machine. In particular, native sensor semantics,
-publication coherence, stale-generation rejection, UNKNOWN/zero/absence,
-and engine-world correspondence remain qualification work.
+The modules were individually machine-tested during development, but that does
+not constitute end-to-end semantic qualification of the complete seven-layer
+state machine. Native sensor semantics, generation propagation, stale-generation
+rejection, UNKNOWN/zero/absence, and engine-world correspondence remain open.
 
 Evidence classes remain:
 `PROVEN`, `STOCK-EVIDENCED`, `DOCUMENTED`, `INFERRED`, `UNKNOWN`, `REJECTED`.
-
-## Structural reconciliation finding — 2026-09-06
-
-A fresh target-machine audit was run against the exact GitHub HEAD
-`21fe30f8949f2b8659f61e3b47ed4042afc2f22a`.
-
-The audit resolved **8 files**, **156 declaration rows**, **129 unique
-symbols**, **356 resolved goal operands**, and **0 resolved high-goal
-operands**.
-
-It also exposed **27 duplicate declarations**. Every duplicate is one of
-the World Model's 27 constants/state symbols, appearing once in the root
-and once in `AEGIS-BYZ-Engine-Carpenter-P2.per`. This confirms a real package
-coherence defect: the current P2 artifact contains a duplicated World Model
-implementation.
-
-The prior P2 audit artifact that reported a one-file closure is stale for the
-current modular package and must not be used as the current closure authority.
 
 ## Current engineering gate
 
 **DO NOT add native Execution adapters yet.**
 
-First:
+The next work is now:
 
-1. reconcile the duplicate World Model/Carpenter ownership;
-2. freeze the intended eight-file load graph;
-3. rerun and preserve the recursive closure audit;
-4. prove generation N -> N+1 propagation and stale-state behavior;
-5. separately qualify observation execution versus semantic evidence validity;
-6. then advance to Execution.
+1. controlled load of the reconciled eight-file package on the target machine;
+2. generation N -> N+1 propagation qualification;
+3. stale-generation rejection qualification;
+4. separate UNKNOWN/zero/absence experiment;
+5. only then advance to the Execution skeleton.
+
+## Machine package prepared
+
+A disposable local package matching the reconciled eight-file closure has been
+prepared at:
+
+`C:\Users\justh\Games\Age of Empires 2 DE\76561198093432383\mods\local\AEGIS-P0-Reconciled`
+
+The stock AI installation and mod-status state were not overwritten by this
+preparation step.
 
 ## Design rule
 
