@@ -15,6 +15,10 @@
 ;   2 = contain
 ;
 ; This keeps Planning separate from later Decision and Execution layers.
+;
+; Publication marker contract:
+;   Planning inherits the upstream published observation marker (2).
+;   Marker 1 is never treated as a completed observation publication.
 
 (defconst aegis-planning-generation 347)
 (defconst aegis-planning-valid 348)
@@ -87,7 +91,7 @@
 
 (defrule
     (up-compare-goal aegis-planning-generation == aegis-objective-generation)
-    (up-compare-goal aegis-planning-observed-at == 1)
+    (up-compare-goal aegis-planning-observed-at == 2)
 =>
     (set-goal aegis-planning-stage aegis-planning-stage-formed)
     (set-goal aegis-planning-valid 1)
