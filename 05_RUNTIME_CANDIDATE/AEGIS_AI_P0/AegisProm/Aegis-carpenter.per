@@ -1,0 +1,113 @@
+; ============================================================================
+; AEGIS ENGINE CARPENTER MODULE
+; ============================================================================
+;
+; The Carpenter does not redesign the World Model. It makes the architecture
+; conform to primitives already observed in the target retail package.
+;
+; Stock evidence used by this pass:
+;   game-time as an up-get-fact source
+;   population / current-age as up-get-fact sources
+;   unit-type-count and unit-type-count-total
+;   up-get-fact-max any-enemy
+;   up-find-player enemy find-closest
+;   timer-triggered / enable-timer
+;   up-chat-data-to-self for bounded diagnostics
+;
+; ============================================================================
+; NATIVE ADAPTER STATE
+; ============================================================================
+
+(defconst aegis-carpenter-heartbeat 319)
+(defconst aegis-carpenter-sensor-pass 320)
+(defconst aegis-carpenter-runtime-ok 321)
+
+; ============================================================================
+; NATIVE SENSOR ADAPTER
+; ============================================================================
+
+(defrule
+    (timer-triggered aegis-wm-timer)
+=>
+    (set-goal aegis-carpenter-runtime-ok 0)
+    (set-goal aegis-carpenter-sensor-pass 0)
+    (up-get-fact game-time 0 aegis-wm-time)
+    (up-get-fact population 0 aegis-wm-population)
+    (up-get-fact current-age 0 aegis-wm-age)
+    (up-get-fact unit-type-count-total aegis-camel aegis-wm-camel)
+    (up-get-fact-max any-enemy unit-type-count aegis-knight aegis-wm-cavalry)
+    (up-find-player enemy find-closest aegis-wm-focus-player)
+    (set-goal aegis-carpenter-sensor-pass 1)
+    (set-goal aegis-carpenter-runtime-ok 1)
+)
+
+; ============================================================================
+; OBSERVABLE HEARTBEAT
+; ============================================================================
+
+(defrule
+    (up-compare-goal aegis-carpenter-sensor-pass == 1)
+    (up-compare-goal aegis-carpenter-heartbeat != aegis-wm-generation)
+=>
+    (up-modify-goal aegis-carpenter-heartbeat g:= aegis-wm-generation)
+    (up-chat-data-to-self "AEGIS WM gen=%d pop=%d age=%d cav=%d camel=%d." g: aegis-wm-generation)
+)
+
+; ============================================================================
+; RESOURCE ADAPTER — exact native forms, no synthetic resource math
+; ============================================================================
+;
+; Resource conditions remain native conditions in this pass. This avoids
+; manufacturing an ABI interpretation for resource-amount until its selector
+; semantics are independently qualified.
+
+(defrule
+    (up-compare-goal aegis-wm-stage == aegis-wm-stage-qualified)
+    (food-amount >= 0)
+    (wood-amount >= 0)
+    (stone-amount >= 0)
+    (gold-amount >= 0)
+=>
+    (set-goal aegis-wm-valid 1)
+)
+
+; ============================================================================
+; ARCHITECT / CARPENTER CONTRACT
+; ============================================================================
+;
+; Architect owns meaning and boundaries.
+; Carpenter owns native expression of those boundaries.
+; Carpenter may not promote an unqualified engine primitive merely because
+; its spelling is accepted by the parser.
+;
+; Runtime evidence produced by this pass is therefore:
+;   package loaded          -> established by the preceding P0 test
+;   rules executed          -> observable through the heartbeat
+;   sensor values populated -> observable through the heartbeat
+;   sensor semantics        -> still requires controlled calibration
+;
+; ============================================================================
+; END — ENGINE CARPENTER PASS 2
+; ============================================================================
+
+; ============================================================================
+; CARPENTER DIAGNOSTIC EXTENSION
+; ============================================================================
+;
+; One value per diagnostic call keeps formatting unambiguous and makes each
+; observed channel independently attributable during runtime qualification.
+;
+(defrule
+    (up-compare-goal aegis-carpenter-sensor-pass == 1)
+    (up-compare-goal aegis-carpenter-runtime-ok == 1)
+=>
+    (up-chat-data-to-self "AEGIS time=%d." g: aegis-wm-time)
+    (up-chat-data-to-self "AEGIS pop=%d." g: aegis-wm-population)
+    (up-chat-data-to-self "AEGIS age=%d." g: aegis-wm-age)
+    (up-chat-data-to-self "AEGIS enemy-cav=%d." g: aegis-wm-cavalry)
+    (up-chat-data-to-self "AEGIS own-camel=%d." g: aegis-wm-camel)
+)
+
+; ============================================================================
+; END — CARPENTER DIAGNOSTIC EXTENSION
+; ============================================================================
