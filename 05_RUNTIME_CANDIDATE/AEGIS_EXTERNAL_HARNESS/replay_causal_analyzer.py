@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import argparse
 import hashlib
@@ -47,7 +47,7 @@ def _action_target(command: str, data: dict[str, Any]) -> int | None:
 
 
 def analyze(input_path: Path, output_path: Path, window_syncs: int = 8) -> dict[str, Any]:
-    elapsed_ms = 0
+    elapsed_raw_units = 0
     sync_seen = 0
     action_seen = 0
     lifecycle_seen = 0
@@ -59,17 +59,17 @@ def analyze(input_path: Path, output_path: Path, window_syncs: int = 8) -> dict[
         payload = row.get("payload")
         if op == "SYNC" and isinstance(payload, list):
             increment = payload[0] if payload and isinstance(payload[0], int) else 0
-            elapsed_ms += increment
+            elapsed_raw_units += increment
             sync_seen += 1
             for action in pending:
                 evidence.append({
                     "action_line": action["line_no"],
                     "action_command": action["command"],
                     "action_sequence": action.get("sequence"),
-                    "action_replay_time_ms": action["replay_time_ms"],
+                    "action_replay_time_raw_units": action["replay_time_raw_units"],
                     "observed_sync_line": row["_line_no"],
-                    "observed_replay_time_ms": elapsed_ms,
-                    "elapsed_ms_after_action": elapsed_ms - action["replay_time_ms"],
+                    "observed_replay_time_raw_units": elapsed_raw_units,
+                    "elapsed_raw_units_after_action": elapsed_raw_units - action["replay_time_raw_units"],
                     "syncs_after_action": sync_seen - action["sync_ordinal"],
                     "target_id": action.get("target_id"),
                     "semantic_status": "TEMPORALLY_CORRELATED",
@@ -88,7 +88,7 @@ def analyze(input_path: Path, output_path: Path, window_syncs: int = 8) -> dict[
                         "sequence": data.get("sequence"),
                         "target_id": _action_target(command, data),
                         "player_id": data.get("player_id"),
-                        "replay_time_ms": elapsed_ms,
+                        "replay_time_raw_units": elapsed_raw_units,
                         "sync_ordinal": sync_seen,
                     })
                     if len(pending) > window_syncs:
@@ -131,3 +131,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

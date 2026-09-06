@@ -1,4 +1,4 @@
-import json
+﻿import json
 from pathlib import Path
 
 from replay_causal_analyzer import analyze
@@ -17,8 +17,8 @@ def test_temporal_correlation_is_not_completion(tmp_path: Path):
     event = json.loads(evidence.read_text(encoding="utf-8").strip())
     assert event["semantic_status"] == "TEMPORALLY_CORRELATED"
     assert event["evidence_level"] == "replay_temporal_only"
-    assert event["action_replay_time_ms"] == 0
-    assert event["observed_replay_time_ms"] == 10
+    assert event["action_replay_time_raw_units"] == 0
+    assert event["observed_replay_time_raw_units"] == 10
     assert report["semantic_boundary"]["created"] == "NOT_PROVABLE"
     assert report["semantic_boundary"]["available"] == "NOT_PROVABLE"
     assert report["semantic_boundary"]["effective"] == "NOT_PROVABLE"
@@ -35,7 +35,8 @@ def test_sync_only_advances_clock(tmp_path: Path):
     source.write_text("\n".join(json.dumps(row) for row in rows), encoding="utf-8")
     report = analyze(source, evidence)
     event = json.loads(evidence.read_text(encoding="utf-8").strip())
-    assert event["action_replay_time_ms"] == 13
-    assert event["observed_replay_time_ms"] == 117
-    assert event["elapsed_ms_after_action"] == 104
+    assert event["action_replay_time_raw_units"] == 13
+    assert event["observed_replay_time_raw_units"] == 117
+    assert event["elapsed_raw_units_after_action"] == 104
     assert report["records"]["syncs"] == 2
+
