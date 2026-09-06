@@ -2,25 +2,33 @@
 ; AEGIS-BYZ — AUTONOMOUS BYZANTINE AI
 ; FIRST PERSONALITY PASS: ARCHITECT / WORLD MODEL
 ; ============================================================================
-;
+
 ; This is the first real implementation pass of AEGIS.
 ; Personality 1 owns the World Model: observe -> qualify -> retain.
 ; It does not decide strategy, authorize production, or issue commands.
-;
+
 ; AEGIS is autonomous. No stock .per file is loaded.
 ; Target: AoE2DE 101.103.48987.0 / Steam BuildID 24094652.
-;
+
 ; The World Model is capability-oriented, aggregate, time-indexed state
 ; with bounded causal memory. It is deliberately not an object database.
-;
+
 ; Semantic envelope:
 ;   VALID + OWNER + GENERATION + STAGE + PAYLOAD + EVIDENCE_LEVEL
-;
+
 ; Evidence is never promoted merely because an observation was attempted.
-;
+
 ; ============================================================================
 ; AEGIS WORLD-MODEL LOCAL STATE
 ; ============================================================================
+
+(load "AegisProm\AEGIS-BYZ-Engine-Carpenter-P2")
+(load "AegisProm\Aegis-belief")
+(load "AegisProm\Aegis-situation")
+(load "AegisProm\Aegis-objectives")
+(load "AegisProm\Aegis-planning")
+(load "AegisProm\Aegis-decision")
+(load "AegisProm\Aegis-commitment")
 
 ; Local goal IDs are implementation candidates for this standalone package.
 ; They are intentionally kept in a low, currently unoccupied stock band.
@@ -152,7 +160,7 @@
 ;
 ; The observation rule re-arms through the timer mechanism. No consumer
 ; owns a second clock and no world fact is fabricated between observations.
-;
+
 ; ============================================================================
 ; ARCHITECTURAL FIREWALL
 ; ============================================================================
@@ -169,8 +177,3 @@
 ; ============================================================================
 ; END — ARCHITECT / WORLD MODEL PASS 1
 ; ============================================================================
-
-; AEGIS-owned native expression layer
-(load "Aegis-carpenter")
-(load "Aegis-belief")
-(load "Aegis-situation")
