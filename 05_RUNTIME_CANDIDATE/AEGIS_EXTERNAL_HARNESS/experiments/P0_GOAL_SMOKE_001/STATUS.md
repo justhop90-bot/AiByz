@@ -41,3 +41,9 @@ A controlled run must capture:
 - repeat-run consistency.
 
 A missing chat message is not automatically a failed goal operation; it is an unresolved runtime observation until the lifecycle is adjudicated.
+
+## 2026-09-05 runtime-path update
+
+A direct retail launch was attempted with `SCRIPT`, `SCRIPTREPORT`, and `RUNNING_AUTOTEST` pointing at the discovered FTS calibration script. The game remained alive, but no requested report was produced and no qualified FTS listener appeared. See `../evidence/CAL_FTS_SCRIPT_LAUNCH_001_2026-09-05.md`.
+
+This does not fail the P0 ABI hypothesis. It fails only the attempted external invocation path. P0 remains **RUNTIME UNKNOWN** pending a controlled way to execute the disposable AI package and capture its output.
