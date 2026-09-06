@@ -1,0 +1,139 @@
+; ============================================================================
+; AEGIS-LITE — SITUATION ANALYSIS
+; ============================================================================
+;
+; Situation Analysis consumes qualified World Model state and evaluated
+; Belief Model state. It classifies the current strategic situation.
+;
+; Boundary:
+;   WORLD MODEL -> BELIEF MODEL -> SITUATION ANALYSIS -> OBJECTIVES
+;
+; This module does not choose an objective, reserve resources, or issue
+; commands. It produces bounded situation classifications only.
+;
+; ============================================================================
+; GOALS
+; ============================================================================
+
+(defconst aegis-situation-generation 331)
+(defconst aegis-situation-valid 332)
+(defconst aegis-situation-stage 333)
+(defconst aegis-situation-cavalry-pressure 334)
+(defconst aegis-situation-enemy-state 335)
+(defconst aegis-situation-urgency 336)
+(defconst aegis-situation-observed-at 337)
+(defconst aegis-situation-cycle 338)
+
+; ============================================================================
+; STAGES
+; ============================================================================
+
+(defconst aegis-situation-stage-init 0)
+(defconst aegis-situation-stage-classified 1)
+
+; ============================================================================
+; CAVALRY PRESSURE
+; ============================================================================
+
+(defconst aegis-situation-cav-none 0)
+(defconst aegis-situation-cav-light 1)
+(defconst aegis-situation-cav-heavy 2)
+
+; ============================================================================
+; ENEMY STATE
+; ============================================================================
+
+(defconst aegis-situation-enemy-absent 0)
+(defconst aegis-situation-enemy-present 1)
+
+; ============================================================================
+; URGENCY
+; ============================================================================
+
+(defconst aegis-situation-urgency-low 0)
+(defconst aegis-situation-urgency-medium 1)
+(defconst aegis-situation-urgency-high 2)
+
+; ============================================================================
+; INITIALIZATION
+; ============================================================================
+
+(defrule
+    (game-time < 10)
+=>
+    (set-goal aegis-situation-valid 0)
+    (set-goal aegis-situation-stage aegis-situation-stage-init)
+    (set-goal aegis-situation-generation 0)
+    (set-goal aegis-situation-cycle 0)
+)
+
+; ============================================================================
+; INGEST BELIEF
+; ============================================================================
+
+(defrule
+    (up-compare-goal aegis-belief-valid == 1)
+    (up-compare-goal aegis-belief-generation != aegis-situation-generation)
+=>
+    (set-goal aegis-situation-valid 0)
+    (set-goal aegis-situation-stage aegis-situation-stage-init)
+    (up-modify-goal aegis-situation-generation g:= aegis-belief-generation)
+    (up-modify-goal aegis-situation-cavalry-pressure g:= aegis-belief-cavalry-level)
+    (up-modify-goal aegis-situation-enemy-state g:= aegis-belief-enemy-present)
+    (up-modify-goal aegis-situation-observed-at g:= aegis-belief-observed-at)
+    (up-modify-goal aegis-situation-cycle c:+ 1)
+)
+
+; ============================================================================
+; URGENCY CLASSIFICATION
+; ============================================================================
+
+(defrule
+    (up-compare-goal aegis-situation-generation == aegis-belief-generation)
+    (up-compare-goal aegis-situation-enemy-state == aegis-situation-enemy-present)
+    (up-compare-goal aegis-situation-cavalry-pressure == aegis-situation-cav-heavy)
+=>
+    (set-goal aegis-situation-urgency aegis-situation-urgency-high)
+)
+
+(defrule
+    (up-compare-goal aegis-situation-generation == aegis-belief-generation)
+    (up-compare-goal aegis-situation-enemy-state == aegis-situation-enemy-present)
+    (up-compare-goal aegis-situation-cavalry-pressure == aegis-situation-cav-light)
+=>
+    (set-goal aegis-situation-urgency aegis-situation-urgency-medium)
+)
+
+(defrule
+    (up-compare-goal aegis-situation-generation == aegis-belief-generation)
+    (up-compare-goal aegis-situation-enemy-state == aegis-situation-enemy-absent)
+=>
+    (set-goal aegis-situation-urgency aegis-situation-urgency-low)
+)
+
+; ============================================================================
+; COMMIT SITUATION
+; ============================================================================
+
+(defrule
+    (up-compare-goal aegis-situation-generation == aegis-belief-generation)
+    (up-compare-goal aegis-situation-observed-at == 1)
+=>
+    (set-goal aegis-situation-stage aegis-situation-stage-classified)
+    (set-goal aegis-situation-valid 1)
+)
+
+; ============================================================================
+; ARCHITECTURAL FIREWALL
+; ============================================================================
+;
+; Situation Analysis does not select objectives.
+; Situation Analysis does not choose units or buildings.
+; Situation Analysis does not reserve resources.
+; Situation Analysis does not issue commands.
+;
+; Output is bounded situation state for the Objectives layer.
+;
+; ============================================================================
+; END — AEGIS SITUATION ANALYSIS
+; ============================================================================
