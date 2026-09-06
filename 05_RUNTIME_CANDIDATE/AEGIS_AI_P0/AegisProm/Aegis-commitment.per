@@ -57,6 +57,8 @@
     (up-modify-goal aegis-commitment-urgency g:= aegis-decision-urgency)
     (up-modify-goal aegis-commitment-observed-at g:= aegis-decision-observed-at)
     (up-modify-goal aegis-commitment-cycle g:= aegis-decision-cycle)
+    (set-goal aegis-commitment-stage aegis-commitment-stage-init)
+    (set-goal aegis-commitment-valid 0)
 )
 
 (defrule
@@ -64,8 +66,8 @@
     (up-compare-goal aegis-commitment-generation == aegis-decision-generation)
     (up-compare-goal aegis-commitment-observed-at == aegis-decision-observed-at)
 =>
-    (up-modify-goal aegis-commitment-stage g:= aegis-commitment-stage-authorized)
-    (up-modify-goal aegis-commitment-valid g:= 1)
+    (set-goal aegis-commitment-stage aegis-commitment-stage-authorized)
+    (set-goal aegis-commitment-valid 1)
 )
 
 (defrule
@@ -73,8 +75,8 @@
     (up-compare-goal aegis-commitment-generation == aegis-decision-generation)
     (up-compare-goal aegis-commitment-observed-at == aegis-decision-observed-at)
 =>
-    (up-modify-goal aegis-commitment-stage g:= aegis-commitment-stage-authorized)
-    (up-modify-goal aegis-commitment-valid g:= 1)
+    (set-goal aegis-commitment-stage aegis-commitment-stage-authorized)
+    (set-goal aegis-commitment-valid 1)
 )
 
 (defrule
