@@ -114,6 +114,25 @@
 ; basis for the native adapter reconciliation.
 
 ; ============================================================================
+; ============================================================================
+; PUBLICATION COORDINATOR -- Architect-owned generation transition
+; ============================================================================
+; Carpenter marks completed native acquisition with observed-at=1. The
+; Architect alone converts that acquisition into a new World Model generation.
+; The handshake keeps generation semantics outside the sensor adapter and
+; establishes an explicit once-per-observation publication boundary.
+
+(defrule
+    (up-compare-goal aegis-carpenter-sensor-pass == 1)
+    (up-compare-goal aegis-wm-observed-at == 2)
+=>
+    (set-goal aegis-wm-valid 0)
+    (set-goal aegis-wm-stage aegis-wm-stage-observe)
+    (up-modify-goal aegis-wm-generation c:+ 1)
+    (up-modify-goal aegis-wm-cycle c:+ 1)
+    (set-goal aegis-wm-observed-at 2)
+)
+
 ; QUALIFICATION — observation is retained only after the acquisition pass
 ; ============================================================================
 
