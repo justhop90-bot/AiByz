@@ -21,7 +21,7 @@ WORLD MODEL
   -> RECOVERY
 ```
 
-The entrypoint `AEGIS-BYZ.per` now loads all ten AEGIS modules. No stock AI module is loaded.
+The entrypoint `AEGIS-BYZ.per` loads all ten AEGIS subordinate layers/adapters in producer-to-consumer order. No stock AI module is loaded.
 
 ## Production modules
 
@@ -39,14 +39,30 @@ The entrypoint `AEGIS-BYZ.per` now loads all ten AEGIS modules. No stock AI modu
 
 The count is eleven physical `.per` files because the World Model entrypoint and the ten subordinate layers/adapters are distinct artifacts.
 
+## Runtime ordering correction
+
+The previous integrated ordering placed the Architect publication coordinator after all downstream modules. That created a one-generation lag: downstream layers consumed generation N while the coordinator then published N+1.
+
+The entrypoint now loads Carpenter first, then runs the Architect bootstrap/publication/qualification rules, then loads Belief through Recovery. This makes the current published generation available to the downstream state machine in the same rule-evaluation pass.
+
+The downstream observation marker contract is explicit:
+
+```text
+1 = native acquisition complete; not yet published
+2 = current World Model generation published/qualified
+```
+
+Belief, Situation, Objectives, and Planning consume marker `2` only.
+
 ## Execution safety state
 
-Execution is implemented through `OPERATIONALIZED` but does not cross into `ISSUED`.
+Production Execution remains inert at the native-command edge. It reaches `OPERATIONALIZED` but does not cross into `ISSUED`.
 
-The following lifecycle remains reserved for target-build qualification:
+The reserved lifecycle is:
 
 ```text
 AUTHORIZED
+  -> OPERATIONALIZED
   -> ISSUED
   -> ACCEPTED/QUEUED
   -> PENDING
@@ -58,6 +74,17 @@ AUTHORIZED
 
 This is intentional. The completed architecture must not fabricate command issuance or world outcomes.
 
+## First actuator candidate
+
+A disposable qualification pair has now been added but is **not loaded by production**:
+
+- `AegisProm/Aegis-actuator-train-candidate.per`
+- `AegisProm/Aegis-verification-train-candidate.per`
+
+The candidate tests one native command contract: `train spearman-line`, with `can-train` and a pre-action `unit-type-count-total` baseline. The first verification boundary is a post-action count increase, explicitly classified as queue/count evidence rather than battlefield creation.
+
+See `AEGIS_FIRST_ACTUATOR_QUALIFICATION_2026-09-06.md` for the promotion gate.
+
 ## Evidence status
 
 The architecture is **CODE-COMPLETE AS A SKELETON** and **NOT RUNTIME-QUALIFIED AS A COMPLETE AUTONOMOUS BOT**.
@@ -66,9 +93,10 @@ Known evidence boundary:
 
 - individual modules have machine-tested startup/load evidence;
 - the reconciled eight-layer package has static structural evidence;
+- publication ordering is now structurally corrected but still requires target-build runtime proof;
 - generation propagation and stale-state rejection remain unqualified;
 - sensor semantics remain partially unqualified;
-- no command lifecycle has been target-build qualified end-to-end;
+- the first native actuator candidate exists but is not target-build qualified;
 - no claim of autonomous-match semantic success is made.
 
 ## Promotion rule
@@ -83,4 +111,4 @@ Do not add an arbitrary native command merely to make the bot appear complete. T
 - independent world-state corroboration where available;
 - explicit UNKNOWN handling for unobservable lifecycle states.
 
-Until that qualification exists, the skeleton's inert Execution edge is the correct production behavior.
+Until that qualification exists, the production skeleton's inert Execution edge is the correct production behavior.
