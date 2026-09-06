@@ -54,8 +54,10 @@
     (up-modify-goal aegis-decision-urgency g:= aegis-planning-urgency)
     (up-modify-goal aegis-decision-observed-at g:= aegis-planning-observed-at)
     (up-modify-goal aegis-decision-cycle g:= aegis-planning-cycle)
-    (up-modify-goal aegis-decision-type g:= aegis-decision-type-none)
-    (up-modify-goal aegis-decision-priority g:= aegis-decision-priority-low)
+    (set-goal aegis-decision-type aegis-decision-type-none)
+    (set-goal aegis-decision-priority aegis-decision-priority-low)
+    (set-goal aegis-decision-stage aegis-decision-stage-init)
+    (set-goal aegis-decision-valid 0)
 )
 
 (defrule
@@ -63,8 +65,8 @@
     (up-compare-goal aegis-planning-type == aegis-planning-type-contain)
     (up-compare-goal aegis-decision-urgency == aegis-situation-urgency-high)
 =>
-    (up-modify-goal aegis-decision-type g:= aegis-decision-type-contain)
-    (up-modify-goal aegis-decision-priority g:= aegis-decision-priority-high)
+    (set-goal aegis-decision-type aegis-decision-type-contain)
+    (set-goal aegis-decision-priority aegis-decision-priority-high)
 )
 
 (defrule
@@ -72,16 +74,16 @@
     (up-compare-goal aegis-planning-type == aegis-planning-type-contain)
     (up-compare-goal aegis-decision-urgency == aegis-situation-urgency-medium)
 =>
-    (up-modify-goal aegis-decision-type g:= aegis-decision-type-contain)
-    (up-modify-goal aegis-decision-priority g:= aegis-decision-priority-medium)
+    (set-goal aegis-decision-type aegis-decision-type-contain)
+    (set-goal aegis-decision-priority aegis-decision-priority-medium)
 )
 
 (defrule
     (up-compare-goal aegis-planning-stage == aegis-planning-stage-formed)
     (up-compare-goal aegis-planning-type == aegis-planning-type-monitor)
 =>
-    (up-modify-goal aegis-decision-type g:= aegis-decision-type-monitor)
-    (up-modify-goal aegis-decision-priority g:= aegis-decision-priority-low)
+    (set-goal aegis-decision-type aegis-decision-type-monitor)
+    (set-goal aegis-decision-priority aegis-decision-priority-low)
 )
 
 (defrule
@@ -89,8 +91,8 @@
     (up-compare-goal aegis-decision-observed-at == aegis-planning-observed-at)
     (up-compare-goal aegis-decision-type != aegis-decision-type-none)
 =>
-    (up-modify-goal aegis-decision-stage g:= aegis-decision-stage-decided)
-    (up-modify-goal aegis-decision-valid g:= 1)
+    (set-goal aegis-decision-stage aegis-decision-stage-decided)
+    (set-goal aegis-decision-valid 1)
 )
 
 (defrule
