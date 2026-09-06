@@ -50,7 +50,7 @@
 =>
     (up-modify-goal aegis-exec-generation g:= aegis-commitment-generation)
     (up-modify-goal aegis-exec-type g:= aegis-commitment-type)
-    (up-modify-goal aegis-exec-action-id g:= aegis-commitment-action-id)
+    (set-goal aegis-exec-action-id 0)
     (up-modify-goal aegis-exec-cycle g:= aegis-commitment-cycle)
     (set-goal aegis-exec-valid 1)
     (set-goal aegis-exec-stage aegis-exec-stage-ready)
