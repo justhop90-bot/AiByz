@@ -22,13 +22,13 @@
 ; AEGIS WORLD-MODEL LOCAL STATE
 ; ============================================================================
 
-(load "AegisProm\AEGIS-BYZ-Engine-Carpenter-P2")
-(load "AegisProm\Aegis-belief")
-(load "AegisProm\Aegis-situation")
-(load "AegisProm\Aegis-objectives")
-(load "AegisProm\Aegis-planning")
-(load "AegisProm\Aegis-decision")
-(load "AegisProm\Aegis-commitment")
+(load "AegisProm\\AEGIS-BYZ-Engine-Carpenter-P2")
+(load "AegisProm\\Aegis-belief")
+(load "AegisProm\\Aegis-situation")
+(load "AegisProm\\Aegis-objectives")
+(load "AegisProm\\Aegis-planning")
+(load "AegisProm\\Aegis-decision")
+(load "AegisProm\\Aegis-commitment")
 
 ; Local goal IDs are implementation candidates for this standalone package.
 ; They are intentionally kept in a low, currently unoccupied stock band.
@@ -101,29 +101,17 @@
 )
 
 ; ============================================================================
-; OBSERVATION — acquire only facts owned by the World Model
+; OBSERVATION OWNERSHIP
 ; ============================================================================
-
-(defrule
-    (timer-triggered aegis-wm-timer)
-=>
-    (set-goal aegis-wm-valid 0)
-    (set-goal aegis-wm-stage aegis-wm-stage-observe)
-    (up-get-fact game-time 0 aegis-wm-time)
-    (up-get-fact population 0 aegis-wm-population)
-    (up-get-fact population-cap 0 aegis-wm-population-cap)
-    (up-get-fact food-amount 0 aegis-wm-food)
-    (up-get-fact wood-amount 0 aegis-wm-wood)
-    (up-get-fact stone-amount 0 aegis-wm-stone)
-    (up-get-fact gold-amount 0 aegis-wm-gold)
-    (up-get-fact current-age 0 aegis-wm-age)
-    (up-get-fact unit-type-count-total aegis-camel aegis-wm-camel)
-    (up-get-fact-max any-enemy unit-type-count aegis-knight aegis-wm-cavalry)
-    (up-find-player enemy find-closest aegis-wm-focus-player)
-    (set-goal aegis-wm-observed-at 1)
-    (up-modify-goal aegis-wm-generation c:+ 1)
-    (up-modify-goal aegis-wm-cycle c:+ 1)
-)
+;
+; The Engine Carpenter owns the native sensor expression. The Architect
+; remains the sole owner of World Model meaning, state storage, qualification,
+; and generation semantics. The Carpenter writes only into these World Model
+; output goals through its qualified native adapter.
+;
+; This removes the previous duplicate observation implementation from the
+; Architect while preserving the exact machine-tested Carpenter source as the
+; basis for the native adapter reconciliation.
 
 ; ============================================================================
 ; QUALIFICATION — observation is retained only after the acquisition pass
