@@ -1,0 +1,61 @@
+; AEGIS Recovery — production skeleton
+; Boundary: Verification result -> bounded current-course disposition
+; Recovery cannot invent facts, plans, decisions, commitments, or commands.
+
+(defconst aegis-rec-stage-init 0)
+(defconst aegis-rec-stage-stable 1)
+(defconst aegis-rec-stage-review 2)
+(defconst aegis-rec-stage-retry-bounded 3)
+(defconst aegis-rec-stage-upstream 4)
+
+(defconst aegis-rec-generation 391)
+(defconst aegis-rec-valid 392)
+(defconst aegis-rec-stage 393)
+(defconst aegis-rec-disposition 394)
+(defconst aegis-rec-retry-count 395)
+(defconst aegis-rec-material-change 396)
+(defconst aegis-rec-dependency 397)
+(defconst aegis-rec-upstream-request 398)
+(defconst aegis-rec-action-id 399)
+(defconst aegis-rec-cycle 400)
+
+(defconst aegis-rec-disposition-none 0)
+(defconst aegis-rec-disposition-hold 1)
+(defconst aegis-rec-disposition-retry 2)
+(defconst aegis-rec-disposition-upstream 3)
+
+(defrule
+    (game-time < 10)
+    (up-compare-goal aegis-rec-cycle == 0)
+=>
+    (set-goal aegis-rec-generation 0)
+    (set-goal aegis-rec-valid 0)
+    (set-goal aegis-rec-stage aegis-rec-stage-init)
+    (set-goal aegis-rec-disposition aegis-rec-disposition-none)
+    (set-goal aegis-rec-retry-count 0)
+    (set-goal aegis-rec-material-change 0)
+    (set-goal aegis-rec-dependency 0)
+    (set-goal aegis-rec-upstream-request 0)
+    (set-goal aegis-rec-action-id 0)
+    (set-goal aegis-rec-cycle 0)
+)
+
+; UNKNOWN is an information state. It is not silently converted to failure.
+; Only a current-generation Verification result may enter Recovery.
+(defrule
+    (up-compare-goal aegis-ver-valid == 1)
+    (up-compare-goal aegis-ver-generation == aegis-wm-generation)
+    (up-compare-goal aegis-ver-result == aegis-ver-result-unknown)
+    (up-compare-goal aegis-rec-generation != aegis-ver-generation)
+=>
+    (up-modify-goal aegis-rec-generation g:= aegis-ver-generation)
+    (up-modify-goal aegis-rec-action-id g:= aegis-ver-action-id)
+    (up-modify-goal aegis-rec-cycle g:= aegis-ver-cycle)
+    (set-goal aegis-rec-valid 1)
+    (set-goal aegis-rec-stage aegis-rec-stage-review)
+    (set-goal aegis-rec-disposition aegis-rec-disposition-hold)
+    (set-goal aegis-rec-upstream-request 1)
+)
+
+; Strategic replacement remains the authority of Planning/Decision/Commitment.
+; This layer only records the bounded recovery disposition.
