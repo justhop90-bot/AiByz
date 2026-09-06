@@ -1,0 +1,16 @@
+; AEGIS actuator qualification entrypoint
+; Disposable experiment only. Production AEGIS-BYZ.per does not load these files.
+;
+; Load order is intentional:
+;   1. Complete AEGIS architecture
+;   2. Native train actuator candidate
+;   3. Action-specific verification candidate
+;
+; This entrypoint exists to isolate the first real command boundary without
+; contaminating the production package.
+
+(load "AEGIS-BYZ")
+(load "AegisProm\\Aegis-actuator-train-candidate")
+(load "AegisProm\\Aegis-verification-train-candidate")
+
+; No other command is authorized by this experiment.
