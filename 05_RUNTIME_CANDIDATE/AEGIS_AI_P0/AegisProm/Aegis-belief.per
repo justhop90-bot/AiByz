@@ -6,12 +6,18 @@
 ; Belief consumes World Model state and maintains bounded beliefs.
 ; It does not issue commands, select producers, or spend resources.
 ; No stock .per dependency is introduced.
-
+;
 ; Semantic boundary:
 ;   WORLD FACT -> BELIEF -> SITUATION ANALYSIS
-
+;
 ; A belief is an interpretation of qualified world state, not a raw sensor.
 ; This first implementation deliberately uses deterministic thresholds.
+;
+; Publication marker contract:
+;   WM observed-at = 1 means Carpenter has acquired native observations.
+;   WM observed-at = 2 means Architect has published a qualified generation.
+; Belief consumes only the published marker (2), never the pre-publication
+; acquisition marker (1).
 
 (defconst aegis-belief-generation 322)
 (defconst aegis-belief-valid 323)
@@ -72,7 +78,7 @@
 
 (defrule
     (up-compare-goal aegis-belief-generation == aegis-wm-generation)
-    (up-compare-goal aegis-belief-observed-at == 1)
+    (up-compare-goal aegis-belief-observed-at == 2)
 =>
     (set-goal aegis-belief-stage aegis-belief-stage-evaluated)
     (set-goal aegis-belief-valid 1)
