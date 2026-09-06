@@ -1,0 +1,25 @@
+; AEGIS candidate verification — spearman-line training effect
+; NOT loaded by the production entrypoint yet.
+;
+; Evidence contract:
+;   For action-id 1, a post-ISSUED increase in
+;   unit-type-count-total spearman-line above the pre-action baseline
+;   establishes that the training request reached the AI training queue/count.
+;
+; This proves a queue/count effect, not final battlefield creation or combat
+; effectiveness. Those remain separate evidence boundaries.
+
+(defconst aegis-train-ver-evidence 1)
+
+(defrule
+    (up-compare-goal aegis-exec-valid == 1)
+    (up-compare-goal aegis-exec-stage == aegis-exec-stage-issued)
+    (up-compare-goal aegis-exec-generation == aegis-wm-generation)
+    (up-compare-goal aegis-exec-action-id == 1)
+    (unit-type-count-total spearman-line > aegis-actuator-baseline-count)
+=>
+    (set-goal aegis-exec-result aegis-ver-result-operational-success)
+    (set-goal aegis-exec-evidence aegis-train-ver-evidence)
+    (set-goal aegis-exec-stage aegis-exec-stage-evidence)
+    (up-chat-data-to-self "AEGIS VERIFY train-count=%d." g: aegis-actuator-baseline-count)
+)
