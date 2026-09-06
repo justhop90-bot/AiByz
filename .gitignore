@@ -1,0 +1,7 @@
+# Local runtime/evidence scratch artifacts
+/_runtime_parse_*/
+/_fresh_rec*/
+/_audit_*/
+/_audit_genprobe_*/
+/_local_evidence_*/
+/_rec_header_test.json
