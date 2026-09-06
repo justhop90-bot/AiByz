@@ -48,17 +48,27 @@ shared ABI
   -> Recovery
 ```
 
-This is designed so the current published generation is consumable by downstream layers in the same rule-evaluation pass.
+This is designed so the current published generation is consumable by the downstream state machine in the same rule-evaluation pass.
 
 **Status:** structurally corrected; runtime N/N+1 proof still required.
 
-## Finding 4 — unit-type-count-total
+## Finding 4 — goal-copy operator misuse
+
+**Symptom discovered during a second semantic source audit:** Decision and Commitment used `up-modify-goal ... g:= <literal>` where `<literal>` was intended as a literal value, for example `g:= 1` to set a validity/stage flag.
+
+In the AEGIS goal ABI, `g:` denotes a goal operand. A literal `1` in that position is therefore a goal reference, not the literal value one. The affected assignments could silently copy the value of goal 1 instead of writing `1`.
+
+**Fix:** literal stage/validity writes now use `set-goal`. Goal-to-goal transfers continue to use `g:=`.
+
+**Status:** corrected in Decision and Commitment; this pattern is now a mandatory QC rule for future modules.
+
+## Finding 5 — unit-type-count-total
 
 Public AI scripting evidence establishes `unit-type-count-total` as the total count including queued units, and official AoE2DE update notes document fixes to this family of counting operations. This supports the syntax and intended semantics, but does not substitute for target-build runtime qualification of the exact `up-get-fact unit-type-count-total` path used by AEGIS.
 
 **Status:** candidate; target-build proof required.
 
-## Finding 5 — first actuator
+## Finding 6 — first actuator
 
 A disposable actuator pair now exists for a single native command:
 
@@ -68,7 +78,7 @@ train spearman-line
 
 It captures a pre-action `unit-type-count-total` baseline, issues the native command, marks Execution `ISSUED`, and has a separate candidate verification rule for a post-action count increase.
 
-The candidate pair is deliberately not loaded by production.
+A dedicated disposable entrypoint now loads the complete AEGIS architecture followed by these two candidate modules. The candidate is deliberately not loaded by production.
 
 **Status:** ready for controlled runtime qualification.
 
