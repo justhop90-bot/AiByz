@@ -1,0 +1,39 @@
+; AEGIS candidate actuator — single spearman-line training contract
+; NOT loaded by the production entrypoint yet.
+; Qualification target: train one Byzantine spearman-line counter unit.
+;
+; Contract:
+;   Commitment(contain) + current Execution(operationalized)
+;   + can-train spearman-line + current total count < 1
+;   -> train spearman-line
+;   -> Execution stage = ISSUED
+;
+; The native train action is the only world-changing operation here.
+; ISSUED means the AI rule executed the native action. It does NOT mean
+; accepted, created, deployed, or effective. Verification must establish the
+; next observable boundary independently.
+
+(defconst aegis-actuator-action-id 1)
+(defconst aegis-actuator-baseline-count 401)
+(defconst aegis-actuator-attempt 402)
+(defconst aegis-actuator-cycle 403)
+
+(defrule
+    (up-compare-goal aegis-exec-valid == 1)
+    (up-compare-goal aegis-exec-stage == aegis-exec-stage-operationalized)
+    (up-compare-goal aegis-exec-type == aegis-exec-type-contain)
+    (up-compare-goal aegis-exec-generation == aegis-wm-generation)
+    (unit-type-count-total spearman-line < 1)
+    (can-train spearman-line)
+=>
+    (up-get-fact unit-type-count-total spearman-line aegis-actuator-baseline-count)
+    (train spearman-line)
+    (set-goal aegis-exec-action-id aegis-actuator-action-id)
+    (set-goal aegis-actuator-attempt 1)
+    (up-modify-goal aegis-actuator-cycle g:= aegis-exec-cycle)
+    (set-goal aegis-exec-attempt 1)
+    (set-goal aegis-exec-result 0)
+    (set-goal aegis-exec-evidence 0)
+    (set-goal aegis-exec-stage aegis-exec-stage-issued)
+    (up-chat-data-to-self "AEGIS ACTUATOR action=%d gen=%d baseline=%d." g: aegis-exec-action-id g: aegis-exec-generation g: aegis-actuator-baseline-count)
+)
