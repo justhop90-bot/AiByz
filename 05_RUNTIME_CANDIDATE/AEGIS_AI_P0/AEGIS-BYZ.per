@@ -14,16 +14,10 @@
 ; AEGIS is autonomous. No stock .per file is loaded.
 ; Target: AoE2DE 101.103.48987.0 / Steam BuildID 24094652.
 
-(load "AegisProm\\AEGIS-BYZ-Engine-Carpenter-P2")
-(load "AegisProm\\Aegis-belief")
-(load "AegisProm\\Aegis-situation")
-(load "AegisProm\\Aegis-objectives")
-(load "AegisProm\\Aegis-planning")
-(load "AegisProm\\Aegis-decision")
-(load "AegisProm\\Aegis-commitment")
-(load "AegisProm\\Aegis-execution")
-(load "AegisProm\\Aegis-verification")
-(load "AegisProm\\Aegis-recovery")
+; IMPORTANT LOAD-ORDER RULE:
+; Shared World Model symbols are declared BEFORE any loaded module is parsed.
+; AoE2 .per load processing does not make later declarations retroactively
+; visible to an already-parsed child file.
 
 ; Local goal IDs are implementation candidates for this standalone package.
 ; They are intentionally kept in a low, currently unoccupied stock band.
@@ -47,23 +41,25 @@
 (defconst aegis-wm-cycle 316)
 (defconst aegis-wm-observed-at 317)
 (defconst aegis-wm-cavalry-age 318)
-
-; Timer ownership belongs to the World Model coordinator, not to consumers.
 (defconst aegis-wm-timer 40)
-
-; Concrete engine identity used only as an observation type in this pass.
-; Knight is unit ID 38 in the target ruleset. Unit-line qualification follows.
 (defconst aegis-knight 38)
 (defconst aegis-camel 92)
-
-; Stages
 (defconst aegis-wm-stage-init 0)
 (defconst aegis-wm-stage-observe 1)
 (defconst aegis-wm-stage-qualified 2)
-
-; Evidence levels for this first implementation.
 (defconst aegis-evidence-unknown 0)
 (defconst aegis-evidence-current 1)
+
+(load "AegisProm\\AEGIS-BYZ-Engine-Carpenter-P2")
+(load "AegisProm\\Aegis-belief")
+(load "AegisProm\\Aegis-situation")
+(load "AegisProm\\Aegis-objectives")
+(load "AegisProm\\Aegis-planning")
+(load "AegisProm\\Aegis-decision")
+(load "AegisProm\\Aegis-commitment")
+(load "AegisProm\\Aegis-execution")
+(load "AegisProm\\Aegis-verification")
+(load "AegisProm\\Aegis-recovery")
 
 ; ============================================================================
 ; BOOTSTRAP — establish an owned state envelope
@@ -98,8 +94,6 @@
 ; ============================================================================
 ; PUBLICATION COORDINATOR — Architect-owned generation transition
 ; ============================================================================
-; Carpenter marks completed native acquisition with observed-at=1. The
-; Architect alone converts that acquisition into a new World Model generation.
 
 (defrule
     (up-compare-goal aegis-carpenter-sensor-pass == 1)
