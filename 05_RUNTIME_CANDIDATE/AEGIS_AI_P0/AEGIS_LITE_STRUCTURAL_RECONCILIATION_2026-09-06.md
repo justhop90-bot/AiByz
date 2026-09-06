@@ -130,9 +130,9 @@ Current observation remains:
 - `aegis-wm-time`: sampled game-time channel, whose exact semantic units remain separately qualified;
 - `aegis-wm-valid = 1`: architectural qualification transition, not independent corroboration of sensor truth.
 
-The public AoE2 AI scripting reference confirms `up-get-fact`, `up-get-fact-max`, and the native AI scripting model, but documentation does not by itself prove the target-build semantics of these specific AEGIS probes. citeturn0search1turn0search2
+The public AoE2 AI scripting reference confirms `up-get-fact`, `up-get-fact-max`, and the native AI scripting model, but documentation does not by itself prove the target-build semantics of these specific AEGIS probes.
 
-The scripting data-limit reference also confirms the relevant broad limits: 10,000 rules, 32 elements per rule in DE, goals 1–16,000, timers 1–50, and nested loads up to 10 files. These are background constraints, not proof of AEGIS runtime behavior. citeturn0search3
+The scripting data-limit reference confirms the broad constraints relevant to this package: 10,000 rules, 32 elements per rule in DE, goals 1–16,000, timers 1–50, and nested loads up to 10 files. These are background constraints, not proof of AEGIS runtime behavior.
 
 ## Provenance binding
 
