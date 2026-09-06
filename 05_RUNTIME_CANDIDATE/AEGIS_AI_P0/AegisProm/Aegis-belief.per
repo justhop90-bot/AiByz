@@ -1,0 +1,110 @@
+; ============================================================================
+; AEGIS-BYZ — BELIEF MODEL
+; PERSONALITY PASS: BELIEF / STATE INTERPRETATION
+; ============================================================================
+;
+; Belief consumes World Model state and maintains bounded beliefs.
+; It does not issue commands, select producers, or spend resources.
+; No stock .per dependency is introduced.
+;
+; Semantic boundary:
+;   WORLD FACT -> BELIEF -> SITUATION ANALYSIS
+;
+; A belief is an interpretation of qualified world state, not a raw sensor.
+; This first implementation deliberately uses deterministic thresholds.
+;
+; ============================================================================
+; BELIEF LOCAL STATE
+; ============================================================================
+
+(defconst aegis-belief-generation 322)
+(defconst aegis-belief-valid 323)
+(defconst aegis-belief-stage 324)
+(defconst aegis-belief-cavalry 325)
+(defconst aegis-belief-cavalry-level 326)
+(defconst aegis-belief-cavalry-confidence 327)
+(defconst aegis-belief-enemy-present 328)
+(defconst aegis-belief-observed-at 329)
+(defconst aegis-belief-cycle 330)
+
+(defconst aegis-belief-stage-init 0)
+(defconst aegis-belief-stage-evaluated 1)
+(defconst aegis-belief-cav-none 0)
+(defconst aegis-belief-cav-light 1)
+(defconst aegis-belief-cav-heavy 2)
+(defconst aegis-belief-confidence-low 25)
+(defconst aegis-belief-confidence-medium 60)
+(defconst aegis-belief-confidence-high 90)
+
+; ============================================================================
+; BELIEF UPDATE
+; ============================================================================
+
+(defrule
+    (up-compare-goal aegis-wm-valid == 1)
+    (up-compare-goal aegis-wm-generation != aegis-belief-generation)
+=>
+    (set-goal aegis-belief-valid 0)
+    (set-goal aegis-belief-stage aegis-belief-stage-init)
+    (set-goal aegis-belief-cavalry g: aegis-wm-cavalry)
+    (set-goal aegis-belief-enemy-present g: aegis-wm-enemy-present)
+    (set-goal aegis-belief-observed-at g: aegis-wm-observed-at)
+    (set-goal aegis-belief-generation g: aegis-wm-generation)
+    (up-modify-goal aegis-belief-cycle c:+ 1)
+)
+
+; ============================================================================
+; CAVALRY INTERPRETATION
+; ============================================================================
+
+(defrule
+    (up-compare-goal aegis-belief-generation == aegis-wm-generation)
+    (up-compare-goal aegis-belief-cavalry <= 0)
+=>
+    (set-goal aegis-belief-cavalry-level aegis-belief-cav-none)
+    (set-goal aegis-belief-cavalry-confidence aegis-belief-confidence-medium)
+)
+
+(defrule
+    (up-compare-goal aegis-belief-generation == aegis-wm-generation)
+    (up-compare-goal aegis-belief-cavalry > 0)
+    (up-compare-goal aegis-belief-cavalry < 4)
+=>
+    (set-goal aegis-belief-cavalry-level aegis-belief-cav-light)
+    (set-goal aegis-belief-cavalry-confidence aegis-belief-confidence-medium)
+)
+
+(defrule
+    (up-compare-goal aegis-belief-generation == aegis-wm-generation)
+    (up-compare-goal aegis-belief-cavalry >= 4)
+=>
+    (set-goal aegis-belief-cavalry-level aegis-belief-cav-heavy)
+    (set-goal aegis-belief-cavalry-confidence aegis-belief-confidence-high)
+)
+
+; ============================================================================
+; COMMIT BELIEF
+; ============================================================================
+
+(defrule
+    (up-compare-goal aegis-belief-generation == aegis-wm-generation)
+    (up-compare-goal aegis-belief-observed-at == 1)
+=>
+    (set-goal aegis-belief-stage aegis-belief-stage-evaluated)
+    (set-goal aegis-belief-valid 1)
+)
+
+; ============================================================================
+; ARCHITECTURAL FIREWALL
+; ============================================================================
+;
+; Belief does not create objectives or commands.
+; Belief does not choose a counter unit.
+; Belief does not reserve resources.
+; Belief does not mutate World Model ownership.
+;
+; Output is bounded interpretation for Situation Analysis.
+;
+; ============================================================================
+; END — AEGIS BELIEF MODEL
+; ============================================================================
