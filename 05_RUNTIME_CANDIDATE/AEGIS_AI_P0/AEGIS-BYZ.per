@@ -1,0 +1,178 @@
+; ============================================================================
+; AEGIS-BYZ — Autonomous Byzantine AI
+; P0 native entry-point candidate
+; ============================================================================
+;
+; PURPOSE
+;   This file is the AEGIS-owned native AI entry point.
+;   P0 deliberately has NO external .per dependencies.
+;   It does not load AI (HD version).per, Promisory, or stock AI logic.
+;
+; ENGINEERING RULE
+;   Architecture is represented here first. Native behavior is added only when
+;   the corresponding engine primitive has been qualified for the target build.
+;
+; TARGET
+;   AoE2DE 101.103.48987.0 / Steam BuildID 24094652
+;
+; ============================================================================
+; AEGIS IDENTITY
+; ============================================================================
+
+(defconst aegis-entrypoint-version 1)
+
+; ============================================================================
+; RUNTIME ROOT
+; ============================================================================
+;
+; This rule is intentionally minimal. It establishes a valid AEGIS-owned
+; executable rule without importing any stock implementation.
+;
+(defrule
+    (true)
+=>
+    (disable-self)
+)
+
+; ============================================================================
+; WORLD MODEL
+; ============================================================================
+;
+; Engine observations belong here conceptually. The World Model does not
+; decide strategy. It records only qualified observations required by AEGIS.
+;
+; Required semantic distinctions:
+;   CURRENT / LAST-KNOWN / UNKNOWN / UNRESOLVED
+;   observation scope
+;   observation age where decision-relevant
+;   selective identity
+;   lifecycle state
+;
+; No numeric state channel is allocated in P0.
+
+; ============================================================================
+; BELIEF MODEL
+; ============================================================================
+;
+; Converts qualified observations into bounded strategic beliefs.
+; Belief is not raw world state and is not enemy intent.
+;
+; Mandatory cross-system envelope where applicable:
+;   VALID + OWNER + GENERATION + STAGE + PAYLOAD + EVIDENCE_LEVEL
+;
+; No numeric state channel is allocated in P0.
+
+; ============================================================================
+; SITUATION ANALYSIS
+; ============================================================================
+;
+; Classifies the current strategic situation from World State and Belief.
+; Situation is not authorization and is not an engine command.
+
+; ============================================================================
+; OBJECTIVES
+; ============================================================================
+;
+; Converts material situations into explicit strategic objectives.
+; Objective demand is not a production order and not execution authority.
+
+; ============================================================================
+; PLANNING
+; ============================================================================
+;
+; Generates feasible capability responses to active objectives.
+; Hard feasibility precedes soft evaluation.
+
+; ============================================================================
+; DECISION
+; ============================================================================
+;
+; Selects among feasible alternatives according to explicit policy.
+; Rule order must never accidentally become undocumented optimization policy.
+
+; ============================================================================
+; COMMITMENT
+; ============================================================================
+;
+; Owns consequential strategic commitment state.
+; Commitment requires explicit owner, generation, stage, and validity semantics.
+; A resource reservation is not itself execution authority.
+
+; ============================================================================
+; EXECUTION
+; ============================================================================
+;
+; Sole consequential command authority for AEGIS capabilities.
+; Command issuance is recorded as ISSUED, never silently upgraded to success.
+
+; ============================================================================
+; VERIFICATION
+; ============================================================================
+;
+; Verifies world postconditions independently of command issuance.
+; Evidence ladder:
+;   INTENTION -> AUTHORIZED -> ISSUED -> ACCEPTED/QUEUED -> PENDING
+;   -> CREATED -> AVAILABLE -> DEPLOYED -> EFFECTIVE
+;
+; No evidence upgrade is implicit.
+
+; ============================================================================
+; RECOVERY / RE-ARBITRATION
+; ============================================================================
+;
+; Failed, contradicted, superseded, or stale execution evidence returns to
+; controlled arbitration. Failure does not imply blind retry.
+
+; ============================================================================
+; RESOURCE PORTFOLIO
+; ============================================================================
+;
+; Tracks resource availability, reservations, and discretionary capacity.
+; Affordability is not a guaranteed queue slot.
+
+; ============================================================================
+; PRODUCTION CAPACITY
+; ============================================================================
+;
+; Represents production capability and availability separately from demand.
+; A capability deficit is derived state, not strategic success.
+
+; ============================================================================
+; FORCE COMPOSITION
+; ============================================================================
+;
+; Converts capability requirements into force requirements and preserves
+; required mass separately from current and surplus capability.
+
+; ============================================================================
+; PRODUCTION / ECONOMIC CONVERSION
+; ============================================================================
+;
+; Converts authorized capability requirements into executable production
+; decisions after feasibility, resource, and arbitration checks.
+
+; ============================================================================
+; FIRST VERTICAL SLICE
+; ============================================================================
+;
+; Cavalry Threat Containment:
+;   OBSERVE ENEMY
+;       -> CLASSIFY CAVALRY THREAT
+;       -> DEFINE CAMEL REQUIREMENT
+;       -> CHECK CAPABILITY / RESOURCES
+;       -> SELECT PRODUCER
+;       -> COMMIT
+;       -> EXECUTE
+;       -> VERIFY
+;       -> RECOVER / RE-ARBITRATE
+;       -> REASSESS
+;
+; ============================================================================
+; P0 BOUNDARY
+; ============================================================================
+;
+; This entry point intentionally proves only package ownership and native
+; entry-point structure. It does not pretend that unqualified ABI semantics
+; are already runtime-proven.
+;
+; End of AEGIS-BYZ P0 entry point.
