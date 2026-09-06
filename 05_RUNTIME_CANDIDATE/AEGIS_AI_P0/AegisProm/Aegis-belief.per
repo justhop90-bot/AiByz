@@ -46,10 +46,10 @@
 =>
     (set-goal aegis-belief-valid 0)
     (set-goal aegis-belief-stage aegis-belief-stage-init)
-    (set-goal aegis-belief-cavalry g: aegis-wm-cavalry)
-    (set-goal aegis-belief-enemy-present g: aegis-wm-enemy-present)
-    (set-goal aegis-belief-observed-at g: aegis-wm-observed-at)
-    (set-goal aegis-belief-generation g: aegis-wm-generation)
+    (up-modify-goal aegis-belief-cavalry g:= aegis-wm-cavalry)
+    (up-modify-goal aegis-belief-enemy-present g:= aegis-wm-enemy-present)
+    (up-modify-goal aegis-belief-observed-at g:= aegis-wm-observed-at)
+    (up-modify-goal aegis-belief-generation g:= aegis-wm-generation)
     (up-modify-goal aegis-belief-cycle c:+ 1)
 )
 
