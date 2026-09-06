@@ -54,6 +54,14 @@ The downstream observation marker contract is explicit:
 
 Belief, Situation, Objectives, and Planning consume marker `2` only.
 
+## Semantic QC corrections
+
+A second source-level audit found an important goal-operand class of errors. In AoE2 AI scripting, `g:` operands refer to goal values, while `c:` operands refer to constants/literals. Therefore constructs such as `g:= 1` or `g:+ 1` do not mean literal one.
+
+Decision and Commitment now use `set-goal` for literal stage/validity values. Situation, Objectives, and Planning now use `c:+ 1` for literal cycle increments. Goal-to-goal transfers continue to use `g:= <goal>`.
+
+A reusable static semantic lint now exists at `tools/aegis_goal_operand_audit.py` to prevent regression of this class of error. It is a semantic lint, not a substitute for the target engine.
+
 ## Execution safety state
 
 Production Execution remains inert at the native-command edge. It reaches `OPERATIONALIZED` but does not cross into `ISSUED`.
@@ -80,6 +88,7 @@ A disposable qualification pair has now been added but is **not loaded by produc
 
 - `AegisProm/Aegis-actuator-train-candidate.per`
 - `AegisProm/Aegis-verification-train-candidate.per`
+- `AEGIS-BYZ-ACTUATOR-QUALIFICATION.per`
 
 The candidate tests one native command contract: `train spearman-line`, with `can-train` and a pre-action `unit-type-count-total` baseline. The first verification boundary is a post-action count increase, explicitly classified as queue/count evidence rather than battlefield creation.
 
