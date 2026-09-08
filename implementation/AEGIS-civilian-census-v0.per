@@ -1,0 +1,60 @@
+; AEGIS CIVILIAN CENSUS V0
+; Implementation candidate - NOT LOADED by production root.
+; Target: AoE2DE 101.103.48987.0 / BuildID 24094652
+; Purpose: engine-observable civilian census service.
+; This is an observation adapter, not strategic policy and not worker allocation.
+
+(defconst aegis-census-timer 42)
+(defconst aegis-census-generation 433)
+(defconst aegis-census-valid 434)
+(defconst aegis-census-stage 435)
+(defconst aegis-census-villagers 436)
+(defconst aegis-census-town-centers 437)
+(defconst aegis-census-pending-villagers 438)
+(defconst aegis-census-observed-at 439)
+(defconst aegis-census-cycle 440)
+
+(defconst aegis-census-stage-init 0)
+(defconst aegis-census-stage-observe 1)
+(defconst aegis-census-stage-qualified 2)
+
+; Bootstrap the observation clock. No strategic decisions are made here.
+(defrule
+    (game-time < 2)
+=>
+    (enable-timer aegis-census-timer 1)
+)
+
+; Acquire only native engine facts and publish one complete census frame.
+; The census frame is independent of the World Model so the observation
+; service can later be consumed by Civilization State without raw-fact races.
+(defrule
+    (timer-triggered aegis-census-timer)
+=>
+    (enable-timer aegis-census-timer 5)
+    (set-goal aegis-census-valid 0)
+    (set-goal aegis-census-stage aegis-census-stage-observe)
+    (up-get-fact unit-type-count villager aegis-census-villagers)
+    (up-get-fact building-type-count-total town-center aegis-census-town-centers)
+    (up-get-fact game-time 0 aegis-census-observed-at)
+    (up-modify-goal aegis-census-cycle g:+ 1)
+    (up-modify-goal aegis-census-generation g:+ 1)
+    (set-goal aegis-census-stage aegis-census-stage-qualified)
+    (set-goal aegis-census-valid 1)
+)
+
+; Pending production is a separate observable fact. It must not be inferred
+; from the difference between population and villager census.
+(defrule
+    (timer-triggered aegis-census-timer)
+    (up-pending-objects c: villager >= 1)
+=>
+    (set-goal aegis-census-pending-villagers 1)
+)
+
+(defrule
+    (timer-triggered aegis-census-timer)
+    (up-pending-objects c: villager <= 0)
+=>
+    (set-goal aegis-census-pending-villagers 0)
+)
