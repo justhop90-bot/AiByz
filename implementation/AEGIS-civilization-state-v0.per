@@ -1,0 +1,56 @@
+; AEGIS CIVILIZATION STATE V0
+; Implementation candidate - NOT LOADED by production root.
+; Target: AoE2DE 101.103.48987.0 / BuildID 24094652
+; Purpose: one reconciled, generation-fenced civilization snapshot.
+; Carpenter acquires raw facts; Civilization State owns their meaning.
+; No same-pass visibility is assumed.
+
+(defconst aegis-cs-generation 403)
+(defconst aegis-cs-valid 404)
+(defconst aegis-cs-stage 405)
+(defconst aegis-cs-observed-at 406)
+(defconst aegis-cs-cycle 407)
+(defconst aegis-cs-time 408)
+(defconst aegis-cs-population 409)
+(defconst aegis-cs-population-cap 410)
+(defconst aegis-cs-age 411)
+(defconst aegis-cs-food 412)
+(defconst aegis-cs-wood 413)
+(defconst aegis-cs-gold 414)
+(defconst aegis-cs-spear 415)
+(defconst aegis-cs-camel 416)
+(defconst aegis-cs-skirm 417)
+(defconst aegis-cs-cavalry 418)
+(defconst aegis-cs-archers 419)
+(defconst aegis-cs-focus-player 420)
+
+(defconst aegis-cs-stage-init 0)
+(defconst aegis-cs-stage-observe 1)
+(defconst aegis-cs-stage-qualified 2)
+
+; A completed Carpenter frame becomes one Civilization State snapshot.
+(defrule
+    (up-compare-goal aegis-carpenter-sensor-pass == 1)
+=>
+    (set-goal aegis-cs-valid 0)
+    (set-goal aegis-cs-stage aegis-cs-stage-observe)
+    (up-modify-goal aegis-cs-time g:= aegis-sensor-time)
+    (up-modify-goal aegis-cs-population g:= aegis-sensor-population)
+    (up-modify-goal aegis-cs-population-cap g:= aegis-sensor-population-cap)
+    (up-modify-goal aegis-cs-age g:= aegis-sensor-age)
+    (up-modify-goal aegis-cs-food g:= aegis-sensor-food)
+    (up-modify-goal aegis-cs-wood g:= aegis-sensor-wood)
+    (up-modify-goal aegis-cs-gold g:= aegis-sensor-gold)
+    (up-modify-goal aegis-cs-spear g:= aegis-sensor-spear)
+    (up-modify-goal aegis-cs-camel g:= aegis-sensor-camel)
+    (up-modify-goal aegis-cs-skirm g:= aegis-sensor-skirm)
+    (up-modify-goal aegis-cs-cavalry g:= aegis-sensor-cavalry)
+    (up-modify-goal aegis-cs-archers g:= aegis-sensor-archers)
+    (up-modify-goal aegis-cs-focus-player g:= aegis-sensor-focus-player)
+    (up-modify-goal aegis-cs-generation g:+ 1)
+    (up-modify-goal aegis-cs-cycle g:+ 1)
+    (set-goal aegis-cs-observed-at 1)
+    (set-goal aegis-cs-valid 1)
+    (set-goal aegis-cs-stage aegis-cs-stage-qualified)
+    (set-goal aegis-carpenter-sensor-pass 0)
+)
