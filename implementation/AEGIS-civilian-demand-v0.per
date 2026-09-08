@@ -1,0 +1,58 @@
+; AEGIS CIVILIAN DEMAND V0
+; Implementation candidate - NOT LOADED by production root.
+; Target: AoE2DE 101.103.48987.0 / BuildID 24094652
+; Purpose: translate reconciled civilization state into typed civilian demand.
+; Byzantine Architect pass: demand is policy; physical execution remains downstream.
+
+(defconst aegis-civ-demand-generation 421)
+(defconst aegis-civ-villager-demand 422)
+(defconst aegis-civ-housing-demand 423)
+(defconst aegis-civ-urgency 424)
+(defconst aegis-civ-stage 425)
+(defconst aegis-civ-observed-at 426)
+
+(defconst aegis-civ-stage-init 0)
+(defconst aegis-civ-stage-derived 1)
+(defconst aegis-civ-stage-qualified 2)
+
+(defconst aegis-civ-demand-none 0)
+(defconst aegis-civ-demand-needed 1)
+(defconst aegis-civ-urgency-normal 1)
+(defconst aegis-civ-urgency-high 2)
+
+; Consume only a qualified civilization-state generation.
+(defrule
+    (up-compare-goal aegis-cs-valid == 1)
+    (up-compare-goal aegis-cs-generation != aegis-civ-demand-generation)
+=>
+    (set-goal aegis-civ-villager-demand aegis-civ-demand-none)
+    (set-goal aegis-civ-housing-demand aegis-civ-demand-none)
+    (set-goal aegis-civ-urgency aegis-civ-urgency-normal)
+    (set-goal aegis-civ-stage aegis-civ-stage-derived)
+    (up-modify-goal aegis-civ-demand-generation g:= aegis-cs-generation)
+    (up-modify-goal aegis-civ-observed-at g:= aegis-cs-observed-at)
+    (set-goal aegis-civ-stage aegis-civ-stage-qualified)
+)
+
+; Villager demand is a service request, not a train command.
+(defrule
+    (up-compare-goal aegis-civ-stage == aegis-civ-stage-qualified)
+    (up-compare-goal aegis-civ-villager-demand == aegis-civ-demand-none)
+    (up-compare-goal aegis-cs-population-cap > aegis-cs-population)
+    (can-train villager)
+=>
+    (set-goal aegis-civ-villager-demand aegis-civ-demand-needed)
+)
+
+; Housing demand is raised before population capacity becomes exhausted.
+(defrule
+    (up-compare-goal aegis-civ-stage == aegis-civ-stage-qualified)
+    (up-compare-goal aegis-civ-housing-demand == aegis-civ-demand-none)
+    (housing-headroom <= 2)
+    (population-headroom >= 1)
+    (up-pending-objects c: house <= 0)
+    (can-build house)
+=>
+    (set-goal aegis-civ-housing-demand aegis-civ-demand-needed)
+    (set-goal aegis-civ-urgency aegis-civ-urgency-high)
+)
