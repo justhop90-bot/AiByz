@@ -59,16 +59,21 @@
     (up-remove-objects search-local object-data-order == orderid-enter)
     (up-clean-search search-local object-data-distance search-order-asc)
     (up-get-search-state local-total aegis-wts-candidates)
-    (set-goal aegis-wts-selected 1)
     (set-goal aegis-wts-stage aegis-wts-stage-qualified)
 )
 
-; No eligible worker is a valid selection result.
 (defrule
     (up-compare-goal aegis-wts-valid == 1)
-    (up-compare-goal aegis-wts-stage == aegis-wts-stage-searching)
+    (up-compare-goal aegis-wts-stage == aegis-wts-stage-qualified)
+    (up-compare-goal aegis-wts-candidates > 0)
+=>
+    (set-goal aegis-wts-selected 1)
+)
+
+(defrule
+    (up-compare-goal aegis-wts-valid == 1)
+    (up-compare-goal aegis-wts-stage == aegis-wts-stage-qualified)
     (up-compare-goal aegis-wts-candidates <= 0)
 =>
     (set-goal aegis-wts-selected 0)
-    (set-goal aegis-wts-stage aegis-wts-stage-qualified)
 )
