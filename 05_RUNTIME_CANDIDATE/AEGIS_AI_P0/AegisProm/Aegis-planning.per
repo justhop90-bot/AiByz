@@ -1,0 +1,98 @@
+; AEGIS-BYZ — Planning
+; AEGIS-Lite vertical slice:
+; WORLD MODEL -> BELIEF -> SITUATION -> OBJECTIVES -> PLANNING
+;
+; Build target: AoE2DE 101.103.48987.0 / Steam BuildID 24094652
+;
+; Semantic boundary:
+;   Consumes a committed Objective.
+;   Produces a bounded, abstract plan.
+;   Does NOT choose concrete units/buildings, reserve resources,
+;   issue commands, or directly alter the world.
+;
+; The plan is deliberately abstract:
+;   1 = monitor
+;   2 = contain
+;
+; This keeps Planning separate from later Decision and Execution layers.
+
+(defconst aegis-planning-generation 347)
+(defconst aegis-planning-valid 348)
+(defconst aegis-planning-stage 349)
+(defconst aegis-planning-type 350)
+(defconst aegis-planning-priority 351)
+(defconst aegis-planning-urgency 352)
+(defconst aegis-planning-observed-at 353)
+(defconst aegis-planning-cycle 354)
+
+(defconst aegis-planning-stage-init 0)
+(defconst aegis-planning-stage-formed 1)
+
+(defconst aegis-planning-type-none 0)
+(defconst aegis-planning-type-monitor 1)
+(defconst aegis-planning-type-contain 2)
+
+(defconst aegis-planning-priority-low 25)
+(defconst aegis-planning-priority-medium 60)
+(defconst aegis-planning-priority-high 90)
+
+(defrule
+    (game-time < 10)
+=>
+    (set-goal aegis-planning-generation 0)
+    (set-goal aegis-planning-valid 0)
+    (set-goal aegis-planning-stage aegis-planning-stage-init)
+    (set-goal aegis-planning-type aegis-planning-type-none)
+    (set-goal aegis-planning-priority aegis-planning-priority-low)
+    (set-goal aegis-planning-urgency aegis-situation-urgency-low)
+    (set-goal aegis-planning-observed-at 0)
+    (set-goal aegis-planning-cycle 0)
+)
+
+(defrule
+    (up-compare-goal aegis-objective-stage == aegis-objective-stage-issued)
+    (up-compare-goal aegis-objective-generation != aegis-planning-generation)
+=>
+    (set-goal aegis-planning-valid 0)
+    (set-goal aegis-planning-stage aegis-planning-stage-init)
+    (up-modify-goal aegis-planning-generation g:= aegis-objective-generation)
+    (up-modify-goal aegis-planning-priority g:= aegis-objective-priority)
+    (up-modify-goal aegis-planning-urgency g:= aegis-objective-urgency)
+    (up-modify-goal aegis-planning-observed-at g:= aegis-objective-observed-at)
+    (up-modify-goal aegis-planning-cycle g:+ 1)
+)
+
+(defrule
+    (up-compare-goal aegis-planning-generation == aegis-objective-generation)
+    (up-compare-goal aegis-objective-type == aegis-objective-type-contain-cavalry)
+    (up-compare-goal aegis-planning-urgency == aegis-situation-urgency-high)
+=>
+    (set-goal aegis-planning-type aegis-planning-type-contain)
+)
+
+(defrule
+    (up-compare-goal aegis-planning-generation == aegis-objective-generation)
+    (up-compare-goal aegis-objective-type == aegis-objective-type-contain-cavalry)
+    (up-compare-goal aegis-planning-urgency == aegis-situation-urgency-medium)
+=>
+    (set-goal aegis-planning-type aegis-planning-type-contain)
+)
+
+(defrule
+    (up-compare-goal aegis-planning-generation == aegis-objective-generation)
+    (up-compare-goal aegis-objective-type == aegis-objective-type-monitor)
+=>
+    (set-goal aegis-planning-type aegis-planning-type-monitor)
+)
+
+(defrule
+    (up-compare-goal aegis-planning-generation == aegis-objective-generation)
+    (up-compare-goal aegis-planning-observed-at == 1)
+=>
+    (set-goal aegis-planning-stage aegis-planning-stage-formed)
+    (set-goal aegis-planning-valid 1)
+)
+
+; Firewall:
+;   No train, build, research, move, attack, gather, resource reservation,
+;   producer selection, or direct command appears in this module.

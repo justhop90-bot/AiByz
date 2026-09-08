@@ -1,0 +1,85 @@
+;; AEGIS-Lite — Commitment
+;; Layer: COMMITMENT
+;; Purpose: convert a valid Decision into an explicit, bounded commitment.
+;; Firewall: no execution, no production, no resource spending, no direct commands.
+;;
+;; Upstream:
+;;   Decision -> Commitment
+;;
+;; Downstream:
+;;   Commitment -> Execution
+;;
+;; Evidence discipline:
+;;   A commitment is an intent/authorization boundary, not proof of execution.
+;;   Later execution and verification layers must establish actual outcomes.
+
+(defconst aegis-commitment-stage-init 0)
+(defconst aegis-commitment-stage-authorized 1)
+
+(defconst aegis-commitment-type-none 0)
+(defconst aegis-commitment-type-monitor 1)
+(defconst aegis-commitment-type-contain 2)
+
+(defconst aegis-commitment-priority-low 25)
+(defconst aegis-commitment-priority-medium 60)
+(defconst aegis-commitment-priority-high 90)
+
+(defconst aegis-commitment-generation 363)
+(defconst aegis-commitment-valid 364)
+(defconst aegis-commitment-stage 365)
+(defconst aegis-commitment-type 366)
+(defconst aegis-commitment-priority 367)
+(defconst aegis-commitment-urgency 368)
+(defconst aegis-commitment-observed-at 369)
+(defconst aegis-commitment-cycle 370)
+
+(defrule
+    (game-time < 10)
+=>
+    (set-goal aegis-commitment-generation 0)
+    (set-goal aegis-commitment-valid 0)
+    (set-goal aegis-commitment-stage aegis-commitment-stage-init)
+    (set-goal aegis-commitment-type aegis-commitment-type-none)
+    (set-goal aegis-commitment-priority aegis-commitment-priority-low)
+    (set-goal aegis-commitment-urgency 0)
+    (set-goal aegis-commitment-observed-at 0)
+    (set-goal aegis-commitment-cycle 0)
+)
+
+(defrule
+    (up-compare-goal aegis-decision-stage == aegis-decision-stage-decided)
+    (up-compare-goal aegis-decision-valid == 1)
+    (up-compare-goal aegis-decision-generation != aegis-commitment-generation)
+=>
+    (up-modify-goal aegis-commitment-generation g:= aegis-decision-generation)
+    (up-modify-goal aegis-commitment-type g:= aegis-decision-type)
+    (up-modify-goal aegis-commitment-priority g:= aegis-decision-priority)
+    (up-modify-goal aegis-commitment-urgency g:= aegis-decision-urgency)
+    (up-modify-goal aegis-commitment-observed-at g:= aegis-decision-observed-at)
+    (up-modify-goal aegis-commitment-cycle g:= aegis-decision-cycle)
+)
+
+(defrule
+    (up-compare-goal aegis-commitment-type == aegis-commitment-type-monitor)
+    (up-compare-goal aegis-commitment-generation == aegis-decision-generation)
+    (up-compare-goal aegis-commitment-observed-at == aegis-decision-observed-at)
+=>
+    (up-modify-goal aegis-commitment-stage g:= aegis-commitment-stage-authorized)
+    (up-modify-goal aegis-commitment-valid g:= 1)
+)
+
+(defrule
+    (up-compare-goal aegis-commitment-type == aegis-commitment-type-contain)
+    (up-compare-goal aegis-commitment-generation == aegis-decision-generation)
+    (up-compare-goal aegis-commitment-observed-at == aegis-decision-observed-at)
+=>
+    (up-modify-goal aegis-commitment-stage g:= aegis-commitment-stage-authorized)
+    (up-modify-goal aegis-commitment-valid g:= 1)
+)
+
+(defrule
+    (up-compare-goal aegis-commitment-stage == aegis-commitment-stage-authorized)
+    (up-compare-goal aegis-commitment-cycle != aegis-decision-cycle)
+=>
+    (up-modify-goal aegis-commitment-cycle g:= aegis-decision-cycle)
+)

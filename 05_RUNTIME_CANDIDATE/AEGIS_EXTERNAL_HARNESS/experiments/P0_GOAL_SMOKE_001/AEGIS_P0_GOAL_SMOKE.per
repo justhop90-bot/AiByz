@@ -1,0 +1,25 @@
+﻿; AEGIS P0 goal ABI smoke test â€” disposable only.
+(defconst aegis-p0-goal 10000)
+(defconst aegis-p0-result 10001)
+
+(defrule
+    (game-time 0)
+=>
+    (set-goal aegis-p0-goal 12345)
+    (set-goal aegis-p0-result 0)
+    (disable-self))
+
+(defrule
+    (goal aegis-p0-result = 0)
+=>
+    (up-chat-data-to-self "AEGIS_P0_WRITE_READ %d" g: aegis-p0-goal)
+    (set-goal aegis-p0-result 1))
+
+(defrule
+    (goal aegis-p0-result = 1)
+    (up-compare-goal aegis-p0-goal = 12345)
+=>
+    (up-chat-data-to-self "AEGIS_P0_COMPARE PASS %d" g: aegis-p0-goal)
+    (set-goal aegis-p0-result 2))
+
+

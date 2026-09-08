@@ -1,0 +1,98 @@
+; AEGIS-BYZ — Objectives
+; AEGIS-Lite vertical slice:
+; WORLD MODEL -> BELIEF MODEL -> SITUATION ANALYSIS -> OBJECTIVES
+;
+; Build target: AoE2DE 101.103.48987.0 / Steam BuildID 24094652
+;
+; Semantic boundary:
+;   Consumes classified Situation Analysis state.
+;   Produces a bounded objective state.
+;   Does NOT plan units, buildings, resources, production, or commands.
+;
+; Learning note:
+;   This module intentionally uses only simple native goal operations.
+;   The objective is to establish the architectural handoff before adding
+;   planning or execution complexity.
+
+(defconst aegis-objective-generation 339)
+(defconst aegis-objective-valid 340)
+(defconst aegis-objective-stage 341)
+(defconst aegis-objective-type 342)
+(defconst aegis-objective-priority 343)
+(defconst aegis-objective-urgency 344)
+(defconst aegis-objective-observed-at 345)
+(defconst aegis-objective-cycle 346)
+
+(defconst aegis-objective-stage-init 0)
+(defconst aegis-objective-stage-issued 1)
+
+(defconst aegis-objective-type-none 0)
+(defconst aegis-objective-type-monitor 1)
+(defconst aegis-objective-type-contain-cavalry 2)
+
+(defconst aegis-objective-priority-low 25)
+(defconst aegis-objective-priority-medium 60)
+(defconst aegis-objective-priority-high 90)
+
+(defrule
+    (game-time < 10)
+=>
+    (set-goal aegis-objective-generation 0)
+    (set-goal aegis-objective-valid 0)
+    (set-goal aegis-objective-stage aegis-objective-stage-init)
+    (set-goal aegis-objective-type aegis-objective-type-none)
+    (set-goal aegis-objective-priority aegis-objective-priority-low)
+    (set-goal aegis-objective-urgency aegis-situation-urgency-low)
+    (set-goal aegis-objective-observed-at 0)
+    (set-goal aegis-objective-cycle 0)
+)
+
+(defrule
+    (up-compare-goal aegis-situation-stage == aegis-situation-stage-classified)
+    (up-compare-goal aegis-situation-generation != aegis-objective-generation)
+=>
+    (set-goal aegis-objective-valid 0)
+    (set-goal aegis-objective-stage aegis-objective-stage-init)
+    (up-modify-goal aegis-objective-generation g:= aegis-situation-generation)
+    (up-modify-goal aegis-objective-urgency g:= aegis-situation-urgency)
+    (up-modify-goal aegis-objective-observed-at g:= aegis-situation-observed-at)
+    (up-modify-goal aegis-objective-cycle g:+ 1)
+)
+
+(defrule
+    (up-compare-goal aegis-objective-generation == aegis-situation-generation)
+    (up-compare-goal aegis-objective-urgency == aegis-situation-urgency-high)
+    (up-compare-goal aegis-situation-cavalry-pressure == aegis-situation-cavalry-heavy)
+=>
+    (set-goal aegis-objective-type aegis-objective-type-contain-cavalry)
+    (set-goal aegis-objective-priority aegis-objective-priority-high)
+)
+
+(defrule
+    (up-compare-goal aegis-objective-generation == aegis-situation-generation)
+    (up-compare-goal aegis-objective-urgency == aegis-situation-urgency-medium)
+    (up-compare-goal aegis-situation-cavalry-pressure == aegis-situation-cavalry-light)
+=>
+    (set-goal aegis-objective-type aegis-objective-type-contain-cavalry)
+    (set-goal aegis-objective-priority aegis-objective-priority-medium)
+)
+
+(defrule
+    (up-compare-goal aegis-objective-generation == aegis-situation-generation)
+    (up-compare-goal aegis-objective-urgency == aegis-situation-urgency-low)
+=>
+    (set-goal aegis-objective-type aegis-objective-type-monitor)
+    (set-goal aegis-objective-priority aegis-objective-priority-low)
+)
+
+(defrule
+    (up-compare-goal aegis-objective-generation == aegis-situation-generation)
+    (up-compare-goal aegis-objective-observed-at == 1)
+=>
+    (set-goal aegis-objective-stage aegis-objective-stage-issued)
+    (set-goal aegis-objective-valid 1)
+)
+
+; Firewall:
+;   No train, build, research, move, attack, gather, resource reservation,
+;   producer selection, or direct command appears in this module.

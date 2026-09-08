@@ -1,0 +1,167 @@
+; ============================================================================
+; AEGIS-BYZ — AUTONOMOUS BYZANTINE AI
+; FIRST PERSONALITY PASS: ARCHITECT / WORLD MODEL
+; ============================================================================
+
+; This is the first real implementation pass of AEGIS.
+; Personality 1 owns the World Model: observe -> qualify -> retain.
+; It does not decide strategy, authorize production, or issue commands.
+
+; AEGIS is autonomous. No stock .per file is loaded.
+; Target: AoE2DE 101.103.48987.0 / Steam BuildID 24094652.
+
+; The World Model is capability-oriented, aggregate, time-indexed state
+; with bounded causal memory. It is deliberately not an object database.
+
+; Semantic envelope:
+;   VALID + OWNER + GENERATION + STAGE + PAYLOAD + EVIDENCE_LEVEL
+
+; Evidence is never promoted merely because an observation was attempted.
+
+; ============================================================================
+; AEGIS WORLD-MODEL LOCAL STATE
+; ============================================================================
+
+(load "AegisProm\\AEGIS-BYZ-Engine-Carpenter-P2")
+(load "AegisProm\\Aegis-belief")
+(load "AegisProm\\Aegis-situation")
+(load "AegisProm\\Aegis-objectives")
+(load "AegisProm\\Aegis-planning")
+(load "AegisProm\\Aegis-decision")
+(load "AegisProm\\Aegis-commitment")
+
+; Local goal IDs are implementation candidates for this standalone package.
+; They are intentionally kept in a low, currently unoccupied stock band.
+; They are not declared cross-system ABI until runtime qualification freezes them.
+(defconst aegis-wm-valid 300)
+(defconst aegis-wm-generation 301)
+(defconst aegis-wm-stage 302)
+(defconst aegis-wm-evidence 303)
+(defconst aegis-wm-time 304)
+(defconst aegis-wm-cavalry 305)
+(defconst aegis-wm-camel 306)
+(defconst aegis-wm-food 307)
+(defconst aegis-wm-wood 308)
+(defconst aegis-wm-stone 309)
+(defconst aegis-wm-gold 310)
+(defconst aegis-wm-population 311)
+(defconst aegis-wm-population-cap 312)
+(defconst aegis-wm-age 313)
+(defconst aegis-wm-focus-player 314)
+(defconst aegis-wm-enemy-present 315)
+(defconst aegis-wm-cycle 316)
+(defconst aegis-wm-observed-at 317)
+(defconst aegis-wm-cavalry-age 318)
+
+; Timer ownership belongs to the World Model coordinator, not to consumers.
+(defconst aegis-wm-timer 40)
+
+; Concrete engine identity used only as an observation type in this pass.
+; Knight is unit ID 38 in the target ruleset. Unit-line qualification follows.
+(defconst aegis-knight 38)
+(defconst aegis-camel 92)
+
+; Stages
+(defconst aegis-wm-stage-init 0)
+(defconst aegis-wm-stage-observe 1)
+(defconst aegis-wm-stage-qualified 2)
+
+; Evidence levels for this first implementation.
+(defconst aegis-evidence-unknown 0)
+(defconst aegis-evidence-current 1)
+
+; ============================================================================
+; BOOTSTRAP — establish an owned state envelope
+; ============================================================================
+
+(defrule
+    (game-time < 10)
+    (up-compare-goal aegis-wm-cycle == 0)
+=>
+    (set-goal aegis-wm-valid 0)
+    (set-goal aegis-wm-generation 0)
+    (set-goal aegis-wm-stage aegis-wm-stage-observe)
+    (set-goal aegis-wm-evidence aegis-evidence-unknown)
+    (set-goal aegis-wm-time 0)
+    (set-goal aegis-wm-cavalry 0)
+    (set-goal aegis-wm-camel 0)
+    (set-goal aegis-wm-food 0)
+    (set-goal aegis-wm-wood 0)
+    (set-goal aegis-wm-stone 0)
+    (set-goal aegis-wm-gold 0)
+    (set-goal aegis-wm-population 0)
+    (set-goal aegis-wm-population-cap 0)
+    (set-goal aegis-wm-age 0)
+    (set-goal aegis-wm-focus-player 0)
+    (set-goal aegis-wm-enemy-present 0)
+    (set-goal aegis-wm-observed-at 0)
+    (set-goal aegis-wm-cavalry-age 0)
+    (set-goal aegis-wm-cycle 1)
+    (enable-timer aegis-wm-timer 15)
+)
+
+; ============================================================================
+; OBSERVATION OWNERSHIP
+; ============================================================================
+;
+; The Engine Carpenter owns the native sensor expression. The Architect
+; remains the sole owner of World Model meaning, state storage, qualification,
+; and generation semantics. The Carpenter writes only into these World Model
+; output goals through its qualified native adapter.
+;
+; This removes the previous duplicate observation implementation from the
+; Architect while preserving the exact machine-tested Carpenter source as the
+; basis for the native adapter reconciliation.
+
+; ============================================================================
+; QUALIFICATION — observation is retained only after the acquisition pass
+; ============================================================================
+
+(defrule
+    (up-compare-goal aegis-wm-stage == aegis-wm-stage-observe)
+    (up-compare-goal aegis-wm-observed-at == 1)
+=>
+    (set-goal aegis-wm-stage aegis-wm-stage-qualified)
+    (set-goal aegis-wm-valid 1)
+    (set-goal aegis-wm-evidence aegis-evidence-current)
+    (up-modify-goal aegis-wm-cavalry-age g:= aegis-wm-time)
+)
+
+; Enemy presence is a world fact, not a strategic conclusion.
+(defrule
+    (up-compare-goal aegis-wm-stage == aegis-wm-stage-qualified)
+    (up-compare-goal aegis-wm-focus-player > 0)
+=>
+    (set-goal aegis-wm-enemy-present 1)
+)
+
+(defrule
+    (up-compare-goal aegis-wm-stage == aegis-wm-stage-qualified)
+    (up-compare-goal aegis-wm-focus-player <= 0)
+=>
+    (set-goal aegis-wm-enemy-present 0)
+)
+
+; ============================================================================
+; NEXT-CYCLE RESET — the timer owns observation cadence
+; ============================================================================
+;
+; The observation rule re-arms through the timer mechanism. No consumer
+; owns a second clock and no world fact is fabricated between observations.
+
+; ============================================================================
+; ARCHITECTURAL FIREWALL
+; ============================================================================
+;
+; No strategic objective is selected here.
+; No producer is selected here.
+; No resource reservation is made here.
+; No build/train/research/attack command is issued here.
+; World Model output is state for downstream personalities.
+;
+; First personality objective:
+;   make the machine observe and retain a bounded, qualified world state.
+;
+; ============================================================================
+; END — ARCHITECT / WORLD MODEL PASS 1
+; ============================================================================
