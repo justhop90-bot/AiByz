@@ -1,0 +1,13 @@
+RULE_ID,SOURCE_FILE,SOURCE_LINE_START,SOURCE_LINE_END,ACTIVATION_PREDICATE,READ_GOALS,WRITE_GOALS,RESET_GOALS,READ_SN,WRITE_SN,RESET_SN,TIMERS,FACTS,OBJECT_DATA,SEARCH_STATE,ENGINE_ACTION,DOWNSTREAM_CONSUMERS,FAILURE_RECOVERY,MODULE_ROLE,EVIDENCE_STATUS,TARGET_RUNTIME_STATUS
+AIHD:R00001,AI (HD version).per,,,,strategy-goal,,,,,,,,,,,strategy/economy/military,,,,strategy controller,STATIC-QUALIFIED,UNKNOWN
+AIHD:R00002,AI (HD version).per,,,,unit-goal,,,,,,,,,,,production/military,,,,composition controller,STATIC-QUALIFIED,UNKNOWN
+PROMISORY_CONTROL:R00001,Promisory/*.per,,,,control-goal,,,,,,,,,,,worker/build/research services,,,,distributed control state,STATIC-QUALIFIED,UNKNOWN
+PROMISORY_POSITION:R00001,Promisory/*.per,,,,position-goal,,,,,,,,,,,placement/scouting services,,,,spatial coordination state,STATIC-QUALIFIED,UNKNOWN
+PROMISORY_TS:R00001,Promisory/*.per,,,,increase-ts,,,,,,,,,,,town-size/construction/economy,,,,town-size state,STATIC-QUALIFIED,UNKNOWN
+PROMISORY_ENEMY:R00001,Promisory/*.per,,,,enemy-goal,,,,,,,,,,,military/scouting/threat,,,,enemy-state coordination,STATIC-QUALIFIED,UNKNOWN
+PROMISORY_FARM:R00001,Promisory/*.per,,,,farm-goal,,,,,,,,,,,economy/building,,,,food infrastructure demand,STATIC-QUALIFIED,UNKNOWN
+PROMISORY_HOUSING:R00001,Promisory/*.per,,,,housing-goal,,,,,,,,,,,economy/building/production,,,,population support state,STATIC-QUALIFIED,UNKNOWN
+PROMISORY_ATTACK:R00001,Promisory/*.per,,,,attack-goal,,,,,,,,,,,tsa/attack/retreat,,,,military intent state,STATIC-QUALIFIED,UNKNOWN
+PROMISORY_RETREAT:R00001,Promisory/*.per,,,,retreat-now-goal,,,,,,,,,,,attack/retreat/threat,,,,military recovery state,STATIC-QUALIFIED,UNKNOWN
+PROMISORY_RESTART:R00001,Promisory/*.per,,,,restart-attack-goal,,,,,,,,,,,attack/retreat,,,,attack lifecycle state,STATIC-QUALIFIED,UNKNOWN
+PROMISORY_ESCROW:R00001,Promisory/*.per,,,,escrow-purpose-goal,,,,,,,,,,,economy/build/train/research,,,,resource arbitration state,STATIC-QUALIFIED,UNKNOWN
