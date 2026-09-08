@@ -6,6 +6,14 @@ Direct forensic inspection of untouched stock `Promisory/units.per`, `escrow.per
 Authoritative local corpus:
 `C:\Program Files (x86)\Steam\steamapps\common\AoE2DE\resources\_common\ai`
 
+## Cross-reference update
+External scripting references materially corroborate the native mechanisms identified locally:
+- `up-can-train`, `up-train`, `up-can-build`, `up-build`, `up-can-research`, and `up-research` are documented engine actions/facts.
+- UserPatch release notes explicitly document escrow-aware command semantics and state that `sn-enable-training-queue` affects `can-train`, `can-train-with-escrow`, `train`, `up-can-train`, and `up-train` immediately in rules.
+- Historical UserPatch notes document `up-release-escrow` and `up-modify-escrow` as native escrow operations, confirming that the stock escrow observations are engine-level rather than merely Promisory bookkeeping.
+- The external command index documents `up-train` and `up-train-site-ready`, supporting the distinction between selecting/validating a training endpoint and issuing the physical training action.
+- Official DE Update 42848 confirms that the modern DE scripting ABI has changed over time, including strategic-number capacity and object-data semantics; therefore current-stock confirmation remains mandatory for version-specific behavior.
+
 ## Executive conclusion
 Stock does not expose a single universal production scheduler with one explicit priority queue. Instead, it implements **distributed arbitration** using persistent goal flags, rule ordering/jump chains, suppression rules, escrow gates, queue/building searches, and final engine commands.
 
@@ -32,46 +40,18 @@ NEXT CONTROL PASS
 ```
 
 ## 1. Production intent is represented as persistent goal state
-`units.per` initializes many independent production goals to `no`, including:
-- `trainvillager`
-- `trainarcher`
-- `trainskirm`
-- `trainpike`
-- `trainknight`
-- `traincamel`
-- `trainhussar`
-- `trainunique`
-- siege and naval production goals.
-
-Hundreds of later rules selectively set these goals to `yes` based on strategic conditions. Therefore a production request is not itself a queue command.
+`units.per` initializes many independent production goals to `no`, including `trainvillager`, military, siege, naval, and other production goals. Later rules selectively set them to `yes` based on strategic conditions. Therefore a production request is not itself a queue command.
 
 ## 2. Goal arbitration is explicitly distributed
-Stock contains numerous rules that turn competing goals off when another demand becomes dominant. Examples include:
-
-- `trainknight` can be disabled in favor of camel production under specific economic/strategic conditions.
-- `trainpike` can be disabled in favor of camel production.
-- `trainarcher` can be disabled in favor of cavalry-archer or hand-cannoneer production.
-- `trainmangonel` and `trainscorpion` explicitly suppress one another in several paths.
-- `trainram` can be suppressed when trebuchet becomes the selected siege requirement.
-- late-game population/military-cap rules can suppress broad categories of production simultaneously.
+Stock contains numerous rules that turn competing goals off when another demand becomes dominant. Examples include knight/camel, pike/camel, archer/cavalry-archer/hand-cannoneer, mangonel/scorpion, and ram/trebuchet competition, plus population and military-cap suppression.
 
 This is not a FIFO scheduler. It is a rule-mediated arbitration graph.
 
 ## 3. A special global gate exists: `siegereq`
-Many final production rules require:
-
-```per
-(goal siegereq yes)
-```
-
-before issuing the actual `train` command. The same gate appears in multiple unit categories, including unique units, monks, trade units, and siege-related production paths.
-
-This demonstrates that some production is intentionally delayed behind a broader execution authorization state.
-
-`units.per` also contains rules that set or clear `siegereq`, so it is not merely a passive status bit.
+Many final production rules require `(goal siegereq yes)` before issuing the actual `train` command. The same gate appears in multiple unit categories. Rules also set/clear `siegereq`, so it is an execution authorization state rather than passive metadata.
 
 ## 4. Villager production has a distinct engine-aware path
-Stock's final villager execution path is materially different from simple `train villager`:
+Stock uses:
 
 ```per
 (goal trainvillager yes)
@@ -84,240 +64,61 @@ followed by:
 (up-train escrow-state c: villager)
 ```
 
-There are additional rules that inspect pending villagers, Town Center state, and Town Center progress before issuing another production action.
-
-This establishes:
-
-```text
-TRAINVILLAGER INTENT
- → ESCROW-AWARE AFFORDABILITY/AUTHORIZATION
- → TC STATE CHECK
- → PHYSICAL QUEUE COMMAND
-```
+with pending-villager and Town Center checks around the path.
 
 ## 5. Other unit production uses queue-object discovery
-For many units the pattern is:
+Many paths use `goal trainX`, `up-can-train`, production-building searches, `object-data-progress-value`, `object-data-under-attack`, distance/index filters, `action-train`, and a later `can-train`/`train` stage.
 
-```per
-(goal trainX yes)
-(goal temporary-goal 1579175)
-(up-can-train 0 c: X)
-```
-
-then:
-
-```per
-(up-full-reset-search)
-(up-find-local c: production-building c: 240)
-(up-remove-objects search-local object-data-progress-value >= 1)
-(up-remove-objects search-local object-data-under-attack >= 1)
-(up-clean-search search-local object-data-distance search-order-asc)
-(up-remove-objects search-local object-data-index >= 1)
-(up-get-search-state local-total)
-(up-target-point 0 action-train c: X)
-```
-
-A subsequent rule observes that a suitable production object was found and then performs:
-
-```per
-(can-train X)
-(train X)
-```
-
-Therefore the production building itself is a selectable operational resource.
+This establishes the production building as a selectable operational resource.
 
 ## 6. Queue availability is not equivalent to building count
-The search explicitly excludes production objects based on:
-- `object-data-progress-value`
-- `object-data-under-attack`
-- object index/order
-- distance.
-
-Thus:
-
-```text
-building-type-count == N
-```
-
-is not sufficient evidence that N buildings are currently usable production endpoints.
-
-The engine-facing operational test is closer to:
-
-```text
-EXISTS production object
-AND object usable
-AND object not excluded by current state
-AND can-train(unit)
-```
+A production building can be excluded because of current progress, attack state, search position, or other endpoint constraints. Therefore `building-type-count == N` does not prove N usable production endpoints.
 
 ## 7. Production command has a two-stage structure
 The recurring pattern is:
 
 ```text
 Stage A: discover / prepare queue target
-Stage B: execute `train`
+Stage B: execute train/research/build
 ```
 
-For many production types, `up-target-point ... action-train` is used to prepare or validate the selected production endpoint, with a temporary goal acting as a cross-rule state marker.
-
-This is another instance of:
+This supports the architecture rule:
 
 > COMMAND ISSUED != TASK CONFIRMED
 
-The following rule can re-evaluate engine state rather than assuming that the previous search succeeded permanently.
-
-## 8. Research follows the same architectural pattern but with a different endpoint
-`escrow.per` contains a large research dispatch table:
-
-```per
-(up-compare-flag escrow-flag == N)
-(can-research-with-escrow technology)
-=>
-(research technology)
-```
-
-The preceding decision layer creates research costs with:
-
-```per
-(up-add-research-cost c: technology c: 1)
-(up-modify-flag escrow-flag...)
-```
-
-Therefore research follows:
-
-```text
-RESEARCH DEMAND
- → RESEARCH COST REGISTRATION
- → ESCROW FLAG
- → CAN-RESEARCH-WITH-ESCROW
- → RESEARCH COMMAND
-```
+## 8. Research follows the same architectural pattern
+`escrow.per` dispatches research using escrow flags and `can-research-with-escrow`, followed by `research`. Costs are registered before authorization.
 
 ## 9. Construction participates in the same expenditure architecture
-`buildings.per` independently performs construction arbitration and placement. It tests resource conditions, building availability, spatial constraints, and construction state before requesting a build.
-
-The escrow subsystem can register object costs for structures and later use `can-build-with-escrow` as an execution gate.
-
-Thus construction is not outside the economic scheduler. It is another consumer of the reservation/expenditure substrate.
+Construction has its own placement/resource/state arbitration while escrow can register object costs and authorize building through `can-build-with-escrow`.
 
 ## 10. Escrow is reset and rematerialized as a transaction cycle
-The stock escrow controller begins a cycle by releasing previous escrow and clearing percentages/values:
-
-```per
-(up-release-escrow)
-(set-escrow-percentage wood 0)
-(set-escrow-percentage food 0)
-(set-escrow-percentage gold 0)
-(set-escrow-percentage stone 0)
-(up-modify-escrow wood c:= 0)
-(up-modify-escrow food c:= 0)
-(up-modify-escrow gold c:= 0)
-(up-modify-escrow stone c:= 0)
-```
-
-It later materializes current requested costs:
-
-```per
-(up-modify-escrow wood g:= cost-wood)
-(up-modify-escrow food g:= cost-food)
-(up-modify-escrow gold g:= cost-gold)
-(up-modify-escrow stone g:= cost-stone)
-```
+Stock releases previous escrow and later writes current requested costs. Historical UserPatch notes independently document `up-release-escrow` and `up-modify-escrow`, including the distinction between escrow-included and escrow-deducted execution states.
 
 This strongly supports a transactional economic model rather than a permanently reserved ledger.
 
 ## 11. Priority is partly encoded by rule graph topology
-The strongest evidence against a centralized priority queue is the prevalence of:
-
-```text
-set goal
-jump rule
-suppress another goal
-modify cost
-set escrow flag
-execute
-```
-
-The `up-jump-rule` graph determines which families of rules are reached or bypassed under strategic conditions.
-
-Consequently effective priority is emergent from:
-- rule ordering
-- jump routing
-- goal state
-- suppression rules
-- strategic-number conditions
-- resource/escrow state
-- military population constraints
-- threat state
-- pending queue state.
+The combination of goal mutation, jump routing, suppression, escrow, and execution gates means effective priority is emergent from control flow and state, not from one explicit queue.
 
 ## 12. Military population acts as a global production constraint
-Late `units.per` logic computes an allowed military population from ally/enemy military populations and game difficulty/context, then suppresses large groups of military production goals when the actual military population reaches the calculated limit.
-
-The important architectural implication is:
-
-```text
-UNIT DEMAND
-     ↓
-MILITARY CAPACITY POLICY
-     ↓
-PRODUCTION GOAL SUPPRESSION
-```
-
-This is policy arbitration before queue execution.
+Late `units.per` logic can suppress military production goals when military population reaches calculated limits.
 
 ## 13. Population pressure also feeds production arbitration
-The same file contains late-game rules that suppress or permit villagers, trade units, naval units, and military units based on:
-- population cap
-- civilian population
-- housing headroom
-- excess resources
-- military population
-- strategic state.
-
-Therefore the scheduler is cross-domain: civilian, military, naval, trade, and research decisions can compete indirectly for the same finite economic/queue capacity.
+Civilian population, housing headroom, excess resources, military population, and strategic state can suppress or permit production categories.
 
 ## 14. Negative finding: no universal explicit FIFO/priority queue proved
-Direct inspection did **not** establish a single structure equivalent to:
-
-```text
-priority_queue<Action>
-```
-
-nor an explicit universal integer priority assigned to every production request.
-
-We should therefore not implement AEGIS as a simple centralized FIFO scheduler merely because it is convenient.
+Direct inspection did not establish a single universal priority queue or explicit integer priority assigned to every production request.
 
 ## 15. AEGIS design consequence
 AEGIS should expose a centralized **logical arbitration service** while preserving distributed physical endpoints:
 
 ```text
-                 DEMANDS
-                    ↓
-             ARBITRATION SERVICE
-                    ↓
-       ┌────────────┼────────────┐
-       ↓            ↓            ↓
-   RESERVATION   SUPPRESSION   AUTHORIZATION
-       ↓            ↓            ↓
-       └────────────┼────────────┘
-                    ↓
-             QUEUE ENDPOINT
-                    ↓
-             PHYSICAL COMMAND
-                    ↓
-               OBSERVATION
-                    ↓
-               VERIFICATION
-                    ↓
-                RECOVERY
+DEMANDS → ARBITRATION → RESERVATION/SUPPRESSION/AUTHORIZATION
+        → QUEUE ENDPOINT → PHYSICAL COMMAND → OBSERVATION → VERIFICATION → RECOVERY
 ```
-
-The logical service should be centralized because AEGIS needs coherent decisions. Physical queue selection must remain endpoint-aware because stock demonstrates that production buildings, Town Centers, castles, monasteries, docks, and siege workshops have distinct operational state.
 
 ## 16. Recommended AEGIS contracts
 
-### Production request
 ```text
 PRODUCTION_REQUEST
   generation
@@ -330,10 +131,7 @@ PRODUCTION_REQUEST
   resource-cost
   reservation-id
   endpoint constraints
-```
 
-### Queue endpoint
-```text
 QUEUE_ENDPOINT
   object-id
   endpoint-type
@@ -345,10 +143,7 @@ QUEUE_ENDPOINT
   can-execute
   observed-at
   generation
-```
 
-### Arbitration result
-```text
 ARBITRATION_RESULT
   request-id
   generation
@@ -360,31 +155,8 @@ ARBITRATION_RESULT
   observed-at
 ```
 
-### Execution lifecycle
-```text
-REQUESTED
- → ADMITTED
- → RESERVED
- → ENDPOINT_SELECTED
- → AUTHORIZED
- → COMMAND_ISSUED
- → ENGINE_OBSERVED
- → CONFIRMED
-```
-
-Failure paths:
-
-```text
-REQUESTED → REJECTED
-RESERVED → RESERVATION_RELEASED
-ENDPOINT_SELECTED → ENDPOINT_INVALID
-AUTHORIZED → COMMAND_FAILED
-COMMAND_ISSUED → ENGINE_STATE_NOT_OBSERVED
-CONFIRMED → TASK_INTERRUPTED
-```
-
-## 17. Critical architecture rule for AEGIS
-Do not collapse these states:
+## 17. Critical architecture rule
+Do not collapse:
 
 ```text
 Strategic commitment
@@ -396,7 +168,7 @@ Command issuance
 Execution confirmation
 ```
 
-They are observably distinct in the stock architecture.
+They are observably distinct.
 
 ## 18. Confidence
 
@@ -416,9 +188,13 @@ They are observably distinct in the stock architecture.
 | Exact engine queue-depth semantics for all endpoints | NOT FULLY ESTABLISHED |
 
 ## 19. No live changes
-No AEGIS runtime files were modified during this forensic pass. The untouched stock corpus remains the authoritative source.
+No AEGIS runtime files were modified during this forensic pass. The untouched stock corpus remains authoritative.
 
-## 20. Status
-This pass closes a major forensic question: **the stock AI's economic scheduler is a distributed arbitration graph coupled to native escrow and endpoint-aware execution, not a single centralized queue.**
+## Sources and links
 
-The next engineering target should be the remaining uncertainty: characterize the exact rule evaluation / jump semantics and determine how multiple simultaneously valid production commands are resolved within one AI update cycle. This requires engine-ABI evidence rather than further inference from strategic conditions alone.
+- Official World's Edge Update 42848 — DE scripting ABI changes: https://www.ageofempires.com/news/aoe2de-update-42848/
+- Official World's Edge Update 61321 — AI script debugging and control-flow diagnostics: https://www.ageofempires.com/news/age-of-empires-ii-definitive-edition-update-61321/
+- AoE2 AI Scripting Encyclopedia — command index: https://airef.github.io/commands/commands-index.html
+- AoE2 AI Scripting Encyclopedia — UserPatch patch notes, including escrow and training-queue semantics: https://airef.github.io/tables/up-patch-notes.html
+- UserPatch Scripting Guide — command/fact/action reference: https://userpatch.aiscripters.net/reference.html
+- Public AI scripting corpus used as behavioral evidence: https://gist.github.com/mateuszszulc/491e6e94797ee0fcd4a6f24229d1be3f
