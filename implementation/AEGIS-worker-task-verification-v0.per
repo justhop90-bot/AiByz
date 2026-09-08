@@ -1,0 +1,111 @@
+; AEGIS WORKER TASK VERIFICATION V0
+; Candidate - NOT LOADED by production root.
+; Target: AoE2DE 101.103.48987.0 / BuildID 24094652
+; Purpose: verify commanded worker state using observable action/order/target evidence.
+; This module does not issue commands and does not claim resource income.
+; Archaeologist: COMMAND_ISSUED is not ENGINE_STATE_OBSERVED.
+; Byzantine Architect: useful allocation requires persistent task state.
+; AI(HD)+Promisory: interruption and source failure remain distinct dispositions.
+
+(defconst aegis-wtv-generation 534)
+(defconst aegis-wtv-valid 535)
+(defconst aegis-wtv-stage 536)
+(defconst aegis-wtv-resource 537)
+(defconst aegis-wtv-worker-visible 538)
+(defconst aegis-wtv-task-visible 539)
+(defconst aegis-wtv-target-visible 540)
+(defconst aegis-wtv-carry-visible 541)
+(defconst aegis-wtv-result 542)
+(defconst aegis-wtv-failure 543)
+(defconst aegis-wtv-observed-at 544)
+(defconst aegis-wtv-cycle 545)
+(defconst aegis-wtv-stage-init 0)
+(defconst aegis-wtv-stage-observing 1)
+(defconst aegis-wtv-stage-confirmed 2)
+(defconst aegis-wtv-stage-failed 3)
+(defconst aegis-wtv-result-unknown 0)
+(defconst aegis-wtv-result-task-observed 1)
+(defconst aegis-wtv-failure-none 0)
+(defconst aegis-wtv-failure-worker-missing 1)
+(defconst aegis-wtv-failure-task-not-observed 2)
+(defconst aegis-wtv-failure-target-not-observed 3)
+
+; Begin verification from a fresh command generation.
+(defrule
+    (up-compare-goal aegis-wtc-valid == 1)
+    (up-compare-goal aegis-wtc-stage == aegis-wtc-stage-issued)
+    (up-compare-goal aegis-wtv-generation != aegis-wtc-generation)
+=>
+    (set-goal aegis-wtv-valid 1)
+    (set-goal aegis-wtv-stage aegis-wtv-stage-observing)
+    (set-goal aegis-wtv-resource aegis-wtc-resource)
+    (up-modify-goal aegis-wtv-generation g:= aegis-wtc-generation)
+    (up-modify-goal aegis-wtv-observed-at g:= aegis-wtc-observed-at)
+    (up-modify-goal aegis-wtv-cycle g:+ 1)
+    (set-goal aegis-wtv-worker-visible 0)
+    (set-goal aegis-wtv-task-visible 0)
+    (set-goal aegis-wtv-target-visible 0)
+    (set-goal aegis-wtv-carry-visible 0)
+    (set-goal aegis-wtv-result aegis-wtv-result-unknown)
+    (set-goal aegis-wtv-failure aegis-wtv-failure-none)
+)
+
+; Observe the commanded worker population without assuming role identity.
+(defrule
+    (up-compare-goal aegis-wtv-valid == 1)
+    (up-compare-goal aegis-wtv-stage == aegis-wtv-stage-observing)
+=>
+    (up-full-reset-search)
+    (up-find-local c: villager-class c: 1)
+    (up-remove-objects search-local object-data-action == actionid-attack)
+    (up-remove-objects search-local object-data-order == orderid-build)
+    (up-remove-objects search-local object-data-order == orderid-repair)
+    (up-remove-objects search-local object-data-order == orderid-enter)
+    (up-get-search-state local-total aegis-wtv-worker-visible)
+)
+
+; A second local search tests whether a worker remains attached to a non-idle
+; task boundary. V0 uses object target presence as evidence, not income proof.
+(defrule
+    (up-compare-goal aegis-wtv-valid == 1)
+    (up-compare-goal aegis-wtv-stage == aegis-wtv-stage-observing)
+    (up-compare-goal aegis-wtv-worker-visible >= 1)
+=>
+    (up-full-reset-search)
+    (up-find-local c: villager-class c: 1)
+    (up-remove-objects search-local object-data-target == -1)
+    (up-get-search-state local-total aegis-wtv-task-visible)
+    (set-goal aegis-wtv-target-visible aegis-wtv-task-visible)
+)
+
+; V0 confirms only when a worker and target are both observable after command issuance.
+(defrule
+    (up-compare-goal aegis-wtv-valid == 1)
+    (up-compare-goal aegis-wtv-stage == aegis-wtv-stage-observing)
+    (up-compare-goal aegis-wtv-worker-visible >= 1)
+    (up-compare-goal aegis-wtv-target-visible >= 1)
+=>
+    (set-goal aegis-wtv-result aegis-wtv-result-task-observed)
+    (set-goal aegis-wtv-stage aegis-wtv-stage-confirmed)
+)
+
+(defrule
+    (up-compare-goal aegis-wtv-valid == 1)
+    (up-compare-goal aegis-wtv-stage == aegis-wtv-stage-observing)
+    (up-compare-goal aegis-wtv-worker-visible <= 0)
+=>
+    (set-goal aegis-wtv-failure aegis-wtv-failure-worker-missing)
+    (set-goal aegis-wtv-stage aegis-wtv-stage-failed)
+    (set-goal aegis-wtv-valid 0)
+)
+
+(defrule
+    (up-compare-goal aegis-wtv-valid == 1)
+    (up-compare-goal aegis-wtv-stage == aegis-wtv-stage-observing)
+    (up-compare-goal aegis-wtv-worker-visible >= 1)
+    (up-compare-goal aegis-wtv-target-visible <= 0)
+=>
+    (set-goal aegis-wtv-failure aegis-wtv-failure-target-not-observed)
+    (set-goal aegis-wtv-stage aegis-wtv-stage-failed)
+    (set-goal aegis-wtv-valid 0)
+)
