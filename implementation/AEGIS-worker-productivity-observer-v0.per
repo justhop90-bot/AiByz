@@ -1,0 +1,83 @@
+; AEGIS WORKER PRODUCTIVITY OBSERVER V0
+; Candidate - NOT LOADED by production root.
+; Target: AoE2DE 101.103.48987.0 / BuildID 24094652
+; Purpose: observe whether a commanded worker appears to have entered a productive task state.
+; This module does not issue commands and does not declare economic success from command issuance.
+; Archaeologist: observed state is distinct from authorization and command issuance.
+; Byzantine Architect: productivity is the physical proof required before treating allocation as useful.
+; AI(HD)+Promisory: retain interruption/failure visibility rather than assuming action-default persists.
+
+(defconst aegis-wpo-generation 526)
+(defconst aegis-wpo-valid 527)
+(defconst aegis-wpo-stage 528)
+(defconst aegis-wpo-resource 529)
+(defconst aegis-wpo-observed 530)
+(defconst aegis-wpo-failure 531)
+(defconst aegis-wpo-observed-at 532)
+(defconst aegis-wpo-cycle 533)
+(defconst aegis-wpo-stage-init 0)
+(defconst aegis-wpo-stage-commanded 1)
+(defconst aegis-wpo-stage-observing 2)
+(defconst aegis-wpo-stage-productive 3)
+(defconst aegis-wpo-stage-failed 4)
+(defconst aegis-wpo-resource-wood 2)
+(defconst aegis-wpo-resource-gold 3)
+(defconst aegis-wpo-resource-stone 4)
+(defconst aegis-wpo-failure-none 0)
+(defconst aegis-wpo-failure-no-worker 1)
+(defconst aegis-wpo-failure-no-target 2)
+(defconst aegis-wpo-failure-interrupted 3)
+
+; Begin observation only after the task command adapter reports issuance.
+(defrule
+    (up-compare-goal aegis-wtc-valid == 1)
+    (up-compare-goal aegis-wtc-stage == aegis-wtc-stage-issued)
+    (up-compare-goal aegis-wpo-generation != aegis-wtc-generation)
+=>
+    (set-goal aegis-wpo-valid 1)
+    (set-goal aegis-wpo-stage aegis-wpo-stage-commanded)
+    (set-goal aegis-wpo-resource aegis-wtc-resource)
+    (up-modify-goal aegis-wpo-generation g:= aegis-wtc-generation)
+    (up-modify-goal aegis-wpo-observed-at g:= aegis-wtc-observed-at)
+    (up-modify-goal aegis-wpo-cycle g:+ 1)
+    (set-goal aegis-wpo-observed 0)
+    (set-goal aegis-wpo-failure aegis-wpo-failure-none)
+)
+
+; Re-observe the worker and resource relationship. A positive local/remote
+; target relationship is the minimum evidence available to this V0 adapter.
+(defrule
+    (up-compare-goal aegis-wpo-valid == 1)
+    (up-compare-goal aegis-wpo-stage == aegis-wpo-stage-commanded)
+=>
+    (up-full-reset-search)
+    (up-find-local c: villager-class c: 1)
+    (up-remove-objects search-local object-data-carry >= 1)
+    (up-remove-objects search-local object-data-action == actionid-attack)
+    (up-remove-objects search-local object-data-order == orderid-build)
+    (up-remove-objects search-local object-data-order == orderid-repair)
+    (up-remove-objects search-local object-data-order == orderid-enter)
+    (up-get-search-state local-total aegis-wpo-observed)
+    (set-goal aegis-wpo-stage aegis-wpo-stage-observing)
+)
+
+; V0 records a candidate productive observation when an eligible worker remains
+; visible after the command. This is deliberately weaker than proof of income.
+(defrule
+    (up-compare-goal aegis-wpo-valid == 1)
+    (up-compare-goal aegis-wpo-stage == aegis-wpo-stage-observing)
+    (up-compare-goal aegis-wpo-observed >= 1)
+=>
+    (set-goal aegis-wpo-stage aegis-wpo-stage-productive)
+)
+
+; If no eligible worker remains visible, classify the observation as interrupted.
+(defrule
+    (up-compare-goal aegis-wpo-valid == 1)
+    (up-compare-goal aegis-wpo-stage == aegis-wpo-stage-observing)
+    (up-compare-goal aegis-wpo-observed <= 0)
+=>
+    (set-goal aegis-wpo-failure aegis-wpo-failure-interrupted)
+    (set-goal aegis-wpo-stage aegis-wpo-stage-failed)
+    (set-goal aegis-wpo-valid 0)
+)
