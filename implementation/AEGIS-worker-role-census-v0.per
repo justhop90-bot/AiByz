@@ -1,0 +1,61 @@
+; AEGIS WORKER ROLE CENSUS V0
+; Implementation candidate - NOT LOADED by production root.
+; Target: AoE2DE 101.103.48987.0 / BuildID 24094652
+; Purpose: publish engine-observable civilian role counts.
+; Roles are operational state, not immutable worker identity.
+; No strategic allocation is performed here.
+
+(defconst aegis-wrc-timer 43)
+(defconst aegis-wrc-generation 450)
+(defconst aegis-wrc-valid 451)
+(defconst aegis-wrc-stage 452)
+(defconst aegis-wrc-food 453)
+(defconst aegis-wrc-forager 454)
+(defconst aegis-wrc-shepherd 455)
+(defconst aegis-wrc-hunter 456)
+(defconst aegis-wrc-fisherman 457)
+(defconst aegis-wrc-farmer 458)
+(defconst aegis-wrc-wood 459)
+(defconst aegis-wrc-gold 460)
+(defconst aegis-wrc-stone 461)
+(defconst aegis-wrc-builder 462)
+(defconst aegis-wrc-observed-at 463)
+(defconst aegis-wrc-cycle 464)
+
+(defconst aegis-wrc-stage-init 0)
+(defconst aegis-wrc-stage-observe 1)
+(defconst aegis-wrc-stage-qualified 2)
+
+; Bootstrap the role observation clock independently of strategic services.
+(defrule
+    (game-time < 2)
+=>
+    (enable-timer aegis-wrc-timer 1)
+)
+
+; Capture the stock engine's semantic worker-role counts into an AEGIS frame.
+; Stock uses these role identifiers directly in unit-type-count predicates and
+; also retrieves role counts with up-get-fact. This service therefore records
+; the engine's role classification rather than reconstructing it from orders.
+(defrule
+    (timer-triggered aegis-wrc-timer)
+=>
+    (enable-timer aegis-wrc-timer 5)
+    (set-goal aegis-wrc-valid 0)
+    (set-goal aegis-wrc-stage aegis-wrc-stage-observe)
+    (up-get-fact unit-type-count villager-food aegis-wrc-food)
+    (up-get-fact unit-type-count villager-forager aegis-wrc-forager)
+    (up-get-fact unit-type-count villager-shepherd aegis-wrc-shepherd)
+    (up-get-fact unit-type-count villager-hunter aegis-wrc-hunter)
+    (up-get-fact unit-type-count villager-fisherman aegis-wrc-fisherman)
+    (up-get-fact unit-type-count villager-farmer aegis-wrc-farmer)
+    (up-get-fact unit-type-count villager-wood aegis-wrc-wood)
+    (up-get-fact unit-type-count villager-gold aegis-wrc-gold)
+    (up-get-fact unit-type-count villager-stone aegis-wrc-stone)
+    (up-get-fact unit-type-count villager-builder aegis-wrc-builder)
+    (up-get-fact game-time 0 aegis-wrc-observed-at)
+    (up-modify-goal aegis-wrc-cycle g:+ 1)
+    (up-modify-goal aegis-wrc-generation g:+ 1)
+    (set-goal aegis-wrc-stage aegis-wrc-stage-qualified)
+    (set-goal aegis-wrc-valid 1)
+)
