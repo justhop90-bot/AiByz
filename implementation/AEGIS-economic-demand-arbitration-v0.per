@@ -25,7 +25,6 @@
 (defconst aegis-eda-resource-gold 3)
 (defconst aegis-eda-resource-stone 4)
 
-; Begin from a fresh economic-demand frame.
 (defrule
     (up-compare-goal aegis-ed-valid == 1)
     (up-compare-goal aegis-eda-generation != aegis-ed-generation)
@@ -40,9 +39,6 @@
     (up-modify-goal aegis-eda-observed-at g:= aegis-ed-observed-at)
 )
 
-; Deterministic priority: high urgency wins first; otherwise choose the largest
-; deficit. Equal deficits resolve food > wood > gold > stone to avoid rule-order
-; dependence on later implementation changes.
 (defrule
     (up-compare-goal aegis-eda-stage == aegis-eda-stage-arbitrated)
     (up-compare-goal aegis-ed-urgency == aegis-ed-urgency-high)
@@ -50,7 +46,7 @@
 =>
     (set-goal aegis-eda-selected-resource aegis-eda-resource-gold)
     (up-modify-goal aegis-eda-selected-deficit g:= aegis-ed-gold-demand)
-    (set-goal aegis-eda-priority aegis-ed-priority-high)
+    (set-goal aegis-eda-priority aegis-eda-priority-high)
 )
 
 (defrule
@@ -95,8 +91,11 @@
     (up-modify-goal aegis-eda-selected-deficit g:= aegis-ed-stone-demand)
 )
 
+; Publish only a positive arbitration result. No-demand frames are not valid
+; worker-selection inputs and therefore cannot accidentally trigger tasking.
 (defrule
     (up-compare-goal aegis-eda-stage == aegis-eda-stage-arbitrated)
+    (up-compare-goal aegis-eda-selected-resource != aegis-eda-resource-none)
 =>
     (set-goal aegis-eda-stage aegis-eda-stage-qualified)
     (set-goal aegis-eda-valid 1)
