@@ -26,11 +26,9 @@ This map converts the flattened stock file into explicit behavioral regions. It 
 | 32,471 | 34,586 | Attack & retreat rules | Military action lifecycle, attack posture, retreat and restart behavior. |
 | 34,587 | 34,645 | Optional cheats | Optional/nonstandard behavior; not core strategic authority. |
 | 34,646 | 34,805 | Human cooperation | Cooperation, ally interaction and communication. |
-| 34,806 | 35,? | Increase TS code | Town-size/infrastructure growth control. |
+| 34,806 | 36,141 | Increase TS code + remaining late-game/support tail | Town-size/infrastructure growth control plus final support rules. |
 
 **File length:** 36,141 lines.
-
-The final exact end of the `INCREASE TS CODE` region and the remaining miscellaneous tail are still to be bounded from the source rather than inferred from the rounded section heading. The earlier 36,141-line total remains authoritative.
 
 ## Important interpretation
 
