@@ -1,0 +1,88 @@
+; AEGIS CIVILIAN LIFECYCLE RECONCILER V0
+; Implementation candidate - NOT LOADED by production root.
+; Target: AoE2DE 101.103.48987.0 / BuildID 24094652
+; Purpose: reconcile villager production command, pending admission,
+; and discrete villager census into a bounded lifecycle state.
+; Archaeologist constraint: pending is not completion.
+; Byzantine Architect constraint: civilian continuity is infrastructure,
+; not strategic policy.
+; AI(HD)+Promisory constraint: preserve the distinction between queue
+; admission, completion, and re-request after failure.
+
+(defconst aegis-vr-generation 441)
+(defconst aegis-vr-valid 442)
+(defconst aegis-vr-stage 443)
+(defconst aegis-vr-baseline-villagers 444)
+(defconst aegis-vr-observed-villagers 445)
+(defconst aegis-vr-pending 446)
+(defconst aegis-vr-confirmed-delta 447)
+(defconst aegis-vr-attempts 448)
+(defconst aegis-vr-observed-at 449)
+
+(defconst aegis-vr-stage-init 0)
+(defconst aegis-vr-stage-issued 1)
+(defconst aegis-vr-stage-pending 2)
+(defconst aegis-vr-stage-confirmed 3)
+(defconst aegis-vr-stage-failed 4)
+
+; Start a lifecycle record only for a fresh production generation.
+(defrule
+    (up-compare-goal aegis-vp-valid == 1)
+    (up-compare-goal aegis-vp-stage == aegis-vp-stage-issued)
+    (up-compare-goal aegis-vr-generation != aegis-vp-generation)
+=>
+    (set-goal aegis-vr-valid 0)
+    (set-goal aegis-vr-stage aegis-vr-stage-issued)
+    (set-goal aegis-vr-baseline-villagers aegis-census-villagers)
+    (set-goal aegis-vr-observed-villagers aegis-census-villagers)
+    (set-goal aegis-vr-pending 0)
+    (set-goal aegis-vr-confirmed-delta 0)
+    (set-goal aegis-vr-attempts aegis-vp-attempts)
+    (set-goal aegis-vr-observed-at aegis-census-observed-at)
+    (up-modify-goal aegis-vr-generation g:= aegis-vp-generation)
+    (set-goal aegis-vr-valid 1)
+)
+
+; Queue admission is an intermediate state, not completion.
+(defrule
+    (up-compare-goal aegis-vr-valid == 1)
+    (up-compare-goal aegis-vr-stage == aegis-vr-stage-issued)
+    (up-compare-goal aegis-census-pending-villagers == 1)
+=>
+    (set-goal aegis-vr-pending 1)
+    (set-goal aegis-vr-stage aegis-vr-stage-pending)
+)
+
+; Completion is confirmed only when the discrete villager census exceeds
+; the baseline captured for this production generation.
+(defrule
+    (up-compare-goal aegis-vr-valid == 1)
+    (up-compare-goal aegis-vr-stage == aegis-vr-stage-pending)
+    (up-compare-goal aegis-census-villagers > aegis-vr-baseline-villagers)
+=>
+    (set-goal aegis-vr-observed-villagers aegis-census-villagers)
+    (up-modify-goal aegis-vr-confirmed-delta g:= aegis-census-villagers)
+    (up-modify-goal aegis-vr-confirmed-delta g:-= aegis-vr-baseline-villagers)
+    (set-goal aegis-vr-stage aegis-vr-stage-confirmed)
+)
+
+; If the pending object disappears without a census increase, retain a
+; bounded failure state. A later civilian-demand generation owns re-request.
+(defrule
+    (up-compare-goal aegis-vr-valid == 1)
+    (up-compare-goal aegis-vr-stage == aegis-vr-stage-pending)
+    (up-compare-goal aegis-census-pending-villagers == 0)
+    (up-compare-goal aegis-census-villagers <= aegis-vr-baseline-villagers)
+=>
+    (set-goal aegis-vr-stage aegis-vr-stage-failed)
+    (set-goal aegis-vr-valid 0)
+)
+
+; Confirmation closes the lifecycle record. Demand remains the responsibility
+; of the next civilization-state/demand reconciliation cycle.
+(defrule
+    (up-compare-goal aegis-vr-valid == 1)
+    (up-compare-goal aegis-vr-stage == aegis-vr-stage-confirmed)
+=>
+    (set-goal aegis-vr-valid 0)
+)
