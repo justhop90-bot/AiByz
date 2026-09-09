@@ -2,41 +2,73 @@
 
 > Professional research, reverse-engineering, architecture, and implementation repository for a next-generation Byzantine AI for Age of Empires II: Definitive Edition.
 
-## Canonical status — 2026-09-05
+## AI ENTRY POINT — READ THIS FIRST
+
+**If you are an AI taking over this project, do not begin by searching the entire repository at random.**
+
+Start with:
+
+1. **`AI_AGENT_START_HERE.md`** — project orientation, semantic traps, authority hierarchy, and what is already solved.
+2. **`docs/FINAL_RECONSTRUCTION_AUDIT_2026-09-09.md`** — definitive unresolved-proof register and next engineering sequence.
+3. **`docs/architecture/AEGIS_STOCK_SUBSYSTEM_RECONSTRUCTION_MAP_2026-09-08.md`** — stock load/provenance/subsystem/ABI reconstruction.
+4. `CANONICAL_AUTHORITY.md`
+5. `docs/CANONICAL_PROJECT_HANDOFF_2026-09-05.md`
+6. `docs/CANONICAL_QC_2026-09-05.md`
+7. `docs/REPOSITORY_AUTHORITY_MAP_2026-09-05.md`
+8. `RESEARCH_INDEX.md`
+
+**Do not treat older handoffs, experiments, or historical passes as competing current authorities.** They remain for evidence and provenance.
+
+## Canonical status — 2026-09-09
 
 **GitHub `main` is the authoritative starting point.**
 
-Start here:
+The project has moved beyond broad archaeology. The current frontier is **machine-truth reconciliation and targeted runtime qualification**.
 
-1. `CANONICAL_AUTHORITY.md`
-2. `docs/CANONICAL_PROJECT_HANDOFF_2026-09-05.md`
-3. `docs/CANONICAL_QC_2026-09-05.md`
-4. `docs/REPOSITORY_AUTHORITY_MAP_2026-09-05.md`
-5. `docs/REPOSITORY_OPERATING_STANDARD_2026-09-05.md`
-6. `04_LAYER3_ARCHITECTURE/PASS94_DETERMINISTIC_ABI_AUDIT_HARNESS_SPEC_2026-09-05.md`
-7. `03_HD_ARCHAEOLOGY/PASS87_END_TO_END_EVIDENCE_GRAPH_2026-09-05.md`
-8. `RESEARCH_INDEX.md`
+### Current engineering position
 
-Older handoffs and QC records remain in the repository as historical evidence. They are not competing authorities.
-
-## Current engineering position
-
-| Layer | Status |
+| Area | Status |
 |---|---|
-| **Layer 1 — Machine/runtime** | **89% — frozen for handoff; broad archaeology closed** |
-| **Layer 2 — Historical strategy archaeology** | **Major reconstruction closed; targeted evidence only** |
-| **Layer 3 — AEGIS architecture** | **Active; symbolic contract defined; numeric ABI blocked** |
-| **Layer 4 — Runtime `.per` implementation** | **Blocked until package/ABI clearance** |
+| Layer 1 — Machine/runtime broad archaeology | **89% — frozen; broad discovery closed** |
+| Layer 2 — Historical strategy archaeology | **Major reconstruction closed; targeted evidence only** |
+| Layer 3A — AEGIS architecture | **Closed for design; qualification active** |
+| Stock subsystem/load reconstruction | **Substantially reconstructed** |
+| ABI inventory | **Substantially reconstructed; allocation still gated** |
+| Runtime lifecycle semantics | **Open** |
+| Complete state ownership matrix | **Open** |
+| Layer 4 — Production `.per` implementation | **Blocked until required machine/ABI gates clear** |
 
-Permanent boundaries:
+## Current frontier
 
-- Scenario-loader automation/testing is retired.
+The definitive remaining-proof register is `docs/FINAL_RECONSTRUCTION_AUDIT_2026-09-09.md`.
+
+The first unresolved gates are:
+
+`R1 effective load/conditional closure`
+`→ R2 complete mutable-state ownership`
+`→ R3 numeric/typed ABI allocation`
+`→ R4 initialization semantics`
+`→ R5 command lifecycle semantics`
+
+Then close only the runtime dependencies required by the first vertical slice:
+
+`CAVALRY THREAT CONTAINMENT`
+
+Do not reopen broad archaeology unless a dependency or contradiction requires it.
+
+## Permanent boundaries
+
+- Scenario-loader automation/testing is retired unless explicitly reopened.
 - XS is outside AEGIS scope.
 - CaptureAge/CADE is secondary validation infrastructure.
-- HD/Promisory is historical strategy evidence, not automatic runtime authority.
+- HD/Promisory is historical strategy evidence, not automatic target-runtime authority.
 - Commands are not completion proof.
 - Validator acceptance is not engine semantics.
 - Apparently unused numeric channels are not automatically safe.
+- Embedded native test-harness capability is not proof of retail invocability.
+- AoE2Control/invasive instrumentation is not AEGIS core runtime authority.
+- `ADprom` and `byzwarcouncil` are failed/theoretical experiments, not production architecture.
+- Experimental V2/V3/V4 architecture is not grandfathered into the final design.
 
 ## Target runtime
 
@@ -50,7 +82,17 @@ Authorized workstation evidence identifies:
 - SHA-256: `6378CA6F1FBD2F230B5B7F2CD048198331848AF70F44B5CD13CEB89420A321A4`
 - Steam BuildID: `24094652`
 
-The current installed `resources\\_common\\ai` directory has been restored from Steam and is designated by the project owner as the **untouched stock-runtime baseline**. The next evidence action is to capture its immutable manifest and hashes. Do not modify that baseline during acquisition.
+The installed `resources\\_common\\ai` directory is designated as the **untouched stock-runtime baseline**. Never modify it during acquisition or qualification.
+
+## Stock-system model
+
+The repository now explicitly distinguishes three stock evidence layers:
+
+1. **`AI (HD version).per`** — flattened behavioral controller and primary historical behavior body.
+2. **Promisory source corpus** — decomposed source/provenance material; existence does not imply runtime loading.
+3. **Active stock runtime substrate** — target load closure, chiefly `defaultConstants`, `finalingConstants`, and conditional `finaling`, with only proven nested imports.
+
+The stock subsystem reconstruction map records this distinction and should be consulted before interpreting any Promisory file.
 
 ## Architecture
 
@@ -68,24 +110,13 @@ COMMIT → AUTHORIZE → EXECUTE → VERIFY
 RESULT CLASSIFICATION → RECOVER / RE-ARBITRATE → REASSESS
 ```
 
-The first executable vertical slice is **Cavalry Threat Containment**:
-
-```text
-enemy cavalry observation
-→ threat classification
-→ required camel capability
-→ capability/resource check
-→ producer selection
-→ commitment
-→ execution
-→ postcondition verification
-→ recovery/re-arbitration
-→ reassessment
-```
-
 Mandatory state envelope:
 
 `VALID + OWNER + GENERATION + STAGE + PAYLOAD + EVIDENCE_LEVEL`
+
+Evidence ladder:
+
+`INTENTION → AUTHORIZED → ISSUED → ACCEPTED/QUEUED → PENDING → CREATED → AVAILABLE → DEPLOYED → EFFECTIVE`
 
 ## Evidence model
 
@@ -97,9 +128,30 @@ Machine/runtime authority:
 `>` `A4 historical/source material`
 `>` `A5 inference`
 
-Only A1–A3 can clear numeric ABI allocation.
+Runtime closure:
 
-Strategic archaeology uses a separate evidence discipline: direct evidence, deterministic composition, AEGIS generalization, and hypothesis remain distinct.
+`W0 command only → W1 accepted/pending evidence → W2 world observation → W3 operational capability → W4 strategic effect`
+
+Never promote a lower evidence level by intuition.
+
+## First executable vertical slice
+
+**Cavalry Threat Containment**:
+
+```text
+enemy observation
+→ threat classification
+→ required camel capability
+→ resource/feasibility check
+→ producer selection
+→ commitment
+→ execution
+→ postcondition verification
+→ recovery/re-arbitration
+→ reassessment
+```
+
+Historical control evidence is strong. Target-build world/strategic realization is still a qualification task.
 
 ## Historical strategic reconstruction
 
@@ -109,11 +161,10 @@ The recovered historical model is:
 
 Major recovered motifs include measure-to-state compression, guard-before-side-effect, search-before-commitment, protected transitions/escrow, production as capability acquisition, threat-driven camel response, attack/retreat/restart lifecycle, geometric scouting, timers/persistent state, and fallback/recovery.
 
-The project assessment is that the historical HD AI is a capable strategic controller, materially below a decent human player, rather than a toy ruleset. Static archaeology does not prove individual match outcomes.
-
 ## Repository organization
 
 ```text
+AI_AGENT_START_HERE.md   AI takeover/orientation contract
 03_HD_ARCHAEOLOGY/       Historical strategy/programmer archaeology
 04_LAYER3_ARCHITECTURE/  Current AEGIS architecture and ABI work
 05_RUNTIME_CANDIDATE/    Runtime/replay candidates and research instruments
@@ -125,28 +176,25 @@ docs/                    Governance, handoffs, QC, machine evidence, procedures
 .github/                 Ownership and contribution controls
 ```
 
-Do not renumber the historical directories. Their paths are part of provenance.
+Do not renumber historical directories; their paths are part of provenance.
 
 ## Historical work
 
 Failed experiments, earlier handoffs, and old branches are preserved because they contain negative results and explain architectural decisions. They are not current implementation authority.
 
-See `docs/ARCHIVED_WORK_AND_BRANCHES_2026-09-05.md` for the disposition model.
-
 ## Immediate next gate
 
-Do **not** begin `.per` implementation yet.
+Do **not** begin production `.per` implementation yet.
 
-The next engineering sequence is:
+The current sequence is:
 
-`STOCK AI SNAPSHOT`
-`→ IMPORT CLOSURE`
-`→ SYMBOL / REFERENCE INVENTORY`
-`→ CHANNEL OCCUPANCY`
-`→ WRITER / READER MATRIX`
-`→ ENGINE / VALIDATOR JOIN`
-`→ ABI DECISIONS`
+`CANONICAL CONSISTENCY`
+`→ EFFECTIVE LOAD / CONDITIONAL GRAPH`
+`→ COMPLETE RELEVANT STATE OWNERSHIP`
+`→ ABI / NUMERIC ALLOCATION GATES`
+`→ TARGETED RUNTIME LIFECYCLE PROBES`
+`→ CAVALRY VERTICAL QUALIFICATION`
 `→ ABI FREEZE`
-`→ FIRST .per VERTICAL SLICE`
+`→ FIRST PRODUCTION .PER SLICE`
 
-The project is now organized so that a future engineer or AI can recover the current state from GitHub without relying on conversational memory.
+The repository is now explicitly organized so an AI can identify **what is authoritative, what is historical, what is obsolete, what is already solved, and what still has to be proven** without relying on conversational memory.
