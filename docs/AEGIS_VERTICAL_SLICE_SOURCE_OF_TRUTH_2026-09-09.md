@@ -1,499 +1,502 @@
-# AEGIS Vertical-Slice Source of Truth — 2026-09-09
+# AEGIS Authoritative Bot Blueprint — 2026-09-09
 
-**Status:** AUTHORITATIVE CONSOLIDATION / CONSTRUCTION CONTROL DOCUMENT
-**Purpose:** Prevent loss, fragmentation, and accidental re-invention of research already completed across the AEGIS repository. This document is the governing index and blueprint for construction of every permanent vertical slice.
-**Runtime:** Pure `.per`; no XS; Promisory is reference/source material only and must never be a runtime dependency.
+**Status:** AUTHORITATIVE / DEFINITIVE CONSTRUCTION BLUEPRINT
+**Authority:** This is the single governing blueprint for final AEGIS construction. It supersedes earlier informal vertical-slice lists and is the only document that should answer: *what do we know, what must be built, what remains unknown, and what must AI(HD)+Promisory still teach us?*
+**Runtime:** Pure `.per`; no XS; Promisory is reference/source material, never a runtime dependency.
 **Target build:** AoE2DE 101.103.48987.0 / BuildID 24094652.
 
-## 0. Authority and precedence
+## 1. Purpose: eliminate knowledge loss
 
-This document does **not** replace the detailed forensic reports. It consolidates them into one construction-facing source of truth so that implementation and review begin from what AEGIS already knows.
+The repository contains detailed forensic research, lifecycle models, ABI work, architecture guides, implementation artifacts, and qualification records. Those artifacts remain the evidence. This document is their construction-facing index and governing specification.
 
-Precedence:
+**Do not rely on conversational memory. Do not recreate a subsystem because its research lives in another file. Before code is written, the relevant evidence in this blueprint and its cited repository artifacts must be reconciled.**
 
-1. Target-build runtime evidence.
-2. Untouched target-build stock AI on the user's machine.
-3. Direct ABI qualification.
-4. Existing AEGIS static/runtime qualification.
-5. Existing repository forensic research.
+The objective is to make three states impossible to confuse:
+
+1. **KNOWN** — established by evidence.
+2. **IMPLEMENTED/QUALIFIED** — represented by AEGIS and proven to the required gate.
+3. **UNKNOWN/MISSING** — not yet established, or stock behavior exists without an AEGIS equivalent.
+
+A capability being documented somewhere in GitHub is not the same as being implemented or runtime-qualified.
+
+## 2. Evidence authority
+
+Use this order when resolving conflicts:
+
+1. Target-build runtime observation.
+2. Untouched target-build stock AI source on the user's machine.
+3. Direct target-build ABI qualification.
+4. Existing AEGIS runtime qualification.
+5. Existing AEGIS static/forensic research.
 6. Official/community documentation.
 7. Inference.
 
-When this document conflicts with a detailed forensic artifact, the detailed artifact must be rechecked and this document corrected. Nothing is promoted merely because it appears here.
+`DIRECT`, `COMPOSED`, `INFERRED`, `AEGIS-GENERALIZATION`, and `UNCERTAIN` remain explicit evidence classes. Confidence labels (`CONFIRMED`, `PROBABLE`, `PLAUSIBLE`, `DISPROVEN`, `OBSOLETE`, `ENGINE-SPECIFIC`, `HISTORICAL`) must never be collapsed into one status.
 
-## 1. The central rule
+## 3. The complete lifecycle contract
 
-**A vertical slice is complete only when its complete lifecycle is understood and implemented, not when its visible feature exists.**
+Every vertical slice is a complete control loop:
 
-Every slice uses this canonical lifecycle:
+`OBSERVE -> RECONCILE -> CLASSIFY -> BELIEVE -> DETECT TRANSITION -> OBJECTIVE -> REQUIREMENTS -> CONSTRAINTS -> CANDIDATES -> EVALUATE -> COMMIT -> AUTHORIZE -> EXECUTE -> VERIFY -> FAILURE CLASSIFICATION -> RECOVERY/REPLAN -> BELIEF UPDATE -> REASSESS`
 
-`OBSERVE/RECONCILE -> CLASSIFY/BELIEVE -> OBJECTIVE -> REQUIREMENTS -> CONSTRAINTS -> CANDIDATES -> EVALUATE -> COMMIT -> AUTHORIZE -> EXECUTE -> VERIFY -> FAILURE CLASSIFICATION -> RECOVERY/REPLAN -> BELIEF UPDATE -> REASSESS`
-
-For executable operations, preserve the evidence ladder:
+For executable operations, retain the evidence ladder:
 
 `INTENTION -> AUTHORIZED -> ISSUED -> ACCEPTED/QUEUED -> PENDING -> CREATED -> AVAILABLE -> DEPLOYED -> EFFECTIVE`
 
-The distinction is mandatory. A command is not completion. A queue entry is not a created object. A created object is not an available capability. An available capability is not strategic success.
+These are different facts. `BUILD` is not completion. `DE_QUEUE` is not a spawned unit. `RESEARCH` is not completed technology. A command record is not world-state realization. World-state realization is not operational capability. Operational capability is not strategic success.
 
-## 2. What the repository already knows
+## 4. Architecture: brain and body
 
-The existing repository already contains substantial lifecycle research. It must be reused rather than recreated. The authoritative architecture documents establish the following:
+The project has two inseparable halves.
 
-- Engine ABI and interpreter semantics are a separate qualification layer.
-- World state must include spatial/entity relationships, not only scalar counts.
-- Civilization state must reconcile population, workers, buildings, queues, stockpiles, age, technology, military state, and active requests.
-- Economic control is a demand/reservation/arbitration problem, not a fixed-percentage problem.
-- Economic Escrow separates strategic commitment, economic requirement, resource reservation, and execution authorization.
-- Civilian lifecycle is already modeled as existence -> production authorization -> queue -> creation -> accounting -> allocation -> tasking -> interruption -> recovery -> replacement.
-- Worker lifecycle research already covers census, role vectors, target selection, task command, task verification, productivity observation, interruption and recovery.
-- Resource/dropsite serviceability, economic demand -> worker allocation, economic contention/preemption, and production arbitration are already documented.
-- Production research already covers queue arbitration, multi-queue arbitration, queue saturation/failure recovery, commitment release/replacement, competing commitments, expiration/cooldowns/reassertion, same-pass arbitration/re-entry, and execution feedback.
-- Construction is a state machine: request -> can-build -> placement -> foundation -> builder assignment -> progress -> completion/failure -> retry/replan.
-- Information is an operating subsystem: scouting, exploration, enemy identification, resource/infrastructure discovery, military observation, freshness, threat interpretation and belief updates.
-- Military is an operating system: production, composition, grouping, reinforcement, tasking, targeting, movement, local advantage, micro, defense, retreat, attack lifecycle, recovery and threat-specific responses.
-- Threat processing includes interpreted military-strength models and cross-system consequences.
-- Historical stock architecture contains timers, persistent state, searches, rule ordering, maintenance loops and distributed control effects that cannot be reconstructed from names alone.
-- Cross-system lifecycle research already exists for object birth/lineage, production identity/command lineage, aggregate production observability, state deltas/entity lineage, controller overwrite priority, timer temporal state, strategic transitions, vertical world-state closure and cross-system control graphs.
-- The repository already contains a complete civilization-substrate architecture guide and a master engineering guide. This document indexes them instead of competing with them.
+### AEGIS cognition — the brain
 
-## 3. Coverage states
+`World -> Observe -> Classify -> Believe -> Detect Transition -> Objective -> Requirements -> Constraints -> Candidates -> Evaluate -> Commit -> Authorize`
 
-Every capability in every slice receives exactly one current disposition:
+### Civilization operating system — the body
 
-- `MISSING` — not yet represented adequately.
-- `DOCUMENTED` — architecture/research exists, implementation not established.
-- `STATIC-ANALYZED` — source/ABI analysis complete enough to implement.
-- `IMPLEMENTED` — AEGIS code exists.
-- `STATIC-QUALIFIED` — implementation passes static/ABI checks.
-- `RUNTIME-QUALIFIED` — demonstrated on the target build.
-- `STRESS-QUALIFIED` — survives adversarial qualification.
-- `HISTORICAL-ONLY` — found in broader stock source but not established as active in the relevant runtime closure.
-- `ENGINE-OWNED` — state/semantics belong to the engine and are not AEGIS-owned.
-- `UNRESOLVED` — evidence is insufficient or conflicting.
+`Authorize -> Economic/Production/Construction/Information/Military/Technology Service -> Engine ABI -> World State -> Observation -> Verification -> Recovery -> Cognition`
 
-No higher status may be claimed without the evidence required by the lower status.
+The strategic model is not considered executable intelligence until the body can reliably realize it.
 
-## 4. Existing evidence that must not be forgotten
+## 5. Stock adversarial model
 
-### 4.1 Civilization substrate
+AI(HD)+Promisory is the adversarial reference model. Treat it as a competent RTS engineer reviewing every slice.
 
-The Civilization Substrate Guide establishes the operating stack:
+The stock system must be interrogated at **five levels**:
 
-`Engine ABI -> World/Spatial State -> Civilization State -> Economic Scheduler -> Civilian Operations -> Construction OS -> Information OS -> Military OS -> Technology OS -> AEGIS cognition`
+1. **Capability:** what behavior exists?
+2. **Lifecycle:** how is it maintained from birth/request through completion/failure/recovery?
+3. **State:** what goals/SNs/flags/timers/groups/search state carry information between rules?
+4. **Topology:** which rules/services write, read, reset and override that state?
+5. **Cross-system effect:** how does the behavior change economy, production, technology, military, information, map position or strategic posture?
 
-It explicitly identifies continuous villager production, housing continuity, idle-villager recovery, resource-role accounting, food-source selection/transition, dropsite dependencies, construction placement/builder management, production queues, scouting continuity, emergency recovery/garrison behavior and research continuity as mundane services that keep strategy executable.
+A stock behavior is not considered captured merely because AEGIS has a similarly named rule.
 
-### 4.2 Economic control
+## 6. What the previous blueprint was missing
 
-Known model:
+The stock-adversarial review and existing GitHub research establish that the blueprint must explicitly account for the following capabilities and mechanisms, not hide them inside broad labels:
 
-`Strategic demand -> resource demand vector -> reservation/escrow -> worker targets -> discrete allocation -> site/task selection -> execution -> measured income -> model update`
+### Civilization continuity and maintenance
+- civilization initialization and persistent-state startup;
+- continuous villager production policy, including pending-villager accounting;
+- housing lead-time management, not merely population-cap detection;
+- idle-villager census, task recovery and replacement;
+- worker-role accounting and discrete allocation;
+- resource-site selection and serviceability;
+- dropsite selection, construction and logistics dependencies;
+- food-source portfolio management and source transitions;
+- herdables, berries/forage, boar, deer/hunt, farms and fishing where applicable;
+- hunting-specific lifecycle and recovery;
+- farm creation/replacement and food fallback;
+- wood/gold/stone allocation and income measurement;
+- production-building existence, availability and queue maintenance;
+- foundation/progress/completion reconciliation;
+- construction failure, placement retry, builder recovery and rebuild/backup behavior;
+- research queue continuity and age progression;
+- emergency garrison/recovery behavior where supported;
+- maintenance loops that keep services alive even when cognition is uncertain.
 
-Known safeguards include food continuity, housing lead time, age-up reservation, military-production reservation, technology reservation, construction reservation, emergency liquidity, allocation hysteresis, reassignment limits, stale-demand expiration and generation matching.
+### Information and scouting
+- scout production and replacement;
+- exploration continuity;
+- enemy-player identification;
+- resource/infrastructure discovery;
+- military observation;
+- information freshness/staleness;
+- scout target/task state;
+- path analysis and alternate-path discovery;
+- specialized scout micro, including avoidance and route adaptation;
+- information-to-threat and information-to-target feedback.
 
-Food is a portfolio: herdables, forage/berries, boar, deer/hunt, farms, fishing where applicable, and civilization/map-specific sources. Effective food value must account for walking, drop distance, setup cost, risk, depletion and infrastructure.
+### Military operations
+- military production requests and queue arbitration;
+- force composition and reinforcement;
+- army/group creation and maintenance;
+- task assignment and task recovery;
+- target selection and target switching;
+- route/movement execution;
+- local advantage evaluation;
+- tactical micro;
+- defense, garrison and emergency response;
+- retreat and retreat-state persistence;
+- attack lifecycle, restart and recovery;
+- siege and counter-siege;
+- capture/forward operations;
+- military idle recovery;
+- threat-family-specific responses;
+- combined-arms arbitration;
+- naval military behavior;
+- map-control/mobility/positioning.
 
-### 4.3 Construction
+### Strategic/economic integration
+- economic demand vectors;
+- discrete worker targets;
+- escrow/resource reservation;
+- competing commitment arbitration;
+- opportunity cost;
+- spending priority and emergency liquidity;
+- allocation hysteresis/anti-oscillation;
+- commitment expiration, cooldown, release, replacement and reassertion;
+- same-pass arbitration/re-entry;
+- economic↔military arbitration;
+- technology↔military arbitration;
+- map-position↔economy arbitration;
+- defensive↔offensive posture arbitration;
+- opponent-aware adaptation;
+- timing/initiative/tempo;
+- transition management;
+- late-game population/resource/production changes;
+- wonder/ending-state logic;
+- trade and market conversion;
+- ally coordination and resource requests;
+- interaction/communication where behavior changes state or coordination.
 
-Construction must retain purpose, requester, priority, placement policy, urgency/deadline, builder budget, reservation identity, retry count, generation and failure disposition. Foundation existence is not completion.
+### Reliability and forensic correctness
+- command evidence ladder;
+- world-state reconciliation;
+- operational capability verification;
+- strategic-effect verification;
+- failure taxonomy;
+- bounded retry/recovery/replan;
+- generation/lifetime matching;
+- stale-state detection;
+- cross-service overwrite priority;
+- timer semantics;
+- rule ordering and control topology;
+- conditional/load topology;
+- engine-owned versus AEGIS-owned state;
+- historical-only versus active-runtime stock behavior.
 
-### 4.4 Production and lifecycle
+## 7. Existing repository knowledge that is now part of the blueprint
 
-Production must distinguish request, eligibility, site, feasibility, queue/command, pending state, completion, stock/capability realization and later deployment. Queue arbitration and commitment arbitration are separate but interacting control loops.
+The following is already researched and must be treated as existing project knowledge, not rediscovered:
 
-### 4.5 Historical stock state networks
+### 7.1 Civilization substrate
+The Civilization Substrate Guide establishes the operating stack and explicitly identifies continuous villager production, housing, idle recovery, worker-role accounting, food selection/transition, dropsites/infrastructure, construction placement/builder management, production queues, scouting continuity, emergency recovery/garrison behavior and research continuity as civilization operating services. fileciteturn286file0
 
-The current active four-file closure contains important active state channels such as:
+### 7.2 Stock substrate architecture
+P0 established that stock is not a set of independent scripts. Its shared symbol/state ABI spans facts, objects/classes, foundations, research/timer/group/action/order constants, ObjectData fields, terrain/search/placement constants, strategic numbers, persistent goals, scratch goals and cross-module flags. It also established active cross-domain feedback among construction, research, military, threats, scouting, production and economy. fileciteturn289file0
 
-- `sn-cavalry-threat = 65`
-- `retreat-now-goal = 20`
-- `attack-status-goal = 24`
-- `restart-attack-goal = 27`
+### 7.3 Lifecycle/reconciliation research
+Existing AEGIS research already covers civilian lifecycle, worker census/roles/targets/tasks/verification/productivity/recovery, resource/dropsite serviceability, demand-to-allocation, economic contention/preemption, production arbitration, multi-queue arbitration, production failure/queue saturation recovery, commitment release/replacement, competing commitments, expiration/cooldowns/reassertion, same-pass arbitration/re-entry, failure→execution feedback, recovery arbitration, object birth/lineage, production identity/command lineage, aggregate production observability, state-delta/entity lineage, controller overwrite priority, timer temporal state, strategic transitions, vertical world-state closure and cross-system control graphs.
 
-The static lifecycle join established writers/readers and rule scope for these channels. Runtime qualification is still required.
+### 7.4 R1/R2/R3/R4 state/ABI work
+The effective-load, mutable-state ownership, numeric-channel allocation and existing-inventory reconciliation passes establish that:
+- static inventories already exist and must be reused;
+- writer ≠ owner;
+- reader ≠ authority;
+- resetter defines an important lifetime boundary;
+- engine-owned state is not AEGIS-owned state;
+- numeric equality does not establish channel identity;
+- state allocation requires typing, collision, load, ownership, compiler/validator and runtime gates.
 
-The broader Promisory corpus also contains historical state such as `cavarchers` and extensive `temporary-goal2` usage. These must not be promoted into active AEGIS state merely because they exist historically.
+The key static join currently establishes active closure channels including `sn-cavalry-threat = 65`, `retreat-now-goal = 20`, `attack-status-goal = 24`, and `restart-attack-goal = 27`. Runtime qualification remains open.
 
-The `sn-cavalry-threat` threshold family is a family-level detector: Magyar Huszar, Boyar, Knight, Scout Cavalry, Tarkan, War Elephant, Camel and Cataphract lines participate at different thresholds. It is not a simple knight detector.
+Historical-only distinctions are also explicit: `cavarchers` is present in the broader Promisory corpus but absent from the active four-file closure; `temporary-goal2` is broadly historical but only appears as commented text in the active closure. The anomalous `up-compare-goal attack-goal >= 29876` is preserved unresolved and must not be silently normalized.
 
-The literal `up-compare-goal attack-goal >= 29876` is preserved as an unresolved anomaly. It must be qualified rather than silently corrected.
+### 7.5 Replay evidence boundary
+Replay reconstruction already distinguishes command/control evidence from pending lifecycle and world realization. W0/W1/W2/W3/W4 must remain separate; unsupported parser actions and missing fields remain explicit uncertainty. Replay evidence cannot be used to invent completion or strategic effect.
 
-## 5. Vertical slice registry
+## 8. Definitive vertical-slice registry
 
-The following 24 slices are the authoritative construction order. Each slice below is a **dossier boundary**: all existing research relevant to that slice must be mapped into it before implementation begins.
+There are **24 permanent slices**. Broad domains are not substitutes for the slices; each slice is a dossier boundary and must inherit the complete lifecycle contract.
 
-### Slice 0 — ABI, initialization and state spine
+### Slice 0 — ABI + initialization + state spine
 
-**Purpose:** Establish the legal machine vocabulary and trustworthy startup/state foundation.
+**Build:** interpreter contract, operand typing, facts/actions/searches/placement, goals/SNs/flags/timers/groups/scratch, initialization, persistent state, generation/lifetime.
 
-**Must include:** engine facts/actions/operands; goal/SN/flag/timer/group/scratch typing; searches; placement; build/train/research primitives; pending semantics; rule order; state initialization; persistent state; generation/lifetime discipline; civilization startup.
+**Known:** ABI gates, state-typing rules, inventory/ownership framework, target-build identity and several critical ABI findings already exist.
 
-**Already known:** ABI qualification gates and the numeric-channel allocation rules exist. The distinction between unit IDs, unit-line IDs and classes is established. No numeric channel may be allocated because a number merely appears unused.
+**Must not forget:** conditional compilation/load topology, search reset semantics, rule ordering, one-command/pass behavior, engine-owned state, negative ABI tests, startup versus first-use initialization, and exact distinction among unit ID, unit-line ID and class.
 
-**Primary existing sources:** `AEGIS_MASTER_ENGINEERING_GUIDE.md`, `ABI_PROBE_PLAN_2026-09-08.md`, R1/R2/R3/R4 forensic artifacts, state ABI registries.
+**Stock must teach us:** every still-unresolved primitive/range/persistence/order semantic that affects later slices.
 
-**Stock challenge:** prove what is actually legal and persistent on the target interpreter; do not infer engine semantics from vocabulary.
-
-**Exit:** ABI/state startup is runtime-qualified enough that later slices can safely allocate and mutate AEGIS-owned state.
+**Exit:** later slices can allocate/use state and issue nontrivial commands with target-build evidence.
 
 ### Slice 1 — Villager continuity
 
-**Purpose:** Keep civilian population continuously alive and usable.
+**Build:** production authorization -> queue -> pending -> creation -> accounting -> housing -> allocation -> tasking -> idle recovery -> replacement.
 
-**Must include:** villager-production authorization, food feasibility, production-site selection, queue maintenance, pending-villager accounting, creation reconciliation, housing lead time, idle detection, idle recovery, replacement and failure handling.
+**Known:** civilian lifecycle and villager production/worker lifecycle research already exist; stock production is a policy network affected by food, population/civilian limits, age, strategy, military policy, research, escrow, dropsites, TC count, map mode and late-game reserves.
 
-**Already known:** the repository contains civilian lifecycle, villager production actuator, civilization-state implementation, worker census/role vectors, worker targeting/tasking/verification/productivity/recovery research.
-
-**Stock challenge:** continuous production is a policy network coupled to age, food reserves, civilian limits, military policy, research, escrow, dropsites, TC count, special maps and late-game reserves.
-
-**Exit:** no ordinary idle/cap/production failure breaks civilization continuity under tested conditions.
+**Stock must teach us:** exact maintenance-rule precedence, queue interactions, special-map behavior, lead-time thresholds, failure/recovery and cross-service overrides not yet captured.
 
 ### Slice 2 — Food continuity
 
-**Purpose:** Make food acquisition a persistent source-selection and transition system.
+**Build:** source discovery -> serviceability -> portfolio selection -> tasking -> income observation -> depletion/loss -> transition/fallback -> recovery.
 
-**Must include:** source discovery, serviceability, portfolio selection, herdables, berries, boar, deer/hunt, farms, fishing where applicable, walking/drop cost, source depletion, transitions, fallback and recovery.
+**Known:** Food Acquisition Controller architecture and food portfolio are already documented; stock has dedicated boar/hunting and water subsystems.
 
-**Already known:** Food Acquisition Controller architecture and food-source portfolio are documented; dedicated stock hunting/water subsystems are known.
-
-**Stock challenge:** stock does not treat food as homogeneous. Source choice depends on map, infrastructure, distance, risk, depletion and timing.
-
-**Exit:** food continuity survives source depletion, loss and transition without collapsing villager production.
+**Stock must teach us:** exact source-selection thresholds, hunting/deer behavior, farm transition policy, source risk/geometry rules and map/civ exceptions.
 
 ### Slice 3 — Worker/resource economy
 
-**Purpose:** Convert economic policy into discrete worker/resource operations.
+**Build:** census -> role vector -> demand -> site -> assignment -> task -> productivity -> reassignment/recovery for food/wood/gold/stone.
 
-**Must include:** worker roles, resource-site selection, dropsites, wood/gold/stone, income measurement, accessibility, target allocation, reassignment, task verification and recovery.
+**Known:** worker census, roles, targets, tasking, verification, productivity and source/dropsite serviceability are researched.
 
-**Already known:** gatherer policy, worker lifecycle, source/dropsite serviceability and demand-to-allocation research are already present.
-
-**Stock challenge:** worker allocation is strategy- and state-dependent, not a static percentage table.
-
-**Exit:** observed worker distributions and measured income converge toward authorized demand without destructive oscillation.
+**Stock must teach us:** exact vector precedence, discrete rounding/transition behavior, strategy-specific overrides and maintenance ordering.
 
 ### Slice 4 — Economic arbitration
 
-**Purpose:** Prevent strategic objectives from fighting over the same resources.
+**Build:** demands -> priorities -> escrow/reservation -> contention -> authorization -> release/expiration/replacement -> reassessment.
 
-**Must include:** demand vectors, reservations, escrow, affordability, opportunity cost, competing claims, preemption, commitment lifecycle, expiration, cooldowns, reassertion, same-pass arbitration, hysteresis and emergency liquidity.
+**Known:** escrow and commitment arbitration lifecycle research is already extensive.
 
-**Already known:** escrow QC and extensive commitment/production arbitration research already exist.
-
-**Stock challenge:** research, production, construction, military posture and economy all consume shared resources and can change priority dynamically.
-
-**Exit:** resource commitments are explainable, non-duplicated, released correctly and resilient to competing objectives.
+**Stock must teach us:** any unresolved priority/override/expiration rules and hidden cross-system resource taxes.
 
 ### Slice 5 — Construction OS
 
-**Purpose:** Turn build intent into reliable structures and infrastructure.
+**Build:** request -> feasibility -> placement -> builder -> foundation -> progress -> completion -> failure -> retry/rebuild -> infrastructure dependency.
 
-**Must include:** build request, feasibility, placement search, builder allocation, foundation state, progress/completion observation, queueing, failure classification, retry/rebuild, infrastructure dependency and recovery.
+**Known:** construction is a state machine; placement, builders, foundation/completion tracking, failure/retry/rebuild and stock backup behavior are researched.
 
-**Already known:** construction controller architecture and stock `buildings.per` evidence establish placement, builder, foundation and backup/rebuild concepts.
-
-**Stock challenge:** placement/serviceability and failure/retry are part of construction semantics, not optional polish.
-
-**Exit:** structures are created, tracked and recovered from failed or blocked construction without losing strategic intent.
+**Stock must teach us:** exact placement scoring/search topology, builder replacement, blocked-foundation behavior, repair/rebuild behavior and rule-order interactions.
 
 ### Slice 6 — Technology OS
 
-**Purpose:** Treat age advancement and research as capability acquisition with resource arbitration.
+**Build:** capability requirement -> prerequisites -> reservation -> affordability -> queue -> research -> completion -> capability reconciliation.
 
-**Must include:** readiness, prerequisites, affordability, reservation, queue, command, completion, capability reconciliation, economic/military/civ-specific technology policy and opportunity cost.
+**Known:** research and escrow-based feasibility are researched; technology feeds economy/production/military.
 
-**Already known:** `researches.per` and escrow-based research feasibility are established historical sources.
-
-**Stock challenge:** research competes with production, age-up, construction and economy and feeds back into those systems.
-
-**Exit:** every claimed technology capability is reconciled from authorization through completion and usable state.
+**Stock must teach us:** exact research ordering, competing research priorities, age-up interruption/recovery and civ/map-specific technology policies.
 
 ### Slice 7 — Information OS
 
-**Purpose:** Turn scouts and observations into persistent information state.
+**Build:** scout continuity -> exploration -> discovery -> observation -> freshness -> tasking -> loss/replacement -> belief update.
 
-**Must include:** scout production/continuity, exploration, enemy identification, resource/infrastructure discovery, military observation, pathing, target tasks, freshness/staleness, interruption and recovery.
+**Known:** scout geometry, path analysis, enemy strength estimation, movement and retreat are researched.
 
-**Already known:** `scoutcontrol.per` research establishes quarterstep/pivot geometry, path analysis, enemy strength estimation, movement and retreat behavior. Scouting is information processing, not just movement.
-
-**Stock challenge:** scout behavior includes path alternatives, base access, spear avoidance, deer pushing and target discovery/refresh behavior.
-
-**Exit:** information remains fresh enough to drive threat and strategic decisions, including scout loss/replacement.
+**Stock must teach us:** alternate-path selection, base-access search, spear avoidance, deer pushing, scout micro and observation refresh cadence where not yet proven.
 
 ### Slice 8 — Threat model
 
-**Purpose:** Convert observations into threat state and capability implications.
+**Build:** observation -> composition/strength interpretation -> threat classification -> persistent state -> response requirements -> belief transition.
 
-**Must include:** focus player, target player, attacking enemy, enemy pocket, military-superiority state, composition estimates, weighted military-strength interpretation, spatial threat/path analysis, threat classification and belief updates.
+**Known:** threat processing is distributed and includes weighted military-strength categories for cavalry, archers, skirmishers, cavalry archers, gunpowder, infantry, monks and siege. Threat state feeds production/research/economy.
 
-**Already known:** stock military strength is an interpreted weighted model covering cavalry, archers, skirmishers, cavalry archers, gunpowder, infantry, monks and siege.
-
-**Stock challenge:** threat state feeds economy, research and production; it is not only a military display.
-
-**Exit:** threat transitions are observable, persistent and linked to downstream authorized responses.
+**Stock must teach us:** exact weighting, thresholds, competing threat precedence, decay/reset behavior, spatial coupling and cross-system effects not yet runtime-qualified.
 
 ### Slice 9 — Cavalry Threat Containment
 
-**Purpose:** First complete strategic/military vertical slice built on the substrate.
+**Build:** cavalry observation -> `sn-cavalry-threat` -> response requirement -> counter capability -> production/technology/position -> verification -> reassessment.
 
-**Must include:** cavalry observation -> classification -> state -> capability response -> production/technology/position response -> verification -> reassessment.
+**Known:** exact active writer graph and family-level threshold detector are statically established. The first threshold covers Magyar Huszar >4, Boyar >4, Knight >4, Scout Cavalry >4, Tarkan >3, War Elephant >2, Camel >4, Cataphract >4. Historical cavalry→camel production chain is established.
 
-**Already known:** historical threat-to-capability chain includes cavalry observations, `sn-cavalry-threat`, camel production (`traincamel`) and feasibility; the exact active-closure status of historical `cavarchers` is separated from broader Promisory evidence.
+**Stock must teach us:** runtime threshold transitions, persistence/reset, competing writers, exact downstream effects and whether each response is actually realized/effective.
 
-**Stock challenge:** cavalry threat is family-level and thresholded; multiple cavalry families trigger different levels.
+### Slice 10 — Military production/composition
 
-**Exit:** a controlled cavalry threat produces an evidenced, verified and recoverable response rather than a merely issued command.
+**Build:** military demand -> reservation -> unit eligibility -> producer -> queue -> creation -> stock -> composition -> reinforcement.
 
-### Slice 10 — Military production and composition
+**Known:** production arbitration, lineage and aggregate production observability research exists.
 
-**Purpose:** Turn military requirements into actual force composition.
+**Stock must teach us:** composition formulas, queue priority, target switching, emergency production, unit-specific micro-preparation and production-to-task handoff.
 
-**Must include:** production requests, unit eligibility, resource reservations, queue arbitration, composition, reinforcement, production identity/lineage and capability reconciliation.
+### Slice 11 — Movement/tasking
 
-**Already known:** production arbitration, multi-queue arbitration, lineage and aggregate production observability research exists.
+**Build:** task -> target -> route -> movement -> arrival/engagement -> interruption -> recovery.
 
-**Stock challenge:** military production adapts to opponent composition and shared economic constraints.
+**Known:** task/movement/path analysis and geometric selection research exist.
 
-**Exit:** requested military capability becomes available stock with known lineage and no false completion claims.
+**Stock must teach us:** exact path-selection scoring, group movement semantics, regrouping, blocking, retreat geometry, local advantage and command precedence.
 
-### Slice 11 — Movement and tasking
+### Slice 12 — Defense/retreat/recovery
 
-**Purpose:** Execute military and operational movement reliably.
+**Build:** threat -> defensive requirement -> posture -> retreat/hold/garrison -> movement -> reinforcement -> restart -> verification.
 
-**Must include:** target selection, route/path choice, movement commands, group/task state, spatial positioning, local advantage, task interruption and recovery.
+**Known:** attack-state channels 20/24/27, retreat conditions and restart lifecycle are researched.
 
-**Already known:** stock `tsa.per` and `scoutcontrol.per` demonstrate task/movement/path analysis; `general.per` contains geometric selection algorithms.
-
-**Stock challenge:** movement is a stateful control loop, not a single move command.
-
-**Exit:** groups reach authorized operational states and stale/failed tasks recover.
-
-### Slice 12 — Defense, retreat and recovery
-
-**Purpose:** Prevent bad engagements from becoming civilization failure.
-
-**Must include:** defense posture, threat response, retreat authorization, retreat movement, group state, reinforcement, restart logic, garrison/emergency behavior and failure classification.
-
-**Already known:** attack lifecycle goals 20/24/27 and historical retreat/restart chains are documented; vertical world-state closure and recovery research exists.
-
-**Stock challenge:** retreat is conditional on castles, towers, TC, monks, insufficient siege and other tactical/operational contexts; restart is a separate lifecycle.
-
-**Exit:** defense/retreat/restart transitions are observable and do not corrupt strategic state.
+**Stock must teach us:** exact precedence among retreat/hold/attack/reinforce, garrison rules, local advantage thresholds, recovery timing and persistent-state transitions.
 
 ### Slice 13 — Attack
 
-**Purpose:** Make offensive action a complete lifecycle rather than an attack command.
+**Build:** objective -> readiness -> commitment -> movement -> engagement -> target/siege decisions -> retreat/restart -> success/failure -> reassessment.
 
-**Must include:** target evaluation, army readiness, objective, commitment, movement, engagement, siege integration, attack state, retreat/restart, reinforcement, success/failure and strategic reassessment.
+**Known:** attack lifecycle and vertical world-state closure are researched.
 
-**Already known:** attack-status, retreat-now and restart-attack state networks, attack lifecycle research and strategic transition tables exist.
-
-**Stock challenge:** attack is a persistent state machine with failure and recovery, not a one-shot order.
-
-**Exit:** an attack can be authorized, executed, verified, abandoned/recovered and restarted without losing the strategic objective unnecessarily.
+**Stock must teach us:** attack-group selection, target switching, local advantage, siege timing, regroup/reinforcement and attack-goal state transitions not yet runtime-qualified.
 
 ### Slice 14 — Other threat families
 
-**Purpose:** Generalize the proven threat-response architecture without assuming identical counters.
+**Build:** archer/skirmisher, infantry, cavalry-archer, gunpowder, monk, siege and combined-arms threat-response lifecycles.
 
-**Must include:** archer/skirmisher, infantry, cavalry-archer, gunpowder, monk, siege and combined-arms threat responses.
+**Known:** threat categories and cross-system production/research coupling are established.
 
-**Already known:** stock threat strength categories and production/research cross-links are documented.
+**Stock must teach us:** threat-specific counterselection, priority/weighting, mixed-composition response and transition behavior.
 
-**Stock challenge:** each threat family may alter economy, technology, production, positioning and timing differently.
+### Slice 15 — Map/mobility/positioning
 
-**Exit:** each threat family has an evidenced response chain and combined-arms arbitration rather than isolated counter-unit rules.
+**Build:** spatial state -> opportunity/risk -> position objective -> route -> execution -> verification -> map-state update.
 
-### Slice 15 — Map, mobility and positioning
+**Known:** spatial model requirements, farthest-pair geometry and scout path analysis exist.
 
-**Purpose:** Make geography part of strategy and operations.
+**Stock must teach us:** territorial/forward-region semantics, blocking, mobility valuation, path alternatives, settlement expansion and position/economy coupling.
 
-**Must include:** map regions, base/forward areas, pathability, distance, threat zones, resource opportunity, mobility, forward operations, capture and positioning.
+### Slice 16 — Naval/water
 
-**Already known:** spatial model requirements, farthest-villager geometry, scout path analysis and map-control research are present.
+**Build:** water opportunity -> fishing/economic demand -> docks/production -> naval force -> tasking -> recovery -> land/water arbitration.
 
-**Stock challenge:** map information changes economic viability and military advantage.
+**Known:** stock water control is a distinct subsystem and water economy is a strategic domain.
 
-**Exit:** strategic decisions can consume and update spatial state rather than treating map position as decorative metadata.
+**Stock must teach us:** exact fishing-site/dock serviceability, naval production/tasking, water threat response, transport behavior and land/water priority rules.
 
-### Slice 16 — Naval and water
+### Slice 17 — Trade/market/conversion
 
-**Purpose:** Operate economies and militaries on water maps and mixed land/water maps.
+**Build:** shortage/surplus -> conversion candidate -> opportunity-cost evaluation -> authorization -> transaction -> resource reconciliation.
 
-**Must include:** fishing, docks, water economy, naval production, naval military operations, transport/interaction where applicable and land/water arbitration.
+**Known:** trade/market is a stock operating domain and interacts with economy/interaction.
 
-**Already known:** stock `watercontrol.per`, `trade.per` and water-related source evidence exist in the repository's stock corpus inventory.
+**Stock must teach us:** exact trigger conditions, price/opportunity-cost policy, emergency conversion and coordination with escrow.
 
-**Stock challenge:** water is an alternative economy and military theater, not a late add-on.
+### Slice 18 — Interaction/ally coordination
 
-**Exit:** water behavior can sustain, produce and fight under qualification scenarios without breaking land systems.
+**Build:** request/signal -> classification -> priority -> response -> resource/strategy effect -> verification.
 
-### Slice 17 — Trade, market and conversion
+**Known:** interaction is an operating/control subsystem; resource requests, strategy disclosure, ally coordination, market/wonder coordination and communication can alter persistent behavior.
 
-**Purpose:** Provide resource conversion and fallback when direct resource acquisition is constrained.
-
-**Must include:** market decisions, trade, conversion, opportunity cost, emergency liquidity and interaction with economic reservations.
-
-**Already known:** stock `trade.per` and interaction/economic arbitration research identify trade as an operating domain.
-
-**Stock challenge:** conversion is a strategic resource decision and competes with other uses of resources.
-
-**Exit:** conversion is authorized by demand/arbitration and reconciled to actual resource state.
-
-### Slice 18 — Interaction and ally coordination
-
-**Purpose:** Treat communication, resource requests and ally coordination as control signals.
-
-**Must include:** resource requests, ally coordination, taunts/communication where behaviorally relevant, market/wonder coordination and persistent state effects of interaction.
-
-**Already known:** `interaction.per` is established as part of the stock OS/control system; interaction can alter persistent strategy/state.
-
-**Stock challenge:** communication is not merely cosmetic when it changes coordination or resource behavior.
-
-**Exit:** interaction actions have explicit authority, lifecycle and verification where the engine permits observation.
+**Stock must teach us:** exact control-signal semantics, ally-resource arbitration, communication timing and which interaction events create persistent strategic effects.
 
 ### Slice 19 — Strategic arbitration
 
-**Purpose:** Connect the AEGIS cognitive model to all operating systems without allowing uncontrolled command issuance.
+**Build:** simultaneous situations -> objectives -> requirements -> candidate plans -> evaluation -> commitments -> cross-service authorization -> transition.
 
-**Must include:** situation classification, objectives, requirements, candidates, evaluation, decision, commitment, timing, initiative/tempo, transitions, opponent adaptation, economic/military arbitration, technology/military arbitration, map/economy arbitration and defensive/offensive posture.
+**Known:** AEGIS cognition chain is defined; stock competence emerges from distributed service feedback, timers and persistent state.
 
-**Already known:** AEGIS cognition is already organized around World -> Observe -> Classify -> Believe -> Transition -> Objective -> Requirements -> Constraints -> Candidates -> Evaluate -> Commit -> Authorize -> Execute -> Verify -> Failure/Success -> Update -> Reassess.
-
-**Stock challenge:** the stock bot's strategic intelligence is distributed through operating services, timers, state writes and cross-system feedback rather than one planner.
-
-**Exit:** cognition issues typed service requests and commitments; operating services own execution; verification feeds cognition.
+**Stock must teach us:** hidden objective priority, rule-order arbitration, posture transitions, timing/tempo logic, opponent adaptation and cross-system opportunity-cost behavior.
 
 ### Slice 20 — Late game
 
-**Purpose:** Prevent early-game architecture from collapsing under late-game conditions.
+**Build:** saturation/exhaustion -> new demand regime -> production/economy/technology changes -> ending-state decisions.
 
-**Must include:** population saturation, resource exhaustion, alternate economies, technology completion, military scaling, wonder/ending states, production/economic transitions and strategic commitment changes.
+**Known:** late-game reserves, population saturation, trade and wonder/ending domains are in the research corpus.
 
-**Already known:** late-game reserves, wonder/ending behavior, trade and population-saturation domains are in the stock-derived architecture inventory.
-
-**Stock challenge:** late game changes the meaning of scarcity, production priority and resource conversion.
-
-**Exit:** the civilization remains coherent through saturation, exhaustion and ending-state decisions.
+**Stock must teach us:** exact transition triggers, production/resource redistribution, late-game military priorities, wonder behavior and resignation/ending-state logic where applicable.
 
 ### Slice 21 — Recovery integration
 
-**Purpose:** Make failure handling a system-wide supervisor rather than local retry code.
+**Build:** failure observation -> classification -> scope -> retry/replacement/replan/abandon -> verification -> state repair -> reassessment.
 
-**Must include:** failure taxonomy, stale state, partial completion, conflicting commitments, blocked queues, failed searches/placements, lost actors, generation/lifetime checks, retry/recovery/replan and cross-service arbitration.
+**Known:** worker, production, construction, commitment and cross-system recovery research already exists.
 
-**Already known:** repository research covers failure -> execution feedback, recovery arbitration, production failure, construction recovery, worker interruption/recovery, commitment expiration/replacement and vertical world-state closure.
-
-**Stock challenge:** recovery must preserve strategic intent while changing execution plans.
-
-**Exit:** representative failures cause diagnosis and bounded recovery rather than silent divergence or infinite loops.
+**Stock must teach us:** hidden failure classes, retry limits/cooldowns, priority escalation, partial-success handling and recovery ordering.
 
 ### Slice 22 — Full-system integration
 
-**Purpose:** Prove that all operating systems and cognition form one stable civilization.
+**Build:** concurrent economic + military + technology + information + construction + map demands with contention, interruption, stale state and long duration.
 
-**Must include:** simultaneous economic, military, technology, information, construction and map demands; competing commitments; resource contention; threat transitions; recovery; stale state; long-duration operation.
+**Known:** cross-system control graph and vertical closure establish the required feedback topology.
 
-**Already known:** cross-system control graph and vertical closure research define the required observation -> state -> authority -> consequence -> timer -> reassessment pattern.
-
-**Stock challenge:** stock competence comes from interaction between systems, not isolated features.
-
-**Exit:** the bot survives sustained adversarial operation without subsystem ownership collisions or strategic deadlocks.
+**Stock must teach us:** emergent interactions that do not appear in isolated slices, especially simultaneous threats, resource scarcity, actor loss, queue contention and posture changes.
 
 ### Slice 23 — Final qualification
 
-**Purpose:** Freeze the final bot only after evidence closes every required gate.
+**Build:** static QC -> ABI QC -> runtime QC -> stress QC -> regression -> stock adversarial audit -> Byzantine tuning -> freeze.
 
-**Must include:** static QC, ABI qualification, runtime qualification, stress qualification, regression, evidence-boundary audit, Byzantine strategic tuning and final stock adversarial comparison.
+**Known:** qualification gates and evidence discipline are established.
 
-**Exit:** every capability has an evidence status; every unresolved item has a documented disposition; no hidden Promisory dependency remains; target-build behavior is demonstrated.
+**Stock must teach us:** only differences that remain after every lower-level capability is genuinely closed.
 
-## 6. Mandatory dossier fields for every slice
+## 9. Mandatory dossier schema for every slice
 
-Each slice must maintain these fields in its final detailed dossier:
+Every slice's detailed section/work artifact must answer all of these fields before implementation is frozen:
 
-| Field | Required content |
-|---|---|
-| Scope | Exact capability boundary |
-| Stock corpus | Exact source files/rules relevant to the slice |
-| Existing AEGIS research | Existing repository artifacts that already establish knowledge |
-| Known facts | Directly established behavior |
-| Composed facts | Multiple evidence sources joined without semantic overreach |
-| Inferences | Explicitly marked and falsifiable |
-| Engine-owned state | State AEGIS must observe rather than own |
-| AEGIS-owned state | State AEGIS is authorized to maintain |
-| State channels | GOAL/SN/FLAG/TIMER/GROUP/scratch with exact typing |
-| Writers | Exact writer rules and conditions |
-| Readers | Exact reader rules and conditions |
-| Resetters | Lifetime/reset behavior |
-| Demands | What cognition/other services can request |
-| Arbitration | How competing requests are resolved |
-| Reservation | Resource/commitment reservation semantics |
-| Authorization | Conditions under which commands may issue |
-| Execution | Exact engine operation |
-| Observation | What can actually be observed afterward |
-| Reconciliation | How world state is updated |
-| Verification | What proves each lifecycle stage |
-| Failure classes | Transient/local/upstream/stale/impossible/ABI/etc. |
-| Recovery | Retry, replacement, replan, abandon conditions |
-| Generation | Identity/lifetime semantics |
-| Stock comparison | What AI(HD)+Promisory does that AEGIS does not |
-| Missing knowledge | What stock still needs to teach us |
-| Qualification | Static/ABI/runtime/stress status |
-| Evidence links | Exact repository artifact paths and machine evidence |
+1. Exact scope and non-scope.
+2. Stock files/rules/functions relevant to the slice.
+3. Existing AEGIS artifacts containing prior research.
+4. Direct facts.
+5. Composed facts.
+6. Inferences and falsifiers.
+7. Engine-owned state.
+8. AEGIS-owned state.
+9. Exact state channels and types.
+10. Initializers and initialization conditions.
+11. Writers and exact rule conditions.
+12. Readers and exact rule conditions.
+13. Resetters/reinitializers.
+14. Lifetime/generation semantics.
+15. Demand inputs.
+16. Arbitration/priority/override rules.
+17. Resource reservations/escrow.
+18. Authorization conditions.
+19. Exact engine commands/operands.
+20. Command acceptance/queue evidence.
+21. Pending lifecycle.
+22. World-state realization.
+23. Operational capability realization.
+24. Strategic-effect realization.
+25. Failure classes.
+26. Recovery/retry/replan/abandon behavior.
+27. Cross-system feedback.
+28. Timer/order dependencies.
+29. Stock-vs-AEGIS capability delta.
+30. What is already known versus what remains unknown.
+31. Static/ABI/runtime/stress qualification status.
+32. Exact evidence paths and machine evidence IDs.
 
-## 7. The adversarial stock review
+## 10. The stock adversarial checklist
 
-Before any slice is implemented or accepted, AI(HD)+Promisory must be treated as the adversarial reviewer and asked:
+Before accepting any slice, run AI(HD)+Promisory against it and explicitly search for:
 
-1. What does stock maintain continuously that AEGIS does not?
-2. What does stock retry, rebuild, release, expire or restart?
-3. What state does stock write and who reads it?
-4. What timers and rule-order dependencies matter?
-5. What mundane maintenance loop prevents civilization failure?
-6. What map/resource/serviceability condition changes the behavior?
-7. What cross-system feedback path is absent?
-8. What happens when the preferred action fails?
-9. What happens when two valid objectives compete?
-10. What does stock do after partial success?
-11. What does stock do when an actor dies or becomes unavailable?
-12. What behavior exists in the broader Promisory corpus but not in the active runtime closure?
-13. What historical behavior has already been proven but is currently missing from AEGIS implementation?
+- initialization that the slice omitted;
+- maintenance loops that keep it alive;
+- state channels not represented;
+- hidden writers/readers/resetters;
+- timers and rule-order effects;
+- searches and placement algorithms;
+- queue and pending-object semantics;
+- actor death/loss and replacement;
+- partial success;
+- stale observations;
+- contention with another service;
+- emergency behavior;
+- map/resource serviceability constraints;
+- civ-specific or map-specific branches;
+- special modes and late-game branches;
+- target switching and priority changes;
+- alternate paths and fallback actions;
+- cross-system feedback;
+- behaviors in the broader Promisory corpus that are absent from the active runtime closure;
+- historical behavior that is understood but not yet reimplemented;
+- behavior that AEGIS can improve rather than copy.
 
-The purpose is not to clone stock. It is to ensure that every stock capability is either reimplemented, intentionally replaced by a demonstrably superior AEGIS mechanism, or explicitly dispositioned as irrelevant/engine-owned/historical-only.
+**The stock comparison is not complete until every apparent omission is dispositioned as: REIMPLEMENT, AEGIS-SUPERIOR-REPLACEMENT, ENGINE-OWNED, HISTORICAL-ONLY, IRRELEVANT-BY-DESIGN, or UNRESOLVED.**
 
-## 8. Anti-forgetting rule
+## 11. Anti-forgetting construction law
 
-When implementing any slice, **do not rely on conversational memory**. Start from this document, follow its existing-research references, then inspect the detailed repository artifacts before writing code.
+When writing code:
 
-A new discovery must be written back into the slice dossier before it is considered project knowledge. A corrected finding must update both the detailed forensic artifact and this source of truth. A rejected design must remain archived with its reason for rejection.
+1. Read this blueprint's relevant slice.
+2. Read every referenced existing GitHub artifact before designing.
+3. Reconcile the current implementation against that research.
+4. Run the stock adversarial review.
+5. Only then write code.
+6. After code, update the slice's knowledge/status in this blueprint.
 
-No new independent inventory, ABI registry, numeric census or lifecycle model may be created when an existing canonical artifact already serves that purpose.
+When research changes a conclusion, update the detailed evidence artifact and then update this blueprint. Do not create a competing master document.
 
-## 9. Construction gate
+No new independent symbol inventory, ABI registry, numeric census, lifecycle model or architecture guide may be created when a canonical artifact already exists.
 
-No production implementation begins merely because a slice is next in order. The slice must first have:
+## 12. Definition of definitive completeness
 
-1. repository evidence consolidated;
-2. stock adversarial review completed;
-3. state ownership mapped;
-4. ABI operands justified;
-5. lifecycle contract complete;
-6. failure/recovery paths defined;
-7. qualification plan defined.
+AEGIS is complete only when:
 
-Only then:
+- the civilization initializes correctly;
+- civilians continuously produce, gather, build, research and recover;
+- resources are spatially and economically understood;
+- commitments are reserved and arbitrated;
+- information is acquired, aged, interpreted and reconciled;
+- threats become verified capability responses;
+- military forces form, move, fight, retreat, reinforce and recover;
+- attacks have complete lifecycles;
+- water, trade, interaction and late-game modes operate;
+- cross-system conflicts are arbitrated;
+- failures are classified and recovered;
+- state ownership and lifetimes are controlled;
+- no command/completion or historical/runtime evidence boundary is violated;
+- all critical behavior is target-build qualified;
+- AI(HD)+Promisory can no longer identify an unaccounted-for stock capability without a documented disposition;
+- the remaining differences are deliberate AEGIS improvements, not forgotten stock behavior.
 
-`FORENSICS -> CONSOLIDATION -> ADVERSARIAL REVIEW -> ARCHITECTURE -> IMPLEMENTATION -> STATIC QC -> ABI QC -> RUNTIME QC -> STRESS QC -> FREEZE`
-
-## 10. Current strategic interpretation
-
-The major project risk is no longer that AEGIS lacks a high-level cognitive model. The major risk is forgetting or underbuilding the operating machinery that makes competent RTS behavior possible.
-
-The repository already contains much of that knowledge. The job of this source of truth is to make it impossible to mistake **"documented somewhere"** for **"known, mapped, implemented, and qualified."**
-
-The next research question after consolidation is therefore precise:
-
-> **For each slice, what do we already know, what have we already implemented, what remains unqualified, and what does AI(HD)+Promisory still demonstrate that is absent?**
-
-That question—not another generic feature list—controls the next engineering pass.
+**That final condition is the standard for calling this blueprint—and the bot—definitive.**
