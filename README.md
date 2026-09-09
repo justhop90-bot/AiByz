@@ -8,27 +8,25 @@
 
 ### Final-bot authority
 
-The current design authority is:
+There is now **one current final-bot plan**:
 
-- `docs/AEGIS_FINAL_BOT_BLUEPRINT_AND_AUTHORITATIVE_GUIDE_2026-09-09.md` — final bot blueprint and engineering rules.
-- `docs/HD_CAPABILITY_COVERAGE_AUDIT_2026-09-09.md` — source-backed closure ledger for complete HD/Promisory capability coverage.
+- `docs/AEGIS_MASTER_PLAN.md` — the single active design, capability, architecture, qualification, and implementation plan.
 
-These documents define the target architecture; they do not override machine evidence or authorize unqualified `.per` code.
+The master plan consolidates the former blueprint, HD capability-coverage ledger, basic-capability red-team findings, and line-by-line blueprint reconciliation. Those dated documents are historical provenance only and are no longer competing planning authorities.
 
 Start here:
 
 1. `CANONICAL_AUTHORITY.md`
-2. `docs/AEGIS_FINAL_BOT_BLUEPRINT_AND_AUTHORITATIVE_GUIDE_2026-09-09.md`
-3. `docs/HD_CAPABILITY_COVERAGE_AUDIT_2026-09-09.md`
-4. `docs/CANONICAL_PROJECT_HANDOFF_2026-09-05.md`
-5. `docs/CANONICAL_QC_2026-09-05.md`
-6. `docs/REPOSITORY_AUTHORITY_MAP_2026-09-05.md`
-7. `docs/REPOSITORY_OPERATING_STANDARD_2026-09-05.md`
-8. `04_LAYER3_ARCHITECTURE/PASS94_DETERMINISTIC_ABI_AUDIT_HARNESS_SPEC_2026-09-05.md`
-9. `03_HD_ARCHAEOLOGY/PASS87_END_TO_END_EVIDENCE_GRAPH_2026-09-05.md`
-10. `RESEARCH_INDEX.md`
+2. `docs/AEGIS_MASTER_PLAN.md`
+3. `docs/CANONICAL_PROJECT_HANDOFF_2026-09-05.md`
+4. `docs/CANONICAL_QC_2026-09-05.md`
+5. `docs/REPOSITORY_AUTHORITY_MAP_2026-09-05.md`
+6. `docs/REPOSITORY_OPERATING_STANDARD_2026-09-05.md`
+7. `04_LAYER3_ARCHITECTURE/PASS94_DETERMINISTIC_ABI_AUDIT_HARNESS_SPEC_2026-09-05.md`
+8. `03_HD_ARCHAEOLOGY/PASS87_END_TO_END_EVIDENCE_GRAPH_2026-09-05.md`
+9. `RESEARCH_INDEX.md`
 
-Older handoffs and QC records remain as historical evidence. They are not competing authorities.
+Older handoffs, QC records, forensic reports, and failed experiments remain historical evidence. They are not competing current plans.
 
 ## Current engineering position
 
@@ -36,7 +34,7 @@ Older handoffs and QC records remain as historical evidence. They are not compet
 |---|---|
 | **Layer 1 — Machine/runtime** | **89% — frozen for handoff; broad archaeology closed** |
 | **Layer 2 — Historical strategy archaeology** | **Major reconstruction closed; targeted evidence only** |
-| **Layer 3 — AEGIS architecture** | **Blueprint established; qualification active** |
+| **Layer 3 — AEGIS architecture** | **Master plan established; qualification active** |
 | **Layer 4 — Runtime `.per` implementation** | **Blocked until package/ABI clearance** |
 
 Permanent boundaries:
@@ -71,11 +69,11 @@ AEGIS is a stateful strategic controller:
 ```text
 WORLD
   ↓
-OBSERVE → CLASSIFY / BELIEVE → TRANSITION DETECTION
+OBSERVE → CLASSIFY / BELIEVE → TRANSITION / REGIME
   ↓
 OBJECTIVE → CAPABILITY DEMAND → DEFICIT
   ↓
-CANDIDATES → RESOURCE / TIMING / POSITION / INFORMATION EVALUATION
+CANDIDATES → RESOURCE / TIMING / POSITION / INFORMATION / RISK EVALUATION
   ↓
 COMMIT → AUTHORIZE → EXECUTE
   ↓
@@ -84,7 +82,7 @@ OBSERVE RESULT → VERIFY → SUCCESS / PARTIAL / FAILURE / UNKNOWN
 RECOVER / RE-ARBITRATE → UPDATE BELIEFS → REASSESS
 ```
 
-The blueprint currently defines **20 major vertical slices**, including dedicated domains for civilian lifecycle, economy/logistics, production, cavalry, infantry/ranged, siege, monks, scouting/information, force composition, battlefield command, defense/garrison, naval operations, technology, and full Byzantine strategic integration.
+The master plan defines **20 major vertical slices** plus a cross-cutting control plane for regime/transition state, resource control, bounded search, execution policy, lifecycle hygiene, communication isolation, and terminal behavior.
 
 The first intended executable slice remains **Cavalry Threat Containment**, but it is not authorized for production implementation until the machine/ABI gate clears.
 
@@ -96,25 +94,11 @@ Mandatory state envelope:
 
 Machine/runtime authority:
 
-`A1 exact installed target package/build`
-`>` `A2 verified package snapshot`
-`>` `A3 byte/content-equivalent repository snapshot`
-`>` `A4 historical/source material`
-`>` `A5 inference`
+`A1 installed target package/build > A2 verified package snapshot > A3 equivalent repository snapshot > A4 historical source > A5 inference`
 
 Only A1–A3 can clear numeric ABI allocation.
 
 Strategic archaeology uses a separate evidence discipline: direct evidence, deterministic composition, AEGIS generalization, and hypothesis remain distinct.
-
-## Historical strategic reconstruction
-
-The recovered historical model is:
-
-`GAME PROBLEM → OBSERVATION → CLASSIFICATION/BELIEF → REQUIREMENT → CAPABILITY CANDIDATES → RESOURCE/TIMING EVALUATION → COMMITMENT → AUTHORITY → ACTION → POSTCONDITION → FAILURE/RECOVERY → REASSESSMENT`
-
-Major recovered motifs include measure-to-state compression, guard-before-side-effect, search-before-commitment, protected transitions/escrow, production as capability acquisition, threat-driven response, attack/retreat/restart lifecycle, geometric scouting, timers/persistent state, and fallback/recovery.
-
-The historical AI is treated as a strategic/programming corpus, not a complete specification of every game capability. The capability audit therefore remains open until the verified HD/Promisory closure has been enumerated by capability.
 
 ## Repository organization
 
@@ -126,11 +110,11 @@ The historical AI is treated as a strategic/programming corpus, not a complete s
 12_RESEARCH/             External research and source provenance
 knowledge/               Durable atomic institutional memory
 
-docs/                    Governance, handoffs, QC, machine evidence, procedures, blueprint
+docs/                    Governance, master plan, QC, machine evidence, procedures
 .github/                 Ownership and contribution controls
 ```
 
-Do not renumber the historical directories. Their paths are part of provenance.
+The master plan is the only current final-bot planning document. Evidence documents remain in their appropriate strata and should be updated only when they are themselves the underlying evidence record.
 
 ## Immediate engineering gates
 
@@ -144,6 +128,6 @@ Do not renumber the historical directories. Their paths are part of provenance.
 
 ### Implementation gate
 
-`OBSERVE → BELIEVE → OBJECTIVE → DEMAND → DEFICIT → AUTHORIZE → EXECUTE → VERIFY → RECOVER → REASSESS`
+`OBSERVE → BELIEVE → REGIME → OBJECTIVE → DEMAND → DEFICIT → AUTHORIZE → EXECUTE → VERIFY → RECOVER → REASSESS`
 
 Do not begin production `.per` implementation until the applicable gates clear.
