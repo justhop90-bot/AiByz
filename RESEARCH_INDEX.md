@@ -6,12 +6,22 @@ This is the repository's navigation map. **It is subordinate to `CANONICAL_AUTHO
 
 1. `README.md`
 2. `CANONICAL_AUTHORITY.md`
-3. `docs/CANONICAL_PROJECT_HANDOFF_2026-09-05.md`
-4. `docs/CANONICAL_QC_2026-09-05.md`
-5. `docs/REPOSITORY_AUTHORITY_MAP_2026-09-05.md`
-6. `docs/REPOSITORY_OPERATING_STANDARD_2026-09-05.md`
-7. `04_LAYER3_ARCHITECTURE/PASS94_DETERMINISTIC_ABI_AUDIT_HARNESS_SPEC_2026-09-05.md`
-8. `03_HD_ARCHAEOLOGY/PASS87_END_TO_END_EVIDENCE_GRAPH_2026-09-05.md`
+3. `docs/AEGIS_FINAL_BOT_BLUEPRINT_AND_AUTHORITATIVE_GUIDE_2026-09-09.md`
+4. `docs/HD_CAPABILITY_COVERAGE_AUDIT_2026-09-09.md`
+5. `docs/CANONICAL_PROJECT_HANDOFF_2026-09-05.md`
+6. `docs/CANONICAL_QC_2026-09-05.md`
+7. `docs/REPOSITORY_AUTHORITY_MAP_2026-09-05.md`
+8. `docs/REPOSITORY_OPERATING_STANDARD_2026-09-05.md`
+9. `04_LAYER3_ARCHITECTURE/PASS94_DETERMINISTIC_ABI_AUDIT_HARNESS_SPEC_2026-09-05.md`
+10. `03_HD_ARCHAEOLOGY/PASS87_END_TO_END_EVIDENCE_GRAPH_2026-09-05.md`
+
+## Final-bot design authority
+
+`docs/AEGIS_FINAL_BOT_BLUEPRINT_AND_AUTHORITATIVE_GUIDE_2026-09-09.md` is the current design target for the completed independent AEGIS bot.
+
+`docs/HD_CAPABILITY_COVERAGE_AUDIT_2026-09-09.md` is the closure ledger that must establish that the blueprint covers every meaningful capability taught by the verified HD/Promisory corpus.
+
+Neither document overrides `CANONICAL_AUTHORITY.md` or current machine evidence.
 
 ## Repository strata
 
@@ -41,13 +51,13 @@ Atomic institutional memory, ledgers, schemas, and durable cross-pass knowledge.
 
 ### `docs/`
 
-Governance, handoffs, QC, Layer-1 machine evidence, procedures, and repository standards.
+Governance, handoffs, QC, Layer-1 machine evidence, procedures, repository standards, and the final-bot blueprint/coverage authority.
 
 ## Layer status
 
 - **Layer 1:** 89%; frozen for handoff; broad archaeology closed.
 - **Layer 2:** major strategic archaeology closed; targeted evidence only.
-- **Layer 3:** active; symbolic architecture defined; numeric ABI blocked.
+- **Layer 3:** blueprint established; qualification active; numeric ABI blocked until package clearance.
 - **Layer 4:** blocked until current package/build/ABI clearance.
 
 ## Evidence rules
@@ -70,8 +80,18 @@ Older handoffs, QC passes, PRs, branches, and failed experiments are preserved f
 
 See `docs/ARCHIVED_WORK_AND_BRANCHES_2026-09-05.md`.
 
-## Immediate next action
+## Immediate engineering sequence
 
-`STOCK AI SNAPSHOT → IMPORT CLOSURE → SYMBOL/REFERENCE INVENTORY → CHANNEL OCCUPANCY → WRITER/READER MATRIX → ENGINE/VALIDATOR JOIN → ABI DECISIONS → ABI FREEZE → FIRST .per VERTICAL SLICE`
+### Historical coverage
 
-Do not reopen broad Layer-1 archaeology, revive scenario-loader testing, make CADE the primary research path, or start `.per` implementation before the ABI gate clears.
+`HD SOURCE INVENTORY → CAPABILITY TRACE → 20-SLICE MAPPING → GAP CLOSURE`
+
+### Machine qualification
+
+`STOCK AI SNAPSHOT → IMPORT CLOSURE → SYMBOL/REFERENCE INVENTORY → CHANNEL OCCUPANCY → WRITER/READER MATRIX → ENGINE/VALIDATOR JOIN → ABI DECISIONS → ABI FREEZE`
+
+### Implementation
+
+`OBSERVE → BELIEVE → OBJECTIVE → DEMAND → DEFICIT → AUTHORIZE → EXECUTE → VERIFY → RECOVER → REASSESS`
+
+Do not reopen broad Layer-1 archaeology, revive scenario-loader testing, make CADE the primary research path, or start `.per` implementation before the applicable gates clear.
