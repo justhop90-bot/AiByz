@@ -4,13 +4,9 @@
 **Target:** AoE2DE `101.103.48987.0` / Steam BuildID `24094652` / Update `#180059`  
 **Status:** MACHINE-CHECKED STATIC PASS — R2/R4 remain open
 
-## 1. What was actually checked
+## 1. Exact source verification
 
-The exact installed stock package was read directly from:
-
-`C:\Program Files (x86)\Steam\steamapps\common\AoE2DE\resources\_common\ai`
-
-The four-file load closure was hashed again during this pass:
+The exact four-file stock closure was read directly from the installed target package and rehashed during this pass:
 
 | File | Bytes | SHA-256 |
 |---|---:|---|
@@ -19,116 +15,171 @@ The four-file load closure was hashed again during this pass:
 | `Promisory/finalingConstants.per` | 10,515 | `ce7a804a9855742cf4329c0fa44e603a5d19655951bf8e6bc5cf689264e07455` |
 | `Promisory/finaling.per` | 29,232 | `95e18eb8b765a7f87ea499c25ed944d0e04c9abf932b70d8821ef1154d872e52` |
 
-The existing GitHub `symbol_inventory.jsonl` was retrieved from `origin/main` at commit `71bd4b40e63779bee4f3ca74a7e3c1954fd7adc9` and contains **5,259 lexical `defconst` declaration records / 1,480 unique symbols**.
-
-A deterministic source scan against the exact installed four-file closure reproduced those **5,259 lexical declaration records / 1,480 unique symbols** and indexed **28,691 exact lexical symbol occurrences**.
+The canonical GitHub `symbol_inventory.jsonl` contains **5,259 lexical `defconst` declaration records / 1,480 unique symbols**. A deterministic scan of the exact installed four-file closure reproduced those counts and indexed **28,691 exact lexical symbol occurrences**.
 
 The reproducible scanner is:
 
 `docs/forensics/tools/r2_r4_exact_occurrence_join.py`
 
-## 2. Critical finding: the 4,893-vs-4,892 discrepancy is real but not a missing source declaration
+## 2. Critical active-closure finding: `cavarchers` is absent
 
-The repository's typed census reports:
+An exact search of all four active stock-closure files found **zero occurrences** of `cavarchers`.
+
+The symbol does exist in the broader historical Promisory corpus, including:
+
+- `Promisory/const.per`
+- `Promisory/customConstants.per`
+- `Promisory/init.per`
+- `Promisory/researches.per`
+- `Promisory/threats.per`
+- `Promisory/units.per`
+
+Therefore the historical writer/reader chain involving `cavarchers` cannot be promoted into the active four-file runtime state graph merely because those historical source files exist.
+
+**Correct disposition:**
+
+`cavarchers = HISTORICAL_SOURCE_STATE / NOT IN ACTIVE FOUR-FILE CLOSURE`
+
+This is a concrete correction to the earlier broad R2/R4 seed interpretation.
+
+## 3. Critical active-closure finding: `temporary-goal2` is not active in the observed occurrence
+
+The only occurrence of `temporary-goal2` in the four-file closure is:
+
+`AI (HD version).per:5806`
+
+```text
+;    (up-modify-goal temporary-goal2 c:- 1)
+```
+
+The surrounding active rule uses `math-goal` and `math-goal2`; the `temporary-goal2` mutation is present as commented source text.
+
+Thus `temporary-goal2` is **not established as live stock runtime state** by this closure scan.
+
+The farthest-pair algorithm remains valuable historical evidence, but its historical scratch channel must not be mistaken for a live target-build state channel.
+
+## 4. `sn-cavalry-threat` is an active stock state channel
+
+The exact source contains the declaration:
+
+`AI (HD version).per:24`
+
+```text
+(defconst sn-cavalry-threat 65)
+```
+
+It has an explicit reset/write in the stock initialization/controller region:
+
+`AI (HD version).per:5167`
+
+```text
+(set-strategic-number sn-cavalry-threat 0)
+```
+
+It also has active threshold writers at:
+
+- `6927` → `1`
+- `6939` → `2`
+- `6951` → `3`
+- `6963` → `4`
+- `7006` → `1`
+- `7016` → `2`
+- `7031` → `1`
+- `7045` → `1`
+
+The first threshold group is driven by `players-unit-type-count focus-player` over cavalry lines including knight, scout-cavalry, tarkan, war-elephant, camel and cataphract lines.
+
+The source also contains numerous readers/guards of the form `strategic-number sn-cavalry-threat ...` across economy, research, production, and military control regions.
+
+This proves the **static source dependency graph**.
+
+It does not yet prove:
+
+- rule execution frequency;
+- writer precedence when multiple rules are eligible;
+- exact persistence across controller cycles;
+- engine/runtime observability timing;
+- strategic consequence.
+
+Those remain qualification questions.
+
+## 5. Attack-state channels are active stock state
+
+The exact source contains:
+
+- `retreat-now-goal = 20` at line 52;
+- `attack-status-goal = 24` at line 56;
+- `restart-attack-goal = 27` at line 59.
+
+The source contains active writes and reads for all three. One `retreat-now-goal` write at line 34002 is explicitly commented and therefore must not be counted as an active writer without a separate lexical interpretation.
+
+The existence of these channels and their source transitions is established. Their complete target-runtime lifecycle is not.
+
+## 6. Exact declaration-count discrepancy: 4,893 vs 4,892
+
+The typed census reports:
 
 `numeric_defconst_declarations = 4,893`
 
-The canonical symbol inventory contains:
+The canonical symbol inventory contains **4,892 integer-valued records**.
 
-`4,892` rows whose `value` is an integer numeric string.
+The exact difference is:
 
-The exact set difference is one row:
-
-`Promisory/defaultConstants.per:99` — `gate-descending-open = 99`
-
-Inspection of the exact source line shows:
+`Promisory/defaultConstants.per:99`
 
 ```text
 (defconst gate-descending-open 91);(defconst gate-descending-open 99)
 ```
 
-The inventory records the first declaration (`91`) and not the second textual `defconst` occurrence. The typed census's numeric declaration counter includes both textual declarations.
+The inventory records the first declaration. The census's lexical numeric counter captures both textual `defconst` forms.
 
-Therefore the discrepancy is **not evidence that the stock package changed** and **not evidence that the inventory lost an active declaration**. It is evidence that the two artifacts use different lexical counting rules for an inline second `defconst` occurrence.
+This is not evidence of a changed package. It is a parser/counting-rule discrepancy. The second textual form must be classified under the actual `.per` lexical grammar before it can be considered active.
 
-The line must remain semantically classified before anyone treats the second `99` as an active declaration. This pass intentionally does **not** assume comment/separator semantics merely from punctuation.
+The correct accounting is therefore:
 
-### Consequence
+- 5,259 lexical inventory declaration records;
+- 4,892 integer-valued inventory records;
+- 4,893 integer-valued textual `defconst` matches in the census;
+- one extra textual match at `defaultConstants.per:99`.
 
-The earlier shorthand statement that the census and inventory were both simply "4,893 numeric declaration rows" is too coarse and must not be repeated.
+No number from this discrepancy is to be used for ABI allocation.
 
-The exact current accounting is:
+## 7. What the occurrence join proves
 
-- **5,259** lexical `defconst` records in the canonical symbol inventory;
-- **4,892** integer-valued rows in that inventory;
-- **4,893** integer-valued textual `defconst` matches in the typed census;
-- the one additional textual match is the second `gate-descending-open` occurrence on line 99.
+The occurrence index preserves:
 
-This is now a tracked parser/lexical-definition discrepancy.
+- source path;
+- source line;
+- source SHA-256;
+- raw source text;
+- enclosing-rule candidate;
+- mutation-operation candidate;
+- declaration records from the canonical inventory.
 
-## 3. Why this matters for R2/R4
+It establishes an exact **lexical occurrence graph** for the four-file closure.
 
-A state-ownership ledger cannot safely treat every textual declaration as an active runtime declaration.
+It does not by itself establish semantic argument positions, active preprocessing, rule scheduling, runtime state lifetime, command acceptance, world completion, or strategic effect.
 
-Likewise, it cannot discard a textual declaration merely because an inventory parser recorded only one declaration from a line.
+## 8. Next static operation
 
-The correct evidence chain is:
+The next pass is narrow:
 
-`RAW BYTES → EXACT SOURCE LINES → LEXICAL OCCURRENCES → OPERATION PARSING → ACTIVE LOAD/PREPROCESSING → RUNTIME QUALIFICATION`
+`LEXICAL RULE`
+`→ EXACT MUTATION ARGUMENT POSITIONS`
+`→ RULE / CONDITION RECONSTRUCTION`
+`→ INITIALIZER / RESET / REINITIALIZER CLASSIFICATION`
+`→ R2 OWNER JOIN`
+`→ R4 LIFETIME JOIN`
+`→ RUNTIME-REQUIRED CELL EXTRACTION`
 
-R2/R4 operate primarily in the middle of that chain. R1 remains responsible for the active-program boundary.
+Only after that should R5 begin.
 
-## 4. Occurrence join result
-
-The first exact lexical occurrence join found:
-
-- **5,259** inventory declaration rows;
-- **1,480** unique symbols;
-- **28,691** exact lexical occurrences across the four-file stock closure;
-- **5,266** declaration-context occurrences;
-- **3,632** mutation-context occurrences;
-- **19,793** reference occurrences.
-
-These role labels are deliberately provisional:
-
-- `DECLARATION_CONTEXT` means the source line contains a `defconst` context;
-- `MUTATION_CONTEXT` means a recognized mutation primitive occurs on the same source line;
-- `REFERENCE` means the symbol occurs without either recognized context.
-
-A `MUTATION_CONTEXT` row does **not** prove that the symbol is the mutation target. Argument-position parsing is the next required refinement.
-
-The occurrence index is therefore an **evidence index**, not a semantic ownership ledger.
-
-## 5. What remains to be parsed
-
-The next static refinement is narrow and mechanical:
-
-1. parse mutation argument positions rather than classifying an entire line as a write;
-2. reconstruct exact rule boundaries and conditions;
-3. distinguish source-code tokens from comments/disabled text using a verified `.per` lexical rule;
-4. identify initialization candidates separately from ordinary writes;
-5. identify reset/clear operations separately from writes;
-6. join those operations to the existing historical writer/reader graph;
-7. emit the canonical R2/R4 rows;
-8. mark only the cells that still require target-runtime evidence.
-
-No broad archaeology is needed for this step.
-
-## 6. Important negative result
-
-The static pass did **not** discover evidence that justifies numeric ABI allocation.
-
-The existing proposed cavalry range `10000–10015` remains blocked. The occurrence join does not change that disposition.
-
-It also did not justify promoting historical `cavarchers`, attack/retreat goals, escrow state, or any other channel to runtime-qualified status merely because their source occurrences can be found.
-
-## 7. R2/R4 disposition
+## 9. Disposition
 
 **R2 — OPEN.**  
 **R4 — OPEN.**  
-**R2/R4 static occurrence join — substantially advanced; argument-position/lexical-semantic refinement remains.**  
-**Runtime qualification — not started from this artifact.**
-
-## 8. Provenance rule
-
-All claims above are tied to the exact four-file stock hashes listed in Section 1 and to the GitHub inventory snapshot identified above. If any source hash changes, this occurrence join is stale and must be regenerated.
+**Four-file lexical occurrence join — COMPLETE.**  
+**Historical-to-active correction for `cavarchers` and `temporary-goal2` — COMPLETE.**  
+**Semantic operation-position join — OPEN.**  
+**Numeric ABI allocation — BLOCKED.**  
+**Runtime lifecycle qualification — NOT STARTED.**
