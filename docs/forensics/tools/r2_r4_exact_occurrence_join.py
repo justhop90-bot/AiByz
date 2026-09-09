@@ -30,7 +30,6 @@ import collections
 import hashlib
 import json
 import re
-import subprocess
 from pathlib import Path
 
 TOKEN_RE = re.compile(r"[A-Za-z0-9_?][A-Za-z0-9_?\-]*")
@@ -49,7 +48,9 @@ def sha256_bytes(data: bytes) -> str:
 
 
 def load_inventory(path: Path):
-    rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    # utf-8-sig accepts both the canonical UTF-8 JSONL and Windows-exported
+    # copies carrying a BOM, without altering the parsed records.
+    rows = [json.loads(line) for line in path.read_text(encoding="utf-8-sig").splitlines() if line.strip()]
     by_symbol = collections.defaultdict(list)
     for row in rows:
         by_symbol[row["symbol"].lower()].append(row)
