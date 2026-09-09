@@ -6,76 +6,69 @@
 **Authority:** `CANONICAL_AUTHORITY.md`  
 **Role:** **single current planning/design authority for the final AEGIS bot**
 
-> This file replaces the previous chain of dated blueprint, capability-audit, red-team, and reconciliation documents as the project's **one active plan**. Historical forensic documents remain evidence records; they are not competing plans.
+> This is the one active plan. Historical forensic documents, machine evidence, external sources, experiments, and prototypes are evidence records—not competing plans.
 
 ---
 
-## 1. What this plan is
+# 1. Governing rule
 
-This is the controlling answer to:
+**Cross-reference stock `AI (HD version).per` and the Promisory closure before designing the AEGIS equivalent. Cross-reference the current target-build machine evidence before writing runtime code. Never generalize `.per` from Lisp-like syntax, and never infer undocumented side effects from vocabulary alone.**
 
-- What are we building?
-- What must the final bot be capable of?
-- What architecture governs it?
-- What did the historical HD/Promisory AI teach us?
-- What remains unproven?
-- What must happen next?
-- What gates must clear before production `.per` is written?
+The project separates four kinds of truth:
 
-The plan is deliberately separated into four kinds of truth:
-
-1. **Historical evidence** — what the stock HD/Promisory source actually does.
-2. **Machine evidence** — what the target DE build actually accepts and means.
-3. **AEGIS design** — what the independent bot should do.
-4. **Qualification status** — what is currently proven, open, or blocked.
-
-No architectural idea becomes engine fact merely because it is elegant. No production `.per` is written until its required primitives, symbols, channels, and side effects have been qualified.
-
-### Governing rule
-
-**Cross-reference stock `AI (HD version).per` before designing the AEGIS equivalent. Cross-reference the current target-build machine evidence before writing runtime code. Never generalize `.per` from Lisp-like syntax or assume undocumented side effects.**
+1. **Historical evidence** — what HD/Promisory source actually does.
+2. **Machine evidence** — what the target DE build accepts and means.
+3. **AEGIS design** — what the independent Byzantine controller should do.
+4. **Qualification status** — what is proven, open, blocked, or merely proposed.
 
 ---
 
-# 2. Non-negotiable project boundaries
+# 2. Non-negotiable boundaries
 
 - AEGIS is independent of stock AI.
 - Stock HD/Promisory is archaeology/reference material, not a runtime parent, intelligence dependency, or live state authority.
 - Pure `.per`; XS is outside scope.
 - Scenario-loader automation is retired and must not be reopened.
-- CADE/CaptureAge is secondary validation infrastructure, not the primary authority.
-- Retail hidden/native test-harness capabilities are not assumed.
+- CADE/CaptureAge is secondary validation infrastructure, not primary authority.
 - Construction remains a runtime ABI qualification boundary until directly proven.
-- Prototypes and experiments are evidence only; they are not production authority.
+- Prototypes/experiments are evidence, not production authority.
 - No production stubs, placeholders, invented primitives, invented numeric channels, or copied `final` prototypes without qualification.
 - No PR is merged without explicit authorization.
 - Do not reopen broad Layer-1 archaeology merely because an interesting unknown remains; pursue targeted evidence only when it changes implementation correctness.
 
 ---
 
-# 3. Current project state
+# 3. Current status
 
 | Area | Status | Meaning |
 |---|---|---|
 | Layer 1 — machine/runtime archaeology | **89% / frozen** | Broad archaeology is closed for handoff; targeted ABI questions remain only where implementation requires them. |
-| Layer 2 — HD/Promisory archaeology | **Major reconstruction closed; targeted source closure OPEN** | The strategic/programmer model is strong, but every meaningful capability is not yet line-anchored. |
+| Layer 2 — HD/Promisory archaeology | **Major reconstruction; targeted source closure OPEN** | Strategic/programmer model is strong, but meaningful capability closure is not yet fully line-anchored. |
 | Layer 3 — AEGIS architecture | **Established / active qualification** | This master plan is the current design authority. |
 | Layer 4 — production `.per` | **BLOCKED** | Requires applicable machine/ABI clearance and frozen symbolic contracts. |
-| First executable vertical slice | **Cavalry Threat Containment** | Architecture target only; implementation is still gated. |
+| First executable vertical slice | **Cavalry Threat Containment** | Architecture target only; implementation remains gated. |
 
-### Current architectural conclusion
-
-The **20-slice decomposition remains valid**. The red-team pass did not justify adding arbitrary top-level slices. Instead, it exposed a cross-cutting control plane that must exist across all slices:
-
-`REGIME / TRANSITION + RESOURCE CONTROL + SEARCH SERVICE + EXECUTION POLICY + CONTROL-PLANE HYGIENE`
-
-This is now part of the master architecture, not a separate addendum.
+**Hard-QC verdict:** the 20-slice architecture survives. The missing material is not another collection of top-level domains; it is explicit cross-cutting control machinery and source-anchored operational coverage.
 
 ---
 
-# 4. Final architecture
+# 4. External-source QC baseline
 
-## 4.1 System boundary
+Current online corroboration confirms several important constraints:
+
+- The current AoE2DE depot exposes `AI (HD version).per` plus a substantial Promisory/AiBuilder module family. The depot inventory is useful corroboration, but filename presence is **not** semantic proof. citeturn0search0
+- Community AI scripting sources confirm that advanced `.per` files can be substantially more complicated than AI-builder abstractions and that existing scripts are normally inspected directly rather than mechanically converted. This supports our decision to treat source archaeology as primary. citeturn1search0
+- Public scripting examples demonstrate persistent goals, timers, random state, strategic numbers, and explicit reset/re-entry patterns. They are corroboration only; stock source remains the authority for historical behavior. citeturn1search2turn1search6
+- Official patch notes demonstrate that the AI scripting surface itself changes over time—for example new facts/commands and AI fixes—so target-build qualification must remain separate from historical HD archaeology. citeturn0search9
+- Public community reports show that small changes in AI script state/logic can materially change attack, resignation, and competitiveness behavior. These are anecdotal, not strategic authority. citeturn0search8turn1search3
+
+**QC conclusion:** online sources strengthen the methodology and identify additional areas to audit, but none supersedes the verified installed stock package or project evidence.
+
+---
+
+# 5. Final architecture
+
+## 5.1 System boundary
 
 ```text
                          AoE2DE ENGINE
@@ -90,62 +83,43 @@ This is now part of the master architecture, not a separate addendum.
                 +-------- ENGINE ABI -------+
 ```
 
-Stock AI answers historical questions such as **how programmers used the machine**. AEGIS independently answers **what a Byzantine strategic controller should decide**.
-
-## 4.2 Strategic control loop
+## 5.2 Strategic loop
 
 ```text
 WORLD
-  ↓
-OBSERVE
-  ↓
-CLASSIFY / BELIEVE
-  ↓
-DETECT TRANSITION
-  ↓
-SELECT REGIME
-  ↓
-DEFINE OBJECTIVE
-  ↓
-DERIVE CAPABILITY REQUIREMENTS
-  ↓
-GENERATE CANDIDATES
-  ↓
-SEARCH / EVALUATE COST + TIMING + POSITION + INFORMATION + RISK
-  ↓
-COMMIT
-  ↓
-AUTHORIZE
-  ↓
-EXECUTE
-  ↓
-OBSERVE RESULT
-  ↓
-VERIFY POSTCONDITION
-  ↓
-SUCCESS / PARTIAL / FAILURE / UNKNOWN
-  ↓
-RECOVER / RE-ARBITRATE
-  ↓
-UPDATE BELIEFS
-  ↓
-REASSESS
+→ OBSERVE
+→ CLASSIFY / BELIEVE
+→ DETECT TRANSITION
+→ SELECT REGIME
+→ DEFINE OBJECTIVE
+→ DERIVE CAPABILITY REQUIREMENTS
+→ GENERATE CANDIDATES
+→ SEARCH / EVALUATE COST + TIMING + POSITION + INFORMATION + RISK
+→ COMMIT
+→ AUTHORIZE
+→ EXECUTE
+→ OBSERVE RESULT
+→ VERIFY POSTCONDITION
+→ SUCCESS / PARTIAL / FAILURE / UNKNOWN
+→ RECOVER / RE-ARBITRATE
+→ UPDATE BELIEFS
+→ REASSESS
 ```
 
-No module is allowed to turn an intention directly into an assumed world-state change.
+No module may turn intention directly into assumed world state.
 
-## 4.3 Cross-cutting control plane
+## 5.3 Cross-cutting control plane
 
 ```text
                     STRATEGIC DIRECTOR
                            |
                   REGIME / TRANSITION
                            |
-        +------------------+------------------+
-        |                  |                  |
-  RESOURCE CONTROL     SEARCH SERVICE     EXECUTION POLICY
-        |                  |                  |
-        +------------------+------------------+
+       +-------------------+-------------------+
+       |                   |                   |
+ RESOURCE CONTROL      SEARCH SERVICE      EXECUTION POLICY
+       |                   |                   |
+       +-------------------+-------------------+
                            |
                   20 CAPABILITY SLICES
                            |
@@ -154,53 +128,43 @@ No module is allowed to turn an intention directly into an assumed world-state c
                  RESET / RECOVER / REASSESS
 ```
 
-### Regime model
+### Regime
 
-A `REGIME` is the current strategic operating mode. It must carry identity, generation, entry/exit conditions, protected commitments, enabled/suppressed capability families, resource posture, timing posture, transition state, and recovery path.
+A `REGIME` carries identity, generation, entry/exit conditions, protected commitments, enabled/suppressed capability families, resource posture, timing posture, transition state, and recovery path.
 
-Architectural categories such as `OPENING`, `TRANSITION`, `ECONOMIC_BUILD`, `MILITARY_PRESSURE`, `DEFENSE`, `RECOVERY`, `WATER`, `LATE_GAME`, and `TERMINAL` are AEGIS design categories, **not claims that HD uses those exact names**.
+`OPENING`, `TRANSITION`, `ECONOMIC_BUILD`, `MILITARY_PRESSURE`, `DEFENSE`, `RECOVERY`, `WATER`, `LATE_GAME`, and `TERMINAL` are AEGIS design categories, not claims that HD uses those exact names.
 
-### Transition model
+### Transition
 
-Major transitions use:
+`PRE → COMMIT → IN_PROGRESS → COMPLETE_DETECTED → REALLOCATE → STABILIZE`, with timeout/failure/recovery.
 
-`PRE → COMMIT → IN_PROGRESS → COMPLETE_DETECTED → REALLOCATE → STABILIZE`
+### Resource control
 
-with timeout/failure/recovery semantics.
+`RAW STOCK → CONTROLLED STOCK → COMMITTED / PROTECTED STOCK → AVAILABLE SPEND`.
 
-This applies to age transitions, economic source transitions, military composition changes, emergency-to-normal recovery, water/land operating changes, and attack/retreat/re-engagement transitions where applicable.
-
-### Resource-control model
-
-Never collapse resources into one number. Distinguish:
-
-`RAW STOCK → CONTROLLED STOCK → COMMITTED / PROTECTED STOCK → AVAILABLE SPEND`
-
-The model must represent protected reserves, anticipated demands, strategic commitments, emergency conversion authority, expenditure restrictions, release conditions, and stale-commitment invalidation.
+Represent reserves, anticipated demand, strategic commitments, emergency conversion authority, expenditure restrictions, release conditions, and stale-commitment invalidation. This is an AEGIS model derived from historical escrow/resource-control behavior, not a claim that HD stored this exact object.
 
 ### Search service
 
-Search is a reusable bounded engine service, not a scouting-only trick:
+`RESET → INITIALIZE → ENUMERATE → MEASURE → HARD-GUARD → SCORE → PRESERVE-BEST → ADVANCE → TERMINATE → RETURN`.
 
-`RESET → INITIALIZE → ENUMERATE → MEASURE → HARD-GUARD → SCORE → PRESERVE-BEST → ADVANCE → TERMINATE → RETURN`
-
-Search state must carry generation/scope/cursor/constraints/measurements/score/uncertainty/budget/invalidation semantics.
+Search state must carry generation/scope/cursor/constraints/measurements/score/uncertainty/budget/invalidation.
 
 ### Execution policy
 
-Separate **strategic intent** from execution behavior. Execution policy may constrain observation cadence, search depth, candidate count, reaction latency, aggressiveness, retry budget, communication frequency, and rule-budget consumption. Difficulty must not silently change strategic-state semantics.
+Separate strategic intent from execution cadence, search depth, candidate count, reaction latency, aggressiveness, retry budget, communication frequency, and rule-budget consumption. Difficulty must not silently alter strategic-state semantics.
 
 ---
 
-# 5. Evidence law
+# 6. Evidence law
 
-## 5.1 Machine/runtime authority
+## Machine authority
 
-`A1 exact installed target package/build > A2 immutable verified package snapshot > A3 byte/content-equivalent repository snapshot > A4 historical/source material > A5 inference`
+`A1 exact installed target package/build > A2 immutable verified package snapshot > A3 byte/content-equivalent repository snapshot > A4 historical/source material > A5 inference`.
 
 Only A1–A3 can clear numeric ABI allocation.
 
-## 5.2 Strategic evidence
+## Strategic evidence
 
 - **DIRECT** — source visibly establishes the relationship.
 - **COMPOSED** — multiple direct facts establish a chain.
@@ -210,74 +174,81 @@ Only A1–A3 can clear numeric ABI allocation.
 
 Never promote inference to engine fact.
 
-## 5.3 Execution completion ladder
+## Completion ladder
 
-Every asynchronous operation must preserve:
-
-`INTENTION → AUTHORIZED → ISSUED → ACCEPTED/QUEUED → PENDING → CREATED → AVAILABLE → DEPLOYED → EFFECTIVE`
+`INTENTION → AUTHORIZED → ISSUED → ACCEPTED/QUEUED → PENDING → CREATED → AVAILABLE → DEPLOYED → EFFECTIVE`.
 
 A command is not completion proof. Validator acceptance is not automatically engine-semantic proof. Replay aggregate change is not automatically object lineage.
 
-## 5.4 State envelope
+## State envelope
 
-Cross-module state publication requires:
+Every cross-module publication carries:
 
-`VALID + OWNER + GENERATION + STAGE + PAYLOAD + EVIDENCE_LEVEL`
+`VALID + OWNER + GENERATION + STAGE + PAYLOAD + EVIDENCE_LEVEL`.
 
 Controller time and world time remain separate.
 
 ---
 
-# 6. What HD/Promisory has taught us so far
+# 7. HD/Promisory findings that are now architectural requirements
 
-The verified historical corpus shows a recurring engineering pattern:
+The verified historical corpus repeatedly shows:
 
-`OBSERVE → MEASURE → COMPRESS INTO STATE → GUARD → ACT → RESET / TRANSITION → RE-ENTER CONTROLLER`
+`OBSERVE → MEASURE → COMPRESS INTO STATE → GUARD → ACT → RESET / TRANSITION → RE-ENTER CONTROLLER`.
 
-Recovered historical mechanisms include:
+Confirmed/recovered mechanism families include:
 
-- escrowed age research and protected resource commitments;
+- escrowed age research and protected expenditure;
 - contextual gatherer allocation;
 - production authorization and feasibility gating;
 - threat classification;
 - persistent scratch-state candidate search;
-- geometric scout/path/waypoint selection;
-- attack → retreat → restart lifecycle;
-- fortification-aware attack suppression/defer behavior;
+- scout/path/waypoint geometry and safety search;
+- attack → retreat → restart;
+- fortification-aware attack suppression/defer;
 - building placement/rebuild fallback;
 - timers and persistent state for temporal hysteresis;
 - pending-state checks against duplicate asynchronous work;
-- ally/enemy population and cooperation/tribute state;
+- ally/enemy population, cooperation, tribute, and communication state;
 - trade and late-game economic transitions;
 - resignation/terminal policy;
-- difficulty/execution scaling.
+- difficulty/execution scaling;
+- initialization and state setup;
+- specialized food/hunting control;
+- research/technology/upgrades;
+- water/fishing/naval behavior.
 
-The stock root's verified closure includes:
+The verified HD root closure is:
 
-- `Promisory/defaultConstants`
-- `Promisory/finalingConstants`
-- `Promisory/finaling`
+`Promisory/defaultConstants → Promisory/finalingConstants → Promisory/finaling`.
 
-The shipped source family also exposes dedicated operational areas including initialization, boar hunting, buildings, escrow, gatherers, general search/state machinery, interaction, research, resignation, scouting, threats, trade, upgrades/technology, and water behavior. **Filename presence is corroboration only; exact semantics require source anchors.**
+The public depot inventory corroborates a broader module family including `boarhunting`, `buildings`, `escrow`, `gatherers`, `general`, `interaction`, `researches`, `resign`, `scoutcontrol`, `threats`, `trade`, and water-related modules. Again: inventory is corroboration, not semantics. citeturn0search0
 
-### Historical lessons that are now architectural requirements
+### Hard-QC additions to the historical model
 
-1. State is a compressed control surface, not merely a log.
-2. Guards precede side effects.
-3. Search occurs before commitment when candidate choice matters.
-4. Transitions reset or invalidate old state.
-5. Controllers re-enter after asynchronous operations.
-6. Resource control protects future capability, not merely current spending.
-7. Performance/search cost is part of correctness in a bounded rule engine.
-8. Communication is a control interface, not world-state evidence.
-9. Terminal/resignation behavior is part of the controller.
-10. Difficulty/execution scaling belongs below strategic intent.
+The HD audit must not stop at strategic labels. It must explicitly trace the mundane machinery underneath them:
+
+1. civilian creation, queue, housing, idle, death, replacement;
+2. builder selection/release and repair-capable workers;
+3. food-source lifecycle: herdables, boar, huntables, farms, fishing, depletion, dropsite transitions;
+4. infrastructure creation, serviceability, destruction and replacement;
+5. unit/technology queue continuity and upgrades;
+6. target invalidation and command deduplication;
+7. garrison/ungarrison and emergency response;
+8. monks: production, healing, relics, conversion, retreat and technology dependencies;
+9. siege production, escort, anti-siege and recovery;
+10. water economy, naval operations and transport/amphibious logistics;
+11. market/trade/conversion and late-game resource regimes;
+12. ally cooperation, tribute, requests/taunts/operator interfaces;
+13. terminal/resignation/hopeless-state behavior;
+14. difficulty as execution policy rather than strategic-state corruption;
+15. timer, reset, scratch-state, stale-state, fallback, and performance hygiene.
+
+These are **coverage requirements**, not claims that every behavior is already reconstructed.
 
 ---
 
-# 7. Final capability blueprint — 20 vertical slices
-
-The following are the **coverage and implementation targets**. They are not claims that each slice is already implemented or historically closed.
+# 8. Final capability blueprint — 20 slices
 
 ## 1 — Foundation / Game-State Control Loop
 
@@ -285,13 +256,13 @@ World observation generation, ownership, publication, controller/world time, val
 
 ## 2 — Opening Economy / Age Advancement
 
-Villager production, housing continuity, early food, wood/gold/stone setup, source transitions, age prerequisites, escrow, transition timing, post-transition reallocation.
+Villager production, housing, early food, wood/gold/stone setup, source transitions, age prerequisites, escrow, transition timing, post-transition reallocation.
 
 ## 3 — Civilian Lifecycle
 
 `CREATE → QUEUE → AVAILABLE → ASSIGN → WORK → REASSIGN → IDLE → RECOVER/REPAIR → DEATH → REPLACEMENT`.
 
-Includes worker census, role classification, task command, productivity observation, idle recovery, builder lifecycle, repair-capable workers, emergency reassignment, and replacement accounting.
+Worker census, roles, task command, productivity observation, idle recovery, builder lifecycle, repair-capable workers, emergency reassignment, replacement accounting.
 
 ## 4 — Resource Economy
 
@@ -299,7 +270,7 @@ Food/wood/gold/stone, stock, inflow, controlled/protected stock, commitments, ne
 
 ## 5 — Economic Logistics
 
-Dropsites, camps/mills/docks, serviceability, travel, safety, saturation, source transitions, effective gather rate, infrastructure continuity, replacement after loss.
+Dropsites, camps/mills/docks, serviceability, travel, safety, saturation, source transitions, effective gather rate, infrastructure continuity and replacement.
 
 ## 6 — Market / Resource Conversion / Trade
 
@@ -307,31 +278,29 @@ Market access, buy/sell feasibility, emergency conversion, trade routes/units wh
 
 ## 7 — Construction & Infrastructure
 
-What/when, prerequisites, builder selection, placement search, feasibility, authorization, completion, defensive construction, walling/containment, economic/production/technology infrastructure, rebuild, alternate placement, repair and recovery.
+Prerequisites, builder selection, placement search, feasibility, authorization, completion, defensive construction, walling/containment, economic/production/technology infrastructure, rebuild, alternate placement, repair/recovery.
 
-**Construction remains explicitly ABI/runtime-unqualified until proven.**
+**Construction remains runtime/ABI-unqualified until proven.**
 
 ## 8 — Production Director
 
-Central production authority:
+`CAPABILITY DEMAND → DEFICIT → PRODUCER CANDIDATES → RESOURCE LOAD → QUEUE/CAPACITY → ARBITRATION → AUTHORIZED PRODUCTION → EXECUTION BRIDGE → EVIDENCE`.
 
-`CAPABILITY DEMAND → DEFICIT → PRODUCER CANDIDATES → RESOURCE LOAD → QUEUE/CAPACITY → ARBITRATION → AUTHORIZED PRODUCTION → EXECUTION BRIDGE → EVIDENCE`
+Civilians, military, siege, monks, unique units, queues, capacity, prerequisites, reservations, switching, pending transactions, upgrades, replacement.
 
-Covers civilians, military, siege, monks, unique units, queues, capacity, prerequisites, reservations, switching, pending transactions, upgrades, and replacement.
-
-No strategic module bypasses this authority for direct military production.
+No strategic module trains units directly.
 
 ## 9 — Cavalry Threat Containment
 
 First intended executable slice:
 
-`ENEMY OBSERVATION → CAVALRY BELIEF → OBJECTIVE → CAPABILITY DEMAND → DEFICIT → PRODUCTION/ALTERNATIVE RESPONSE → ARBITRATION → EXECUTION → WORLD EVIDENCE → VERIFY → RECOVER`
+`ENEMY OBSERVATION → CAVALRY BELIEF → OBJECTIVE → CAPABILITY DEMAND → DEFICIT → RESPONSE CANDIDATES → ARBITRATION → EXECUTION → WORLD EVIDENCE → VERIFY → RECOVER`.
 
-Potential response classes include counter-unit, fortification, mobility, positional denial, economic relocation, retreat, counterattack, technology, or delay. This taxonomy is AEGIS design, not a historical claim.
+Candidate response classes may include counter-unit, fortification, mobility, positional denial, economic relocation, retreat, counterattack, siege, technology, or delay. This is AEGIS design, not a historical claim.
 
 ## 10 — Infantry / Ranged Warfare
 
-Infantry/ranged pressure, mixed compositions, mobility interactions, counters/counter-counters, production transitions, positioning, engagement constraints, replacement and recovery.
+Infantry/ranged pressure, mixed compositions, mobility interactions, counters/counter-counters, production transitions, positioning, engagement constraints, replacement/recovery.
 
 ## 11 — Siege Warfare
 
@@ -339,13 +308,13 @@ Siege production/prerequisites, escort, target selection, vulnerability, anti-si
 
 ## 12 — Monastic / Monk Operations
 
-Monastery prerequisites/construction, monk production/queues, healing targets and positioning, relic discovery/assignment/pickup/transport/deposit, conversion targeting/timing, survival/retreat, escort, reserve monks, monastery technologies and capability changes.
+Monastery prerequisites/construction, monk production/queues, healing targets/positioning, relic discovery/assignment/pickup/transport/deposit, conversion targeting/timing, survival/retreat, escort, reserves, monastery technologies.
 
-The game capability surface must be distinguished from what HD actually did; historical source anchors determine the latter.
+Game capability surface must remain distinct from what HD actually did; source anchors determine historical behavior.
 
 ## 13 — Scouting / Exploration / Map Knowledge
 
-Scout production/assignment, exploration, route safety, waypoints, target regions, resource/enemy discovery, military information acquisition, survival, information value, geometric search.
+Scout production/assignment, exploration, route safety, waypoints, target regions, resource/enemy discovery, military information, survival, information value, geometric search.
 
 ## 14 — Information / Belief / Fog-of-War
 
@@ -357,25 +326,17 @@ Observed facts, stale facts, inferred facts, hypotheses, confidence, alternative
 
 Desired/current effective force, damaged/ineffective, deployed, reserve, pending, committed, deficit/surplus, transitions, replacement.
 
-Invariant:
-
-`effective capability + deficit >= required capability`
-
-with nonnegative quantities and explicit generation/evidence.
+Invariant: `effective capability + deficit >= required capability`.
 
 ## 16 — Battlefield Command
 
 Movement, attack, attack-move, target selection, formation, patrol, regroup, pursuit, retreat, positional control, tactical transitions.
 
-Attack lifecycle:
-
-`PREPARE → AUTHORIZE → MOVE → ENGAGE → ASSESS → CONTINUE / CHANGE / REGROUP / RETREAT → RESET → REASSESS`
+`PREPARE → AUTHORIZE → MOVE → ENGAGE → ASSESS → CONTINUE / CHANGE / REGROUP / RETREAT → RESET → REASSESS`.
 
 ## 17 — Garrison / Defense / Emergency Response
 
-Garrison/ungarrison, civilian protection, exposed-resource response, defensive structures, emergency retreat/evacuation/redeployment, reinforcement, economic defense, and appropriate town-bell-like responses.
-
-Historical source must distinguish stock behavior from AEGIS extension.
+Garrison/ungarrison, civilian protection, exposed-resource response, defensive structures, emergency retreat/evacuation/redeployment, reinforcement, economic defense, appropriate emergency response.
 
 ## 18 — Naval / Water Operations
 
@@ -385,126 +346,104 @@ Fishing economy, docks, naval production, transports, naval groups, movement, at
 
 Age advancement, economic/military/unit-line/civilization/monastery technologies, prerequisites, escrow, queue conflicts, opportunity cost, completion verification, capability changes, post-transition reallocation.
 
-Technology is a capability investment, not a shopping list.
-
 ## 20 — Strategic Director / Full Byzantine Integration
 
 Arbitrates economic growth, military pressure, defense, technology, information, monks/relics, water, construction, trade, recovery, timing, reserves, opponent transitions, initiative and tempo.
 
-The Strategic Director decides and authorizes; it does not directly perform engine-facing commands.
+Strategic Director decides/authorizes; it does not directly execute engine-facing commands.
 
 ---
 
-# 8. Universal lifecycle requirements
+# 9. Universal lifecycle and control-plane requirements
 
-Every slice must explicitly account for the mundane machinery that is easy to hide behind strategic labels.
+Every slice must explicitly account for:
 
-### Universal requirements
+1. idle-time management;
+2. death/replacement;
+3. repair/maintenance;
+4. housing/population continuity;
+5. queue continuity;
+6. upgrade continuity;
+7. target invalidation;
+8. command deduplication;
+9. timers/cooldowns/temporal hysteresis;
+10. generation/stale-state handling;
+11. search reset/scratch-state isolation;
+12. performance/rule-budget management;
+13. emergency mode;
+14. recovery mode;
+15. terminal-state handling;
+16. communication/operator-control isolation;
+17. transition reallocation;
+18. asynchronous completion verification;
+19. explicit unknown state where evidence is insufficient.
 
-1. Idle-time management.
-2. Death/replacement management.
-3. Repair/maintenance.
-4. Housing/population continuity.
-5. Queue continuity.
-6. Upgrade continuity.
-7. Target invalidation.
-8. Command deduplication.
-9. Timers/cooldowns/temporal hysteresis.
-10. Generation and stale-state handling.
-11. Search reset and scratch-state isolation.
-12. Performance/rule-budget management.
-13. Emergency mode.
-14. Recovery mode.
-15. Terminal-state handling.
-16. Communication/operator-control isolation.
+Universal operational contract:
 
-### Universal operational contract
-
-`OBSERVE → CLASSIFY/BELIEVE → OBJECTIVE → CAPABILITY STATE → AUTHORIZE → COMMAND → PENDING → WORLD EVIDENCE → VERIFY → RECOVER/RECOMMIT`
-
-A capability is not complete merely because its strategic objective exists.
+`OBSERVE → CLASSIFY/BELIEVE → OBJECTIVE → CAPABILITY STATE → AUTHORIZE → COMMAND → PENDING → WORLD EVIDENCE → VERIFY → RECOVER/RECOMMIT`.
 
 ---
 
-# 9. Historical capability-closure ledger
+# 10. Historical coverage closure ledger
 
-Historical coverage is **OPEN** until each meaningful HD/Promisory capability has direct source anchors.
+Historical coverage remains **OPEN** until every meaningful HD/Promisory capability relevant to the target is source-anchored.
 
-For every source family, the required trace is:
+Required trace:
 
-`FILE → LINE/RULE/FUNCTION → OBSERVATION → STATE WRITE → STATE READER → GUARD → ACTION → POSTCONDITION → FAILURE → RECOVERY → STRATEGIC PURPOSE → AEGIS OWNER`
+`FILE → LINE/RULE/FUNCTION → OBSERVATION → STATE WRITE → STATE READER → GUARD → ACTION → POSTCONDITION → FAILURE → RECOVERY → STRATEGIC PURPOSE → AEGIS OWNER`.
 
-### Priority closure order
+Priority order:
 
-| Priority | Family | Primary owner | Status |
+| Priority | Family | Owner | Status |
 |---:|---|---|---|
-| P0 | strategy/regime selection and transitions | 1 / 19 / 20 | OPEN |
-| P0 | resource-control / expenditure protection | 4 / 6 / 19 | OPEN |
-| P0 | civilian production, housing, idle, death, replacement | 2 / 3 / 8 | OPEN |
+| P0 | regime/transition selection | 1 / 19 / 20 | OPEN |
+| P0 | resource control/protected expenditure | 4 / 6 / 19 | OPEN |
+| P0 | civilian production/housing/idle/death/replacement | 2 / 3 / 8 | OPEN |
 | P0 | food-source lifecycle | 2 / 4 / 5 | OPEN |
 | P0 | infrastructure/dropsite replacement | 5 / 7 | OPEN |
-| P0 | production authorization / queue continuity | 8 | OPEN |
+| P0 | production authorization/queue continuity | 8 | OPEN |
 | P0 | target/search/invalidation | 10 / 13 / 16 | OPEN |
 | P0 | attack/retreat/restart | 16 | OPEN |
 | P1 | monks/relic/conversion/healing | 12 | OPEN |
-| P1 | siege/fortification response | 11 / 16 / 17 | OPEN |
+| P1 | siege/fortification | 11 / 16 / 17 | OPEN |
 | P1 | water/fishing/transport/naval | 18 | OPEN |
 | P1 | market/trade/conversion | 6 | OPEN |
 | P1 | ally/tribute/cooperation/communication | 20 | OPEN |
 | P1 | technology/research/age transitions | 19 | OPEN |
-| P1 | difficulty/execution scaling | 20 / execution policy | OPEN |
-| P1 | resignation/terminal behavior | 20 / terminal controller | OPEN |
+| P1 | difficulty/execution scaling | execution policy | OPEN |
+| P1 | resignation/terminal behavior | terminal controller | OPEN |
 
-### Closure rule
+A row becomes **CLOSED** only when exact source anchors, executable mechanism, separated interpretation, AEGIS owner, current-build requirements, unresolved semantics, and behavior preservation are all recorded.
 
-A row becomes **CLOSED** only when:
+If something does not fit a slice:
 
-1. exact source anchors are identified;
-2. executable mechanism is traced;
-3. strategic interpretation is separated from source fact;
-4. one primary AEGIS owner is assigned;
-5. current-build machine requirements are identified;
-6. unresolved semantics are recorded;
-7. no important behavior is lost during abstraction.
-
-If a capability cannot fit one of the 20 slices, record:
-
-`MISSING SLICE → CAPABILITY → SOURCE EVIDENCE → ARCHITECTURAL FAILURE`
-
-and revise this master plan before implementation.
+`MISSING SLICE → CAPABILITY → SOURCE EVIDENCE → ARCHITECTURAL FAILURE`.
 
 ---
 
-# 10. Machine/ABI gate
+# 11. Machine / ABI gate
 
 Historical closure does not authorize code.
 
-Required machine sequence:
+Required sequence:
 
-`IMMUTABLE STOCK SNAPSHOT`
-→ `IMPORT CLOSURE`
-→ `COMPLETE SYMBOL / REFERENCE INVENTORY`
-→ `CHANNEL OCCUPANCY`
-→ `WRITER / READER MATRIX`
-→ `ENGINE / VALIDATOR JOIN`
-→ `ABI DECISIONS`
-→ `ABI FREEZE`
+`IMMUTABLE STOCK SNAPSHOT → IMPORT CLOSURE → COMPLETE SYMBOL/REFERENCE INVENTORY → CHANNEL OCCUPANCY → WRITER/READER MATRIX → ENGINE/VALIDATOR JOIN → ABI DECISIONS → ABI FREEZE`.
 
-Current known inventory scale includes thousands of numeric declaration/operation records and hundreds of shared numeric values; therefore **numeric emptiness is not sufficient evidence of safety**.
+Current machine evidence includes thousands of declaration/operation records, hundreds of shared numeric values, and many goal/SN/timer channels. Numeric emptiness is not sufficient ABI clearance.
 
-Known machine principles that remain binding include:
+Binding principles:
 
 - exact token/identifier semantics matter;
 - `.per` is not generalized Lisp;
 - goal channels and strategic-number channels have distinct semantics;
 - parser acceptance does not prove engine reservation/meaning;
-- pending-object and research-status evidence are stronger when directly observed in stock source;
+- pending-object/research-status evidence is stronger when directly stock-proven;
 - construction remains qualification-gated;
-- no invented compatibility shim is production authority without evidence.
+- compatibility shims require evidence before production use.
 
 ---
 
-# 11. Symbolic and state-contract rules
+# 12. Symbolic/state contracts and authority
 
 Before production implementation, freeze:
 
@@ -521,182 +460,54 @@ Before production implementation, freeze:
 - verification authority;
 - recovery authority.
 
-### Ownership rule
-
-Every mutable state field has exactly one authoritative writer/owner. Readers consume published state; they do not silently recreate competing versions.
-
-### Production authority rule
+Production authority:
 
 ```text
 Force Planner
-     ↓ capability demand
+    ↓ capability demand
 Production Director
-     ↓ deficit/resource/queue arbitration
+    ↓ deficit/resource/queue arbitration
 Execution Bridge
-     ↓ engine-facing command
+    ↓ engine-facing command
 Engine
-     ↓ world evidence
+    ↓ world evidence
 Observation / Verification
 ```
 
-No strategic module trains units directly.
+No strategic module bypasses this path for direct military production.
 
 ---
 
-# 12. First executable vertical slice
+# 13. First executable vertical slice
 
 ## Cavalry Threat Containment
 
-This remains the first intended production slice because it exercises the full architecture without requiring the entire final bot first.
+Required chain:
 
-### Required evidence chain
+`ENEMY OBSERVATION → THREAT BELIEF → CONTAINMENT OBJECTIVE → CAPABILITY DEMAND → CURRENT EFFECTIVE CAPABILITY → DEFICIT → RESOURCE/QUEUE/PRODUCER FEASIBILITY → ARBITRATION → AUTHORIZED REQUEST → EXECUTION BRIDGE → WORLD EVIDENCE → VERIFY → RECOVER/RE-ARBITRATE`.
 
-`ENEMY OBSERVATION`
-→ `THREAT BELIEF`
-→ `CONTAINMENT OBJECTIVE`
-→ `CAPABILITY DEMAND`
-→ `CURRENT EFFECTIVE CAPABILITY`
-→ `DEFICIT`
-→ `RESOURCE / QUEUE / PRODUCER FEASIBILITY`
-→ `ARBITRATION`
-→ `AUTHORIZED REQUEST`
-→ `EXECUTION BRIDGE`
-→ `WORLD EVIDENCE`
-→ `VERIFY`
-→ `RECOVER / RE-ARBITRATE`
+Invariant:
 
-### Capability-demand invariant
+`effective capability + deficit >= required capability`.
 
-`effective capability + deficit >= required capability`
-
-All quantities must be nonnegative and carry generation/evidence.
-
-### Important restriction
-
-Do **not** implement this slice until exact existing AEGIS/world-state fields for current, pending, deployed, and effective force are identified and the applicable machine ABI is clear.
-
-The old direct `can-train camel-line` shortcut is not the final architecture.
+Do not implement until exact existing AEGIS/world-state fields for current, pending, deployed and effective force are identified and the applicable machine ABI is clear. The old direct `can-train camel-line` shortcut is not the final architecture.
 
 ---
 
-# 13. Prototype salvage policy
+# 14. Prototype salvage policy
 
-Existing prototype material is mined for concepts, not promoted wholesale.
+Prototype material is mined for concepts, not promoted wholesale. Candidate salvage includes civilian/economic demand, arbitration, civilization-state reconciliation, worker census/productivity, recovery lifecycle, and execution/verification separation.
 
-Potential salvage includes:
-
-- civilian demand policy;
-- economic demand;
-- demand arbitration;
-- civilization-state reconciliation;
-- worker census/productivity concepts;
-- recovery lifecycle;
-- execution/verification separation.
-
-Machine prototypes with names such as `*-final` are not automatically final. Byte differences between machine and repository versions mean they must be reconciled before reuse.
-
-Construction prototypes remain qualification boundaries.
+Machine `*-final` names do not make artifacts final. Machine/repository byte differences require reconciliation. Construction prototypes remain qualification boundaries.
 
 ---
 
-# 14. Repository organization
+# 15. Definition of done
 
-The repository now has one active plan. Everything else is evidence, procedure, implementation candidate, experiment, or institutional memory.
-
-```text
-CANONICAL_AUTHORITY.md       Governance authority
-
-docs/AEGIS_MASTER_PLAN.md    ← ONE CURRENT FINAL-BOT PLAN
-
-docs/MACHINE_EVIDENCE/       Machine/package/ABI evidence
-03_HD_ARCHAEOLOGY/            Historical HD/Promisory evidence
-04_LAYER3_ARCHITECTURE/       Architecture/ABI research and procedures
-05_RUNTIME_CANDIDATE/         Replay/runtime research instruments
-07_EXPERIMENTS/               Experimental material
-12_RESEARCH/                  External/comparative research
-knowledge/                    Durable atomic institutional memory
-```
-
-### Document rule
-
-**Do not create another blueprint, addendum, reconciliation, or revised plan.**
-
-If new evidence changes the design:
-
-1. update this master plan;
-2. record the underlying forensic evidence in the appropriate evidence directory if necessary;
-3. update the status/ledger here;
-4. do not create a competing planning document.
-
-Historical dated documents may remain when they are genuine provenance records, but they are never current planning authority.
-
----
-
-# 15. What happens next
-
-The project is no longer waiting for another architecture brainstorm.
-
-## Phase A — Close historical coverage
-
-Perform the exact HD source-anchor pass in this order:
-
-1. regime/transition selection;
-2. resource-control and protected expenditure;
-3. civilian production/housing/idle/death/replacement;
-4. food-source lifecycle;
-5. infrastructure and dropsite replacement;
-6. production authorization/queues/upgrades;
-7. target search/invalidation;
-8. attack/retreat/restart;
-9. monks/relics/healing/conversion;
-10. siege/fortification response;
-11. water/fishing/transport/naval;
-12. market/trade/conversion;
-13. ally/tribute/cooperation/communication;
-14. research/technology/age transitions;
-15. difficulty/execution scaling;
-16. resignation/terminal behavior.
-
-For each, produce source anchors and close or explicitly classify every meaningful capability.
-
-## Phase B — Close the machine gate for the first slice
-
-Use the immutable target package to clear only the symbols/channels actually needed by Slice 9 and its supporting substrate.
-
-## Phase C — Freeze contracts
-
-Freeze state ownership, generation, lifecycle stages, evidence levels, command authority, verification, recovery, and numeric allocations.
-
-## Phase D — Write the first production `.per`
-
-Only after A–C clear. Production code must be minimal, fully qualified, and directly traceable to evidence.
-
-## Phase E — Qualify the vertical slice
-
-Validate:
-
-`OBSERVE → BELIEVE → OBJECTIVE → DEMAND → DEFICIT → AUTHORIZE → EXECUTE → VERIFY → RECOVER → REASSESS`
-
-No scenario-loader automation.
-
-## Phase F — Expand slice by slice
-
-Add the remaining capabilities while preserving the same control-plane and evidence laws.
-
-## Phase G — Integration / Byzantine strategic optimization
-
-Only after the underlying capability substrate is reliable should the Strategic Director optimize Byzantine-specific priorities, initiative, tempo, reserves, timing, and multi-domain tradeoffs.
-
----
-
-# 16. Definition of done
-
-The final AEGIS bot is not done because it has 20 modules or because it can issue commands.
-
-It is done when:
+The final bot is done only when:
 
 - every required capability has a primary owner;
-- every historical capability relevant to the target has been traced or explicitly classified;
+- every relevant historical capability is traced or explicitly classified;
 - every production primitive is machine-qualified;
 - every numeric channel is ABI-cleared;
 - every mutable state field has one owner;
@@ -709,13 +520,79 @@ It is done when:
 - communication is not mistaken for world state;
 - terminal behavior is explicit;
 - execution policy is separated from strategic intent;
-- the independent `.ai`/`.per` closure is clean;
+- independent `.ai`/`.per` closure is clean;
 - the bot operates without stock AI intelligence as a dependency.
 
-### Final invariant
+Final invariant:
 
-**AEGIS is a closed-loop strategic controller, not a collection of rules.**
+`WORLD → BELIEF → REGIME → OBJECTIVE → CAPABILITY → RESOURCE/SEARCH EVALUATION → COMMITMENT → AUTHORIZATION → EXECUTION → WORLD EVIDENCE → VERIFICATION → RECOVERY → REASSESSMENT`.
 
-`WORLD → BELIEF → REGIME → OBJECTIVE → CAPABILITY → RESOURCE/SEARCH EVALUATION → COMMITMENT → AUTHORIZATION → EXECUTION → WORLD EVIDENCE → VERIFICATION → RECOVERY → REASSESSMENT`
+---
 
-That is the single plan.
+# 16. Current next actions — no new plan documents
+
+### Phase A — Historical source closure
+
+Perform the exact HD/Promisory source-anchor pass in this order:
+
+1. regime/transition selection;
+2. resource-control/protected expenditure;
+3. civilian production/housing/idle/death/replacement;
+4. food-source lifecycle;
+5. infrastructure/dropsite replacement;
+6. production authorization/queues/upgrades;
+7. target search/invalidation;
+8. attack/retreat/restart;
+9. monks/relics/healing/conversion;
+10. siege/fortification;
+11. water/fishing/transport/naval;
+12. market/trade/conversion;
+13. ally/tribute/cooperation/communication;
+14. research/technology/age transitions;
+15. difficulty/execution scaling;
+16. resignation/terminal behavior.
+
+### Phase B — First-slice machine gate
+
+Clear only the symbols/channels needed by Slice 9 and its supporting substrate from the immutable target package.
+
+### Phase C — Contract freeze
+
+Freeze ownership, generation, lifecycle, evidence, command authority, verification, recovery, and numeric allocations.
+
+### Phase D — First production `.per`
+
+Only after A–C clear. Minimal, fully qualified, directly traceable to evidence.
+
+### Phase E — Vertical qualification
+
+Validate:
+
+`OBSERVE → BELIEVE → OBJECTIVE → DEMAND → DEFICIT → AUTHORIZE → EXECUTE → VERIFY → RECOVER → REASSESS`.
+
+No scenario-loader automation.
+
+### Phase F — Expansion
+
+Add slices while preserving the same control plane and evidence law.
+
+### Phase G — Byzantine optimization
+
+Only after the capability substrate is reliable, optimize Byzantine-specific priorities, initiative, tempo, reserves, timing, and multi-domain tradeoffs.
+
+---
+
+# 17. Document governance
+
+**There is exactly one current AEGIS plan: this file.**
+
+Do not create another blueprint, addendum, reconciliation, revised plan, or competing roadmap.
+
+When new evidence changes the design:
+
+1. update this master plan;
+2. preserve underlying forensic evidence in the appropriate evidence layer when necessary;
+3. update the relevant status/ledger here;
+4. do not create a second planning authority.
+
+Historical dated documents may remain as provenance records. They do not become current design authority.
