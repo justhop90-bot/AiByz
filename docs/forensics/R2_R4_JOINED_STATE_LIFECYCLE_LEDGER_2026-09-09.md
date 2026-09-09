@@ -2,7 +2,7 @@
 
 **Date:** 2026-09-09  
 **Target:** AoE2DE `101.103.48987.0` / Steam BuildID `24094652` / Update `#180059`  
-**Status:** OPEN — canonical join specification + evidence-backed seed rows; not a fabricated complete census
+**Status:** OPEN — machine-checked static join; runtime qualification not yet complete
 
 ## 0. Why this artifact exists
 
@@ -13,27 +13,65 @@ R2 and R4 are not separate archaeology programs.
 
 This ledger is the single reconciliation surface for both questions.
 
-It deliberately references existing machine inventories instead of copying them. The authoritative raw evidence remains:
+It references existing inventories rather than copying them. The authoritative raw evidence remains the existing symbol inventory, typed census, collision map, load closure, ABI registries, and historical state graph.
 
-- `_local_stock_audit_2026-09-06/symbol_inventory.jsonl`
-- `_local_stock_audit_2026-09-06/goal_reference_inventory.jsonl`
-- `docs/MACHINE_EVIDENCE/AEGIS_A1_TYPED_STATE_CENSUS_2026-09-05.json`
-- `docs/MACHINE_EVIDENCE/AEGIS_A1_STATE_CHANNEL_COLLISION_MAP_2026-09-05.json`
-- `docs/MACHINE_EVIDENCE/AEGIS_A1_LOAD_CLOSURE_2026-09-05.json`
-- `04_LAYER3_ARCHITECTURE/PASS90_STATE_ABI_REGISTRY_2026-09-04.md`
-- `04_LAYER3_ARCHITECTURE/PASS90_RUNTIME_PRIMITIVE_REGISTRY_2026-09-04.md`
-- `04_LAYER3_ARCHITECTURE/PASS92_ABI_FINALIZATION_AND_ALLOCATION_GATE_2026-09-05.md`
-- `04_LAYER3_ARCHITECTURE/PASS93_AUTHORITATIVE_ABI_INVENTORY_SPEC_2026-09-05.md`
-- `03_HD_ARCHAEOLOGY/HD_STATE_CHANNEL_GRAPH_PASS4_2026-09-04.md`
-- `docs/forensics/R2_MUTABLE_STATE_OWNERSHIP_LEDGER_2026-09-09.md`
-- `docs/forensics/R3_NUMERIC_CHANNEL_ABI_ALLOCATION_GATE_2026-09-09.md`
-- `docs/forensics/R4_EXISTING_INVENTORY_RECONCILIATION_2026-09-09.md`
+## 1. Exact target source closure used for this pass
 
-## 1. Evidence contract
+The installed four-file stock closure was read directly and rehashed:
 
-A ledger row is not considered complete merely because a symbol exists in the inventory.
+| File | Bytes | SHA-256 |
+|---|---:|---|
+| `AI (HD version).per` | 1,167,238 | `8a554a90a18f7983a949f7bef3b767e09732bce87dca3b9546fe782f098de51c` |
+| `Promisory/defaultConstants.per` | 33,628 | `187980fd34f5a5626955b20dd97114dc2212c9e7e86356014a7976dd1ae310ad` |
+| `Promisory/finalingConstants.per` | 10,515 | `ce7a804a9855742cf4329c0fa44e603a5d19655951bf8e6bc5cf689264e07455` |
+| `Promisory/finaling.per` | 29,232 | `95e18eb8b765a7f87ea499c25ed944d0e04c9abf932b70d8821ef1154d872e52` |
 
-For each symbol/channel the join must preserve:
+The existing GitHub symbol inventory contains 5,259 lexical `defconst` records / 1,480 unique symbols. An exact lexical occurrence scan of the installed closure reproduced that declaration cardinality and indexed 28,691 symbol-bearing occurrences.
+
+## 2. Critical active-closure corrections
+
+This pass found two historical/lexical traps that materially affect the R2/R4 join.
+
+### 2.1 `cavarchers` is NOT present in the four-file active stock closure
+
+An exact search of:
+
+- `AI (HD version).per`
+- `Promisory/defaultConstants.per`
+- `Promisory/finalingConstants.per`
+- `Promisory/finaling.per`
+
+found **zero occurrences** of `cavarchers`.
+
+The symbol is present in the broader historical Promisory corpus, including `Promisory/threats.per`, `researches.per`, `units.per`, `init.per`, `const.per`, and `customConstants.per`.
+
+Therefore the earlier R2/R4 seed classification of `cavarchers` as an active-stock mutable channel was too broad. Its correct current classification is:
+
+`HISTORICAL_SOURCE_STATE — NOT IN ACTIVE FOUR-FILE CLOSURE`
+
+It remains useful historical evidence, but it cannot be treated as a current runtime state channel without an explicit load/provenance bridge.
+
+### 2.2 `temporary-goal2` occurs only in commented historical code in the active flattened file
+
+The only occurrence found in the four-file closure is:
+
+`AI (HD version).per:5806`
+
+with exact source text:
+
+```text
+;    (up-modify-goal temporary-goal2 c:- 1)
+```
+
+The line is inside an otherwise active `defrule`, but the `temporary-goal2` operation itself is prefixed by the source's comment marker. The active rule uses `math-goal` and `math-goal2` on the surrounding lines.
+
+Therefore `temporary-goal2` must **not** be treated as an active stock runtime state channel from this occurrence. The historical farthest-pair algorithm remains valid historical evidence, but it does not establish that this symbol is live in the target four-file closure.
+
+This is precisely the kind of distinction R1/R4 must preserve: historical source presence, lexical presence, and active runtime presence are different evidence classes.
+
+## 3. Canonical R2/R4 fields
+
+Every relevant mutable channel must ultimately have:
 
 ```text
 symbol
@@ -59,87 +97,85 @@ probe_result
 disposition
 ```
 
-The source hash is part of the evidence identity. A row must not silently combine facts from differently hashed source snapshots.
+Source hash is part of evidence identity.
 
-## 2. Existing machine inventory facts
+## 4. Evidence-backed active-stock seed rows
 
-The typed census records, for the target stock snapshot:
-
-- 4,893 numeric declaration rows;
-- 1,480 unique declared symbols;
-- 756 unique numeric values;
-- 257 numeric values shared by multiple symbols;
-- 87 referenced GOAL channels;
-- 143 strategic-number channels;
-- 29 timers.
-
-The inventory also records exact source hashes. For example, `AI (HD version).per` is 1,167,238 bytes / 36,141 lines with SHA-256 `8a554a90a18f7983a949f7bef3b767e09732bce87dca3b9546fe782f098de51c`; the three Promisory runtime-substrate files have independently recorded hashes in the same census. These values are provenance, not semantic claims.
-
-## 3. Seed rows that are already evidence-backed
-
-These are **not claimed to be the complete ledger**. They demonstrate the exact join form and identify where existing evidence stops.
-
-| Symbol | Channel | Numeric declaration | Static evidence currently established | Owner candidate | Remaining R2/R4 gap | Disposition |
+| Symbol | Channel | Numeric declaration | Exact active-stock evidence | Current interpretation | Remaining gap | Disposition |
 |---|---|---:|---|---|---|---|
-| `sn-cavalry-threat` | SN | 65 | Exact declaration in target stock snapshot: `AI (HD version).per:24`; downstream threat/research/production use is documented in existing archaeology | Stock threat/intelligence state | Full writer set, clearers, lifetime and target-runtime observability | RUNTIME_REQUIRED |
-| `cavarchers` | mutable threat state | source-defined | Existing archaeology identifies writer in `threats.per` and readers in `researches.per` / `units.per` | Threat/intelligence subsystem | Exact initialization/reset/lifetime join against authoritative source snapshot | RUNTIME_REQUIRED |
-| `retreat-now-goal` | GOAL | 20 | Exact declaration: `AI (HD version).per:52`; attack/retreat lifecycle is established historically | Tactical attack/retreat controller | Complete initialization, reset, transition reachability and world consequence | RUNTIME_REQUIRED |
-| `attack-status-goal` | GOAL | 24 | Exact declaration: `AI (HD version).per:56`; attack lifecycle role established historically | Tactical attack controller | Complete writer/reset ownership and target-build transition realization | RUNTIME_REQUIRED |
-| `restart-attack-goal` | GOAL | 27 | Exact declaration: `AI (HD version).per:59`; restart lifecycle role established historically | Tactical recovery controller | Complete reset/re-entry ownership and target-build realization | RUNTIME_REQUIRED |
-| `temporary-goal2` | scratch GOAL | algorithm-local | Existing archaeology proves explicit initialization before farthest-pair candidate comparison | `general.per` search routine | Exact source/hash occurrence join and confirmation that no cross-routine lifetime escapes exist | CLOSED_COMPOSED* |
+| `sn-cavalry-threat` | SN | 65 | declaration at `AI (HD version).per:24`; reset at line 5167; active writers at 6927, 6939, 6951, 6963, 7006, 7016, 7031, 7045; numerous active readers | Real active stock strategic-number channel | Rule execution/lifetime semantics, writer arbitration, runtime observability | RUNTIME_REQUIRED |
+| `retreat-now-goal` | GOAL | 20 | declaration at line 52; active writes/tests across attack-control region; one commented write at 34002 is separately identified | Real active stock goal channel | Complete ownership/lifetime and target-build transition realization | RUNTIME_REQUIRED |
+| `attack-status-goal` | GOAL | 24 | declaration at line 56; active writes/tests across attack-control region | Real active stock goal channel | Complete ownership/lifetime and target-build transition realization | RUNTIME_REQUIRED |
+| `restart-attack-goal` | GOAL | 27 | declaration at line 59; active writes/tests at 35153–35171 | Real active stock goal channel | Complete reset/re-entry and target-build realization | RUNTIME_REQUIRED |
+| `cavarchers` | historical mutable state | — | zero occurrences in active four-file closure; present in historical Promisory modules | Historical-only state until an active-load bridge is proven | Effective-load provenance if ever needed | HISTORICAL_ONLY |
+| `temporary-goal2` | historical/commented scratch | — | only active-closure occurrence is commented line 5806 | Not established as live stock state | None for current active closure; historical algorithm remains separate evidence | HISTORICAL_ONLY |
 
-`*` The bounded-lifetime interpretation is compositionally supported by the recovered algorithm, but it does **not** grant this scratch channel permission for AEGIS allocation.
+## 5. `sn-cavalry-threat` writer structure now statically closed as a source graph
 
-## 4. Important declaration collision already demonstrated
+The exact active source contains an unconditional initialization/reset action:
 
-The inventory contains `treaty-time` with value `33` in `AI (HD version).per` and value `54` in `Promisory/defaultConstants.per`.
+```text
+5161: (defrule
+5162:     (true)
+5163: =>
+...
+5167:     (set-strategic-number sn-cavalry-threat 0)
+...
+```
 
-This is precisely why the join key cannot be:
+The same active source contains threshold writers:
 
-`numeric value → meaning`.
+- line 6927 → `1` when the specified cavalry-line composition exceeds the first thresholds;
+- line 6939 → `2` at the second thresholds;
+- line 6951 → `3` at the third thresholds;
+- line 6963 → `4` at the fourth thresholds;
+- line 7006 → `1` under a time/zero-threat/stable condition;
+- line 7016 → `2` under a stronger cavalry/time/stable condition;
+- line 7031 → `1` under a flush-specific early condition;
+- line 7045 → `1` under an early Castle-Age/time/civilization condition.
 
-The required identity is at minimum:
+This establishes a **static writer graph**, not runtime priority or execution frequency.
 
-`source hash + source file + symbol + channel/operation context`.
+In particular, the presence of a `(true)` reset rule must not be interpreted as "reset once at startup" until target runtime rule-evaluation semantics prove that behavior. The source alone establishes the action and its condition; it does not establish how often the rule fires.
 
-The existing census already exposes this collision; no new interpretation is required.
+## 6. Important declaration-count discrepancy
 
-## 5. Static closure rules
+The typed census reports `numeric_defconst_declarations = 4,893`.
 
-A cell may be `CLOSED_STATIC` only when the target snapshot proves the relevant fact directly.
+The canonical symbol inventory contains 4,892 integer-valued rows.
 
-A cell may be `CLOSED_COMPOSED` only when multiple existing artifacts compose without an unsupported assumption.
+The exact difference is:
 
-A cell becomes `RUNTIME_REQUIRED` when static source evidence cannot establish execution-dependent behavior such as:
+`Promisory/defaultConstants.per:99`
 
-- conditional initialization actually executing;
-- rule-order interaction;
-- reset reachability;
-- state persistence across transitions;
-- command-side state becoming observable;
-- engine-provided observation lifetime;
-- accepted/queued/pending/created/available/effective transitions.
+```text
+(defconst gate-descending-open 91);(defconst gate-descending-open 99)
+```
 
-Unknown is not converted to false, zero, absent, or success.
+The inventory captures the first declaration. The typed census's lexical numeric counter captures both textual `defconst` forms.
 
-## 6. Owner determination rules
+This is not evidence of a changed package. It is evidence that the two inventory procedures count textual declaration forms differently. The second form must be semantically classified by the `.per` lexical grammar before it can be considered active.
+
+The discrepancy is now explicitly tracked rather than silently averaged away.
+
+## 7. Owner determination rules
 
 Owner is not synonymous with writer.
 
-A symbol may have multiple writers while still having one semantic owner, but only if those writers are structurally governed by the same ownership contract. Otherwise the row remains unresolved/conflicted.
+A symbol may have multiple writers while retaining one semantic owner only if those writers are structurally governed by the same ownership contract. Otherwise the row remains unresolved/conflicted.
 
-The following distinctions are mandatory:
+Required authority classes:
 
-- **ENGINE_AUTHORITATIVE:** engine observation is the source of truth.
-- **AEGIS_AUTHORITATIVE:** AEGIS owns the semantic state.
-- **DERIVED_CACHE:** recomputable state; not authoritative.
-- **OBSERVATIONAL:** diagnostic/evidence state only.
+- `ENGINE_AUTHORITATIVE`
+- `AEGIS_AUTHORITATIVE`
+- `DERIVED_CACHE`
+- `OBSERVATIONAL`
 
-A reader never becomes an owner merely by consuming the value.
+A reader never becomes an owner merely by consuming a value.
 
-## 7. Initialization classification
+## 8. Initialization classification
 
-Use only these values:
+Use only:
 
 `DECLARATION_DEFAULT`
 `LOAD_TIME_ASSIGNMENT`
@@ -150,49 +186,57 @@ Use only these values:
 `ENGINE_PROVIDED`
 `UNKNOWN`
 
-Do not infer `UNCONDITIONAL_RUNTIME_INIT` from the existence of a declaration.
+A declaration is not automatically an active runtime initializer.
 
-Do not infer `RESET_REINIT` from a later write unless the source operation and control path establish reset semantics.
+A writer is not automatically a resetter.
 
-## 8. The exact remaining join work
+A historical source occurrence is not automatically an active-load occurrence.
 
-The raw inventory is already sufficient to avoid another broad symbol census. The missing operation is a source-level occurrence join.
+## 9. What the exact lexical occurrence join does and does not prove
 
-For every relevant symbol, the reconciliation process must:
+The reproducible occurrence index records:
 
-1. resolve every declaration from the existing symbol inventory;
-2. preserve the declaration's source SHA-256;
-3. enumerate every source occurrence in the same authoritative snapshot;
-4. classify each occurrence by operation role: read, write, clear/reset, compare/guard, or declaration;
-5. capture the enclosing rule and condition text without normalizing away tokens;
-6. identify initialization candidates separately from ordinary writes;
-7. identify reset/reinitialization candidates separately from first-use writes;
-8. join readers and writers to the existing historical state graph;
-9. join the symbol to active-load evidence;
-10. assign the strongest defensible static evidence grade;
-11. mark runtime-required cells rather than filling them by inference;
-12. emit one canonical row per semantic symbol/channel, while retaining all underlying occurrences.
+- exact source path;
+- exact source line;
+- exact source SHA-256;
+- raw source text;
+- enclosing-rule candidate;
+- mutation-operation candidates;
+- declaration records joined from the canonical inventory.
 
-The underlying occurrence records must remain available as evidence. The ledger is an index, not a replacement for raw evidence.
+It intentionally does **not** yet claim:
 
-## 9. No numeric ABI allocation follows from this ledger yet
+- argument-position semantics;
+- comment/preprocessor semantics beyond separately observed source evidence;
+- rule execution order;
+- runtime frequency;
+- engine-owned state lifetime;
+- command acceptance/completion;
+- strategic effectiveness.
 
-The ledger deliberately does **not** clear any AEGIS numeric identifier.
-
-In particular, the proposed `10000–10015` cavalry scalar range remains blocked. The existing inventory already demonstrates cross-channel numeric collisions and Pass 93 requires collision, load, ownership, validator, and runtime gates before allocation.
+Those require separate qualification.
 
 ## 10. R2/R4 status
 
-**R2: OPEN.**  
-**R4: OPEN.**  
-**Joined ledger: PARTIAL / SEED COMPLETE, EXHAUSTIVE OCCURRENCE JOIN PENDING.**
+**R2 — OPEN.**  
+**R4 — OPEN.**  
+**Static lexical occurrence join — COMPLETE for the four-file closure.**  
+**Semantic operation-position join — NEXT.**  
+**Historical-to-active provenance correction — COMPLETE for the two identified symbols above.**  
+**Runtime lifecycle qualification — NOT YET STARTED.**
 
-This is an intentional evidence boundary. Claiming an exhaustive join from the currently retrievable repository excerpts would fabricate closure.
+## 11. Next operation
 
-## 11. Next gate
+The next pass is no longer a broad inventory pass.
 
-Once the exhaustive occurrence join is generated from the exact stock snapshot, the next operation is **R5 command lifecycle qualification**, restricted to transitions that remain unresolved after this ledger is complete:
+It is:
 
-`DESIRE → CAN-FACT → AUTHORIZED → ISSUED → ACCEPTED/QUEUED → PENDING → CREATED → AVAILABLE → DEPLOYED → EFFECTIVE`
+`EXACT MUTATION ARGUMENT PARSING`
+`→ RULE/CONDITION RECONSTRUCTION`
+`→ INITIALIZER / RESET CLASSIFICATION`
+`→ R2 OWNER JOIN`
+`→ R4 LIFETIME JOIN`
+`→ UNRESOLVED-CELL EXTRACTION`
+`→ R5 TARGETED RUNTIME QUALIFICATION`
 
-The R5 program must not retest transitions already closed by direct evidence, and it must not use command presence as proof of world-state realization.
+No numeric ABI allocation occurs before these gates close.
