@@ -697,3 +697,361 @@ Only then can implementation be called complete. The final adversarial question 
 > **Can AI(HD)+Promisory point to a concrete stock behavior or lifecycle mechanism that AEGIS has neither reproduced, deliberately superseded, delegated to the engine, nor explicitly rejected with evidence?**
 
 If yes, the construction is not complete.
+
+## 17. Second adversarial pass — additional stock knowledge not yet explicit
+
+This pass compares the governing blueprint not only against the named capability domains, but against the implementation techniques and control mechanisms already recovered from AI(HD)+Promisory and the repository. Several important facts were still implicit. They are now construction requirements.
+
+### 17.1 Control flow itself is part of the state machine
+
+Stock `.per` does not rely only on ordinary rule eligibility. The recovered source uses explicit control-flow primitives including `up-jump-rule`, `disable-self`, and search-reset operations.
+
+These mechanisms can create bounded loops, one-shot phases, staged scans, and deliberate re-entry into earlier rules.
+
+Therefore every slice must account for:
+- explicit rule jumps and their destination;
+- self-disabling rules;
+- re-entry into earlier rule regions;
+- loop counters and termination conditions;
+- search reset boundaries before a new search;
+- state that exists solely to drive control flow.
+
+A source reader who treats `.per` as a flat list of independent `if -> action` rules will miss executable architecture.
+
+**Disposition:** REIMPLEMENT as an equivalent control mechanism where required; exact engine semantics remain ABI/runtime-qualified.
+
+### 17.2 Search state is a shared execution resource, not merely a query result
+
+AI(HD)+Promisory repeatedly performs `up-full-reset-search`, establishes a search population, filters/removes objects, orders candidates, retrieves search state, and then consumes the result.
+
+The important additional finding is that search state itself has lifecycle and interference risk.
+
+Construction must therefore model:
+`SEARCH OWNER -> RESET -> POPULATE -> FILTER -> ORDER -> ITERATE -> CONSUME -> RELEASE/RESET`.
+
+A service cannot safely assume that a previous search remains available after another service begins a search. Search ownership and nesting/non-reentrancy must be explicitly qualified before concurrent services are allowed to share the primitive.
+
+**Disposition:** ENGINE-OWNED primitive with AEGIS service-level ownership/serialization around its use.
+
+### 17.3 Negative evidence is an active control input
+
+Stock rules repeatedly use absence conditions, not merely positive observations:
+- no pending object;
+- building count below required count;
+- no military population;
+- no valid enemy/ally player;
+- no nearby resource/drop site;
+- no qualifying production building;
+- no dangerous object in a searched region.
+
+Therefore “nothing found” cannot be represented generically as false.
+
+Construction must distinguish:
+`NOT_SEARCHED`, `SEARCHED_NONE`, `INVALID_TARGET`, `OBJECT_ABSENT`, `OBJECT_LOST`, and `STATE_UNKNOWN`.
+
+This is especially important for recovery: “the TC is absent” and “the TC census is stale” demand different actions.
+
+**Disposition:** REIMPLEMENT as typed observation/reconciliation states.
+
+### 17.4 Feasibility is multidimensional and frequently precedes configuration
+
+The historical production/building examples reveal a pattern stronger than simply `can-build` or `can-train`.
+
+The controller may first determine whether a capability is feasible, then search for an eligible actor/producer/site, then configure placement or target state, and only then issue the action.
+
+Examples include:
+- `can-build` before placement/build;
+- `can-train` before production;
+- production-building search followed by progress/attack filtering;
+- builder assignment before construction;
+- target-point configuration before movement/train actions.
+
+AEGIS must therefore distinguish:
+`GLOBAL FEASIBILITY -> LOCAL EXECUTOR ELIGIBILITY -> RESOURCE FEASIBILITY -> SPATIAL FEASIBILITY -> COMMAND AUTHORIZATION`.
+
+Passing one `can-*` predicate does not close the feasibility problem.
+
+**Disposition:** REIMPLEMENT as layered eligibility, with engine predicates treated as necessary evidence rather than complete authorization semantics.
+
+### 17.5 Actor selection is part of capability realization
+
+Stock frequently does not issue an abstract command to “the army” or “the economy.” It searches for the concrete actor or producer that can perform the operation.
+
+Recovered examples include:
+- stable selection for camel production;
+- builder assignment for construction;
+- scout group creation from individual scouts;
+- villager search for land-nomad geometry;
+- target-object selection before point extraction.
+
+Construction must therefore include an explicit:
+`CAPABILITY REQUIREMENT -> ACTOR/PRODUCER SEARCH -> ACTOR ELIGIBILITY -> COMMAND` stage.
+
+Without this, an apparently correct strategic decision can remain operationally unrealizable.
+
+**Disposition:** REIMPLEMENT.
+
+### 17.6 ObjectData is an operational sensor layer
+
+Stock uses ObjectData-derived measurements such as progress, under-attack state, distance, index, and position during production, movement, and search.
+
+These are not decorative metadata. They participate directly in filtering and selection.
+
+AEGIS must treat ObjectData as an engine-owned observation surface with explicit freshness and validity semantics.
+
+Construction must answer for every ObjectData field used:
+- what entity it describes;
+- when it is sampled;
+- whether it can become stale;
+- whether the object can disappear between selection and command;
+- whether the value is local, remote, or target-relative;
+- what action depends on it.
+
+**Disposition:** ENGINE-OWNED observation substrate; AEGIS-GENERALIZATION for typed reconciliation/freshness.
+
+### 17.7 Configuration state can be as important as the final action
+
+Stock building and movement code often changes strategic-number placement parameters, target points, search filters, group flags, or other control state immediately before an action.
+
+Therefore the construction unit is not merely:
+`ACTION(train/build/move)`.
+
+It is:
+`CONFIGURE -> SELECT -> AUTHORIZE -> ACTION`.
+
+If configuration state is omitted, reproducing the final primitive can produce materially different behavior.
+
+**Disposition:** REIMPLEMENT where configuration changes semantics; never discard pre-action state writes as incidental.
+
+### 17.8 One rule can perform several causal transitions
+
+Stock rules often write multiple channels in a single action block: for example, changing a response goal, attack state, timer, reset state, and another strategic number in response to one observation.
+
+The causal unit is therefore sometimes a **transaction-like mutation bundle**, not an individual assignment.
+
+AEGIS construction must preserve the ordering and atomicity assumptions that matter to the engine:
+`TRIGGER -> STATE MUTATION SET -> COMMAND/CONFIGURATION -> FOLLOW-UP STATE`.
+
+Do not split a historically coupled mutation bundle into independent services without proving that the resulting rule-order behavior is equivalent or intentionally superior.
+
+**Disposition:** REIMPLEMENT semantics; architecture may improve the packaging.
+
+### 17.9 Rule ordering is an arbitration mechanism, not merely source organization
+
+The existing research already identifies overwrite priority as important. The additional adversarial finding is that `.per` rule ordering, jumps, timers, and repeated eligibility can combine to make later rules effectively override earlier state.
+
+Therefore every shared state channel needs an **overwrite graph**, not just a writer list:
+`writer A -> writer B -> resetter -> reinitializer -> consumer`.
+
+For competing writes, construction must record:
+- predicate overlap;
+- relative source position;
+- same-pass possibility;
+- timer-gated ordering;
+- whether a later write supersedes or merely supplements an earlier write;
+- whether the state is intentionally oscillatory.
+
+**Disposition:** REIMPLEMENT as explicit arbitration/precedence in AEGIS; exact stock ordering remains source/runtime evidence.
+
+### 17.10 State is frequently encoded as multi-channel tuples
+
+The historical controller often represents one logical situation using several channels simultaneously rather than one enumerated state.
+
+Attack/retreat is the clearest example:
+`retreat-now-goal + attack-status-goal + attack-goal + timer/reset state`.
+
+Escrow similarly uses multiple flags/SNs, and scout control combines goals, strategic numbers, group flags, target points, and timers.
+
+Construction must therefore avoid forcing every historical state machine into one scalar enum. The correct model may be a typed tuple with invariants.
+
+For each tuple, record:
+- legal combinations;
+- illegal combinations;
+- transition writers;
+- reset ordering;
+- precedence when fields disagree;
+- derived versus authoritative members.
+
+**Disposition:** REIMPLEMENT as typed state tuples where they improve correctness; preserve engine-specific channels where required.
+
+### 17.11 Comments marked `test`, `TODO`, or backup are evidence about engineering intent but not runtime truth
+
+The stock corpus contains comments identifying tests, temporary values, TODOs, and backup mechanisms. The TC fallback is a strong example.
+
+These comments are useful evidence of what the programmer was worried about, but they do not prove that a branch is active, successful, or retained in the target runtime.
+
+Construction must maintain three separate fields:
+`COMMENTARY EVIDENCE`, `EXECUTABLE EVIDENCE`, `RUNTIME EVIDENCE`.
+
+A comment may explain why a mechanism exists while executable/runtimed evidence determines whether it belongs in the active reconstruction.
+
+**Disposition:** HISTORICAL-ONLY as proof of intent unless executable/runtime evidence closes it.
+
+### 17.12 Specialized modules may be support infrastructure rather than standalone strategic domains
+
+The complete Promisory corpus includes modules such as constants/custom constants, merge/utility modules, Paphos/development definitions, resignation/ending logic, trade, interaction, water/boar support, and TSA-related control.
+
+The adversarial finding is that not every file should become an independent AEGIS service merely because it exists as a file.
+
+The construction mapping must answer whether each module is:
+- a primary behavior owner;
+- shared infrastructure consumed by several slices;
+- conditional/development support;
+- historical implementation detail;
+- engine-facing support;
+- obsolete/irrelevant by design.
+
+This prevents reproducing the stock file topology instead of reproducing its behavior.
+
+**Disposition:** explicit corpus mapping required; no automatic one-file/one-service architecture.
+
+### 17.13 Late-game and ending behavior is a control regime, not merely a final slice
+
+The presence of late-game, resignation, wonder, trade, saturation, and special-mode branches means the controller can change its operating regime rather than merely continue the early-game policy indefinitely.
+
+Construction must therefore treat regime transition as a first-class state change:
+`NORMAL REGIME -> TRANSITION CONDITION -> LATE/ENDING REGIME -> NEW PRIORITIES -> NEW MAINTENANCE -> EXIT/RESIGNATION`.
+
+The transition itself requires ownership, trigger, persistence, and recovery semantics.
+
+**Disposition:** REIMPLEMENT where behavior is relevant to Byzantine objectives; ENGINE-OWNED where the engine controls the terminal condition.
+
+### 17.14 Historical code contains explicit bounded computational procedures
+
+The land-nomad pair search is not the only lesson. The scout path scan and other search loops demonstrate that stock programmers built bounded computation from primitive counters, jumps, search state, and temporary goals.
+
+AEGIS must treat computational budget as a construction parameter:
+- maximum candidates;
+- maximum iterations;
+- search reset count;
+- jump/re-entry count;
+- worst-case rule work;
+- early termination;
+- interaction with other service loops.
+
+A theoretically superior algorithm that monopolizes the `.per` rule budget can be operationally inferior.
+
+**Disposition:** REIMPLEMENT equivalent bounded behavior; optimize only after measuring target-build cost.
+
+### 17.15 The stock system has multiple kinds of “success” before strategic success
+
+The evidence ladder is now strengthened by the actual source patterns:
+- a predicate can pass;
+- a candidate actor can be selected;
+- a command can be issued;
+- an engine pending state can appear;
+- an object can be created;
+- a capability can become available;
+- an actor can deploy it;
+- the intended local condition can change;
+- the strategic objective can improve.
+
+Construction must not collapse these into one Boolean `success` field.
+
+**Disposition:** REIMPLEMENT as the existing evidence ladder plus typed postconditions.
+
+### 17.16 New cross-slice requirement: every service needs a liveness contract
+
+AI(HD)+Promisory is not only deciding. It is repeatedly re-establishing the conditions under which future decisions remain executable.
+
+For each AEGIS service, define:
+- what makes the service alive;
+- what maintenance keeps it alive;
+- what observations indicate degradation;
+- what actor/resource loss invalidates it;
+- who repairs it;
+- how it yields authority to another service;
+- how it re-enters normal operation.
+
+This is stronger than a generic recovery section. It makes **service liveness** an explicit construction artifact.
+
+**Disposition:** REIMPLEMENT across all operating services.
+
+### 17.17 New cross-slice requirement: every commitment needs a release witness
+
+Escrow and attack/recovery research demonstrate that state release/reset is not synonymous with successful completion.
+
+Therefore every AEGIS commitment must specify:
+`ACQUIRE -> HOLD -> CONSUME/EXECUTE -> RELEASE CONDITION -> RELEASE WITNESS -> POST-RELEASE REASSESSMENT`.
+
+A release witness can be world-state evidence, capability evidence, explicit abandonment, timeout, or another qualified terminal condition. “The rule ran” is not a release witness.
+
+**Disposition:** REIMPLEMENT.
+
+### 17.18 New cross-slice requirement: every observation has a provenance and freshness contract
+
+The source combines facts, object searches, counts, player validity/stance, timers, and ObjectData. These observations have different lifetimes.
+
+AEGIS must attach at minimum:
+`SOURCE -> SAMPLE TIME/REGIME -> SUBJECT -> VALUE -> VALIDITY -> FRESHNESS -> CONSUMERS`.
+
+A fresh unit count and an old threat aggregate cannot silently be treated as equally current.
+
+**Disposition:** REIMPLEMENT as typed observation metadata; engine observations remain ENGINE-OWNED.
+
+### 17.19 New cross-slice requirement: service boundaries must follow behavior, not historical filenames
+
+The adversarial review confirms that stock behavior crosses file boundaries repeatedly. Conversely, one file may contain several unrelated mechanisms.
+
+Therefore AEGIS service boundaries must be derived from:
+`state ownership + lifecycle + authority + capability + recovery`,
+not from `which `.per` file contained the rule`.
+
+Historical filenames remain provenance, not architecture.
+
+**Disposition:** AEGIS-GENERALIZATION.
+
+## 18. Adversarial disposition summary
+
+The second pass found no evidence that the 24-slice registry itself is missing an entire major game domain. The more serious omissions were **mechanical** rather than categorical.
+
+The blueprint was still under-specifying:
+
+1. control-flow primitives;
+2. search-state ownership and interference;
+3. negative/absence semantics;
+4. layered feasibility;
+5. concrete actor selection;
+6. ObjectData as a sensor surface;
+7. pre-action configuration state;
+8. multi-channel transactional mutations;
+9. overwrite/arbitration graphs;
+10. tuple-state invariants;
+11. separation of comment/executable/runtime evidence;
+12. support-module disposition;
+13. regime transitions;
+14. bounded computation budgets;
+15. liveness contracts;
+16. commitment release witnesses;
+17. observation freshness/provenance;
+18. behavior-derived rather than file-derived service boundaries.
+
+These are now construction requirements rather than optional architectural observations.
+
+## 19. Construction gate after the second adversarial pass
+
+Before writing a slice's implementation, the construction record must now prove not only **what capability is being built**, but also:
+
+`CONTROL FLOW`
+→ `STATE OWNERSHIP`
+→ `OBSERVATION PROVENANCE/FRESHNESS`
+→ `FEASIBILITY`
+→ `ACTOR/RESOURCE/SPATIAL SELECTION`
+→ `CONFIGURATION`
+→ `AUTHORIZATION`
+→ `COMMAND`
+→ `PENDING`
+→ `WORLD REALIZATION`
+→ `CAPABILITY`
+→ `STRATEGIC EFFECT`
+→ `RELEASE/INVALIDATION`
+→ `MAINTENANCE/RECOVERY`
+→ `REASSESSMENT`.
+
+If a stock mechanism participates in that chain, omitting it requires an explicit disposition.
+
+The adversarial question is therefore upgraded:
+
+> **Can AI(HD)+Promisory identify not merely a missing feature, but a missing control primitive, state invariant, actor-selection step, search lifecycle, configuration step, liveness mechanism, release witness, or transition rule that would make an apparently correct AEGIS implementation behave differently from the intended control system?**
+
+If yes, the construction is not complete.
