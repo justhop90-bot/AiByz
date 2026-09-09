@@ -1,4 +1,4 @@
-# AEGIS Authoritative Bot Blueprint — 2026-09-09
+# AEGIS Vertical-Slice Source of Truth - 2026-09-09
 
 **Status:** AUTHORITATIVE / DEFINITIVE CONSTRUCTION BLUEPRINT
 **Authority:** This is the single governing blueprint for final AEGIS construction. It supersedes earlier informal vertical-slice lists and is the only document that should answer: *what do we know, what must be built, what remains unknown, and what must AI(HD)+Promisory still teach us?*
@@ -500,3 +500,200 @@ AEGIS is complete only when:
 - the remaining differences are deliberate AEGIS improvements, not forgotten stock behavior.
 
 **That final condition is the standard for calling this blueprint—and the bot—definitive.**
+
+## 13. Adversarial AI(HD)+Promisory pass — WHO / WHAT / WHEN / WHERE / WHY
+
+This is the construction-phase adversarial gate. AI(HD)+Promisory is not being asked whether the blueprint contains the right category names. It is being asked whether a stock engineer could point to a concrete behavior, state transition, control path, or maintenance mechanism that the construction plan has failed to account for.
+
+### 13.1 WHO — authority and actor identity
+
+For every behavior, identify who has authority to cause the transition:
+- engine-owned state or engine-generated observation;
+- stock rule/service that writes or commands;
+- AEGIS service that owns the corresponding state;
+- cognition that authorizes the requirement;
+- another service that can override, preempt, reset, or invalidate it;
+- physical actor/object whose lifecycle realizes the operation.
+
+A writer is not automatically an owner. A reader is not automatically an authority. A command issuer is not automatically the actor that realizes the command. If two services can write the same channel, precedence and ownership must be explicit.
+
+### 13.2 WHAT — exact behavior and state transition
+
+The unit of reconstruction is not a feature label such as “economy” or “attack.” It is the smallest behavior that changes control state or world state in a strategically meaningful way.
+
+For each behavior, record:
+- observation/input;
+- classification/belief;
+- state channel(s) changed;
+- guard/predicate;
+- candidate action(s);
+- authorization;
+- exact engine primitive and operands;
+- queue/pending state;
+- world realization;
+- operational capability;
+- strategic effect;
+- failure and recovery;
+- reset/reassessment.
+
+Also record non-state machinery: searches, geometry, placement, ObjectData, groups, timers, queue semantics, action/order primitives, and rule-order dependencies. These are part of the behavior when the stock implementation depends on them.
+
+### 13.3 WHEN — trigger, cadence, lifetime, and temporal precedence
+
+“Condition exists” is insufficient. Establish when the behavior is allowed to run and how long its state remains authoritative.
+
+Every slice must account for:
+- initialization/startup;
+- first-use initialization;
+- recurring maintenance cadence;
+- timer enable/disable/set/modify behavior;
+- same-pass re-entry and arbitration;
+- rule ordering and overwrite precedence;
+- transition thresholds and hysteresis;
+- expiration/cooldown;
+- actor/object loss;
+- state reset/reinitialization;
+- late-game/special-mode branches;
+- stale observations and refresh cadence.
+
+A `(true)` guard does not prove a one-time initializer. Source order does not prove runtime order. A timer declaration does not prove its cadence or semantic unit. These require qualification where they affect behavior.
+
+### 13.4 WHERE — provenance and topology
+
+Every important claim must have a machine-addressable home:
+1. target-build stock file;
+2. exact rule/function/line or structural occurrence;
+3. state channel/type;
+4. writer/reader/resetter relationship;
+5. load/conditional context;
+6. existing AEGIS research artifact;
+7. runtime/replay evidence ID when applicable.
+
+The HD/Promisory source corpus is the complete `AI (HD version).per` plus the entire original `Promisory` directory. The four-file effective-load closure is a separate runtime-load question and must never be mistaken for the definition of the historical source corpus.
+
+The broader corpus must therefore be searched even when a behavior is absent from the active four-file closure. Such behavior is classified as active, historical-only, conditional, obsolete, engine-owned, or unresolved; it is not silently discarded.
+
+### 13.5 WHY — programmer intent and strategic function
+
+For each stock behavior, explain the function it serves in the control system, without inventing intent from names alone:
+- what problem or threat is being controlled;
+- what resource, time, information, position, or capability is being protected or acquired;
+- what competing objective is displaced or constrained;
+- what downstream subsystem consumes the result;
+- what observation causes reassessment;
+- what would falsify the proposed strategic interpretation.
+
+The strategic “why” must be derived from code topology and evidence, not from a plausible RTS story.
+
+## 14. New adversarial findings that change construction requirements
+
+The prior blueprint covered the major capability domains, but this pass finds several places where category-level coverage was still too permissive.
+
+### 14.1 File-level coverage is now mandatory
+
+The blueprint previously named relevant stock files per dossier but did not require a complete corpus-to-slice accounting. Construction must close this gap.
+
+Every file in the complete 37-file HD/Promisory corpus must receive a disposition and at least one of:
+- primary slice owner;
+- cross-slice service dependency;
+- historical-only evidence;
+- conditional/development-only evidence;
+- engine-owned dependency;
+- obsolete/irrelevant-by-design with justification;
+- unresolved requiring further archaeology.
+
+Known stock domains that must remain explicitly mapped include constants/custom constants, initialization, finaling, gatherers, buildings, researches, units, scout control, threats, TSA/attack control, trade, interaction, water/boar support, resignation/ending logic, Paphos/development definitions, and merge/utility modules where present in the corpus.
+
+### 14.2 Rule-level coverage is mandatory, not merely feature-level coverage
+
+A slice cannot be marked “known” because one representative rule was understood. The adversarial unit is the rule family and its lifecycle: all writers, readers, resetters, guards, overrides, timers, alternate branches, maintenance rules, and failure paths that materially participate in the behavior.
+
+The existing structural mutation parser and R2/R4 joins are the substrate for this work; do not create another symbol inventory or mutation census.
+
+### 14.3 Load topology is part of the program
+
+The source corpus and effective runtime closure answer different questions. The blueprint must preserve both:
+- Source corpus: everything that can teach us historical architecture/behavior.
+- Effective-load closure: what the target runtime actually loads.
+- Conditional topology: behavior enabled only under specific preprocessing/load conditions.
+- AEGIS runtime topology: what AEGIS deliberately loads and owns.
+
+No historical behavior may be called “unused” merely because it is outside the current four-file closure.
+
+### 14.4 The maintenance layer is a first-class requirement
+
+AI(HD)+Promisory repeatedly demonstrates that practical competence comes from rules that keep the civilization alive between strategic decisions. Therefore every construction slice must separate:
+- decision rules — choose what should happen;
+- execution rules — issue/maintain commands;
+- reconciliation rules — determine what actually happened;
+- maintenance rules — prevent degradation while no new decision occurs;
+- recovery rules — repair failed or invalid state.
+
+A cognition loop without these maintenance loops is not an equivalent control system.
+
+### 14.5 Negative-space behavior must be tracked
+
+The stock corpus contains behavior that is historical, conditional, commented, or outside the active runtime closure. The absence of a behavior from the active closure is itself evidence requiring disposition.
+
+Examples already established:
+- `cavarchers`: live in the broader Promisory source corpus but absent from the active four-file closure;
+- `temporary-goal2`: broadly used historically, but only commented in the active closure;
+- the `attack-goal >= 29876` comparison remains an unresolved anomaly and must not be normalized.
+
+These are not implementation instructions. They are anti-forgetting obligations.
+
+### 14.6 State channels require complete lifecycle proof
+
+The known active channels `sn-cavalry-threat = 65`, `retreat-now-goal = 20`, `attack-status-goal = 24`, and `restart-attack-goal = 27` demonstrate the required standard: declaration, initialization, every writer, every reader, guard context, reset/reinitializer, lifetime, authority effect, downstream consumer, runtime qualification, and disposition.
+
+The same standard applies to every AEGIS-owned channel introduced during construction. Numeric availability alone is never sufficient for allocation.
+
+### 14.7 Capability realization must be followed all the way to strategic effect
+
+Construction must not stop at “the command worked.” For every important capability, qualification must distinguish:
+`INTENTION -> AUTHORIZED -> ISSUED -> ACCEPTED/QUEUED -> PENDING -> CREATED -> AVAILABLE -> DEPLOYED -> EFFECTIVE -> STRATEGIC EFFECT`
+
+A missing link is an explicit uncertainty, not an assumption.
+
+### 14.8 The stock adversary must review transitions, not just steady states
+
+The hardest failures will occur at transitions: age-up, food-source depletion, builder death, dropsite loss, housing pressure, queue saturation, scout loss, threat escalation, retreat, attack restart, technology completion, population saturation, water/land competition, resource exhaustion, and late-game mode changes.
+
+Therefore each slice must include at least one transition/failure scenario in which the old state becomes invalid and the service must recover without cognition being rewritten manually.
+
+## 15. Construction-phase 5W acceptance gate
+
+No vertical slice is construction-complete until its dossier can answer, with evidence:
+
+**WHO:** who observes, owns, writes, authorizes, executes, overrides, and realizes the state transition?
+
+**WHAT:** exactly what state and world transition occurs, including operands, queues, searches, geometry, groups, timers, and failure paths?
+
+**WHEN:** what triggers it, how often can it recur, what timer/order/priority rules govern it, and when does its state expire or reset?
+
+**WHERE:** which exact stock source and AEGIS artifact prove it, which load/conditional path contains it, and where is its runtime evidence?
+
+**WHY:** what strategic control problem does it solve, what does it consume/protect/displace, and what evidence would falsify that interpretation?
+
+If any answer is “unknown,” the slice remains open. If the answer is “not applicable,” that must be justified. If the answer is inferred, the falsifier must be recorded.
+
+## 16. Revised definition of definitive construction coverage
+
+The blueprint is now considered construction-ready only as an inventory, not as proof of implementation. Before a slice can be frozen, it must demonstrate:
+- complete stock-file provenance;
+- complete relevant rule-family coverage;
+- state ownership/lifetime closure;
+- load/conditional topology closure;
+- WHO/WHAT/WHEN/WHERE/WHY answers;
+- ABI/engine-command qualification;
+- pending/world/capability/strategic-effect evidence separation;
+- maintenance and recovery behavior;
+- cross-system contention and override handling;
+- transition/failure qualification;
+- explicit stock-vs-AEGIS disposition for every material difference.
+
+Only then can implementation be called complete. The final adversarial question remains:
+
+> **Can AI(HD)+Promisory point to a concrete stock behavior or lifecycle mechanism that AEGIS has neither reproduced, deliberately superseded, delegated to the engine, nor explicitly rejected with evidence?**
+
+If yes, the construction is not complete.
