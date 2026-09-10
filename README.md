@@ -9,16 +9,18 @@
 Start with:
 
 1. **`AGENT_SESSION_CONTRACT.md`** — hard rules (pasteable)
-2. **`AI_AGENT_START_HERE.md`** — orientation, traps, what is already solved
-3. **`docs/FINAL_RECONSTRUCTION_AUDIT_2026-09-09.md`** — definitive unresolved-proof register
-4. **`docs/AEGIS_FORWARD_ENGINEERING_MANUAL_2026-09-07_REV2.md`** — design manual
-5. **`docs/progress/`** — current working material (ownership, ABI, probes, residual risk, civilian slice)
-6. `CANONICAL_AUTHORITY.md`
-7. Machine evidence and stock reconstruction maps as needed
+2. **`AI_OPERATING_PROTOCOL.md`** — anti-error workflow for AI reasoning and changes
+3. **`AI_AGENT_START_HERE.md`** — orientation, traps, what is already solved
+4. **`docs/FINAL_RECONSTRUCTION_AUDIT_2026-09-09.md`** — definitive unresolved-proof register
+5. **`docs/AEGIS_FORWARD_ENGINEERING_MANUAL_2026-09-07_REV2.md`** — design manual
+6. **`docs/progress/`** — current working material (ownership, ABI, probes, residual risk, civilian slice)
+7. `CANONICAL_AUTHORITY.md`
+8. `docs/BRANCH_POLICY.md` + `docs/BRANCH_DISPOSITION.md`
+9. Machine evidence and stock reconstruction maps as needed
 
 **Do not treat older handoffs, experiments, or historical passes as competing current authorities.** They remain for evidence and provenance.
 
-## Canonical status — 2026-09-09
+## Canonical status — 2026-09-10
 
 **GitHub `main` is the authoritative starting point.**
 
@@ -87,12 +89,13 @@ Evidence: `W0 command → W1 pending/accepted → W2 world → W3 capability →
 
 ```text
 AGENT_SESSION_CONTRACT.md   Hard rules for AI sessions
+AI_OPERATING_PROTOCOL.md    AI anti-error workflow / stop conditions
 AI_AGENT_START_HERE.md      Orientation contract
 03_HD_ARCHAEOLOGY/          Historical strategy (see LAYER2_INDEX.md)
 04_LAYER3_ARCHITECTURE/     Architecture (see LAYER3_CURRENT.md)
-implementation/             Candidate .per modules (not production roots)
-docs/                       Governance, Final Audit, machine evidence, progress/
-docs/progress/              Current working engineering layer
+implementation/              Candidate .per modules (not production roots)
+docs/                        Governance, Final Audit, machine evidence, progress/
+docs/progress/               Current working engineering layer
 ```
 
 ## Immediate next gate
