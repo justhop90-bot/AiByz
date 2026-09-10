@@ -1,0 +1,55 @@
+name: AEGIS Policy Checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  policy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Candidate .per must declare NOT LOADED by production root
+        run: |
+          set -e
+          if ls implementation/*.per >/dev/null 2>&1; then
+            for f in implementation/*.per; do
+              if ! grep -qi "NOT LOADED by production root" "$f"; then
+                echo "FAIL: $f missing explicit 'NOT LOADED by production root' marker"
+                exit 1
+              fi
+            done
+            echo "OK: all implementation/*.per mark NOT LOADED by production root"
+          else
+            echo "No implementation/*.per files"
+          fi
+
+      - name: Forbid XS scope creep in implementation
+        run: |
+          if grep -Rni --include='*.per' -e '\bxs\b' implementation/ 2>/dev/null; then
+            echo "FAIL: XS references found in implementation/"
+            exit 1
+          fi
+          echo "OK: no XS references in implementation/"
+
+      - name: Authority files must exist
+        run: |
+          set -e
+          test -f AGENT_SESSION_CONTRACT.md
+          test -f AI_AGENT_START_HERE.md
+          test -f CANONICAL_AUTHORITY.md
+          test -f docs/FINAL_RECONSTRUCTION_AUDIT_2026-09-09.md
+          test -f docs/SUPERSESSION_REGISTER_2026-09-09.md
+          test -f docs/BRANCH_POLICY.md
+          echo "OK: core authority files present"
+
+      - name: Progress working layer present
+        run: |
+          set -e
+          test -d docs/progress
+          test -f docs/progress/03_ABI_ALLOCATION_POLICY_2026-09-09.md
+          test -f docs/progress/07_CIVILIAN_VERTICAL_SLICE_CONTRACT_V0_2026-09-09.md
+          echo "OK: progress working layer present"

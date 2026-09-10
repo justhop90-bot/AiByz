@@ -1,0 +1,35 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*~
+
+# Local secrets / machine paths (never commit credentials)
+.env
+.env.*
+*.pem
+*.key
+
+# Local game / large binaries (hashes belong in docs, not binaries)
+*.exe
+*.aoe2record
+*.zip
+!docs/**/*.zip
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Node (if ever added for docs tooling — Husky not used)
+node_modules/
+
+# Local scratch
+_local/
+*.tmp
+.tmp/

@@ -1,41 +1,28 @@
-# AEGIS Engineering Pull Request
-
 ## Purpose
 
-What problem does this change solve?
+- [ ] Knowledge / authority / progress update
+- [ ] Probe fix or evidence
+- [ ] Candidate `.per` change
+- [ ] Other
 
-## Scope
+## Authority check
 
-What files/subsystems are intentionally changed?
+- [ ] Does not conflict with `docs/FINAL_RECONSTRUCTION_AUDIT_2026-09-09.md`
+- [ ] Does not invent engine semantics
+- [ ] Does not clear numeric ABI without A1–A3 evidence
 
-## Evidence
+## `.per` safety (if applicable)
 
-- Evidence class: `DIRECT / COMPOSED / AEGIS-GENERALIZATION / HYPOTHESIS`
-- Source/build/version:
-- Reproducibility:
+- [ ] Marked `NOT LOADED by production root`
+- [ ] Uses generation + valid + stage envelope where applicable
+- [ ] Ownership inventory updated if new channels added
 
-## Validation
+## Residual risk
 
-What was actually tested? Include exact commands, fixtures, runtime build, or QC results where applicable.
+What remains unproven after this PR?
 
-## Authority impact
+## Vertical slice
 
-- [ ] No authority change
-- [ ] Updates current canonical state
-- [ ] Supersedes a historical record
-- [ ] Changes Layer 1 machine claims
-- [ ] Changes Layer 3 architecture
-- [ ] Changes numeric ABI
-- [ ] Changes Layer 4 runtime implementation
-
-## Safety gates
-
-- [ ] No unsupported engine claim promoted
-- [ ] No arbitrary numeric ABI allocation
-- [ ] Command issuance is not being represented as completion
-- [ ] Historical/source-derived material remains within provenance policy
-- [ ] Failed or superseded evidence has not been silently erased
-
-## Reviewer summary
-
-What should the reviewer verify most carefully?
+- [ ] Civilian (primary)
+- [ ] Cavalry (secondary)
+- [ ] Neither / infra only
