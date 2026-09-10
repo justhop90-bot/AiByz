@@ -1,19 +1,11 @@
 ; ============================================================
 ; AEGIS PROBE CL-3 — Train Villager Lifecycle
-; COMPLETE RUNNABLE VERSION — 2026-09-09
+; FIXED RUNNABLE VERSION — 2026-09-09
 ; NOT PRODUCTION CODE
 ; Target: AoE2DE 101.103.48987.0
 ;
-; What this does:
-; 1. Checks if it can train a villager
-; 2. Issues a train command
-; 3. Watches for pending production
-; 4. Watches for the villager count to go up
-; 5. Chats every important step so you can see it
-;
-; How to use:
-; - Start a normal game with at least 1 Town Center and enough food
-; - You should see chat messages telling you what the probe is doing
+; Fix: replaced invalid (train villager) with the up-train form
+; already used by the project's own candidate code.
 ; ============================================================
 
 (defconst probe-cl3-generation 19101)
@@ -30,7 +22,7 @@
 ; 2 = train command issued
 ; 3 = pending villager seen
 ; 4 = SUCCESS - new villager appeared
-; 5 = FAILED - no villager appeared
+; 5 = FAILED
 
 ; Startup
 (defrule
@@ -47,7 +39,7 @@
     (disable-self)
 )
 
-; Capture how many villagers we have at the start
+; Capture baseline villager count
 (defrule
     (up-compare-goal probe-cl3-stage == 0)
 =>
@@ -56,27 +48,28 @@
     (chat-to-all "CL3: Baseline villager count captured")
 )
 
-; Try to train a villager (only once, and only if the engine says we can)
+; Try to train (using the same form as the project's own v0 code)
 (defrule
     (up-compare-goal probe-cl3-stage == 1)
     (up-compare-goal probe-cl3-attempts < 1)
     (can-train villager)
     (building-type-count town-center >= 1)
 =>
-    (train villager)
+    (up-train escrow-state c: villager)
     (up-modify-goal probe-cl3-attempts g:+ 1)
     (set-goal probe-cl3-stage 2)
     (chat-to-all "CL3: Train command ISSUED")
 )
 
-; Could not train (not enough resources, no TC, etc.)
+; Cannot train right now
 (defrule
     (up-compare-goal probe-cl3-stage == 1)
     (up-compare-goal probe-cl3-attempts < 1)
     (not (can-train villager))
 =>
-    (chat-to-all "CL3: Cannot train yet (need food / TC / population space)")
+    (chat-to-all "CL3: Cannot train yet - need food, TC, or pop space")
     (up-modify-goal probe-cl3-attempts g:+ 1)
+    (set-goal probe-cl3-stage 5)
 )
 
 ; Detect pending production
@@ -86,58 +79,48 @@
 =>
     (set-goal probe-cl3-pending 1)
     (set-goal probe-cl3-stage 3)
-    (chat-to-all "CL3: PENDING villager detected in queue")
+    (chat-to-all "CL3: PENDING villager detected")
 )
 
-; Success: villager count went up
+; Check for success after pending
 (defrule
     (up-compare-goal probe-cl3-stage == 3)
 =>
     (up-get-fact unit-type-count villager probe-cl3-current)
-    (up-modify-goal probe-cl3-current g:-= probe-cl3-baseline)
 )
 
 (defrule
     (up-compare-goal probe-cl3-stage == 3)
-    (up-compare-goal probe-cl3-current >= 1)
+    (up-compare-goal probe-cl3-current > probe-cl3-baseline)
 =>
     (set-goal probe-cl3-stage 4)
     (chat-to-all "CL3: SUCCESS - New villager appeared")
     (chat-to-all "CL3: Train lifecycle works")
 )
 
-; Failure path: we issued the command but never got a new villager
+; Also check for success directly (in case pending was very fast)
+(defrule
+    (up-compare-goal probe-cl3-stage == 2)
+=>
+    (up-get-fact unit-type-count villager probe-cl3-current)
+)
+
+(defrule
+    (up-compare-goal probe-cl3-stage == 2)
+    (up-compare-goal probe-cl3-current > probe-cl3-baseline)
+=>
+    (set-goal probe-cl3-stage 4)
+    (chat-to-all "CL3: SUCCESS - New villager appeared")
+    (chat-to-all "CL3: Train lifecycle works")
+)
+
+; Failure if we issued but nothing happened
 (defrule
     (up-compare-goal probe-cl3-stage == 2)
     (up-compare-goal probe-cl3-attempts >= 1)
     (up-pending-objects c: villager <= 0)
-=>
-    (up-get-fact unit-type-count villager probe-cl3-current)
-    (up-modify-goal probe-cl3-current g:-= probe-cl3-baseline)
-)
-
-(defrule
-    (up-compare-goal probe-cl3-stage == 2)
-    (up-compare-goal probe-cl3-current <= 0)
-    (up-pending-objects c: villager <= 0)
+    (up-compare-goal probe-cl3-current <= probe-cl3-baseline)
 =>
     (set-goal probe-cl3-stage 5)
-    (chat-to-all "CL3: FAILED - No villager appeared after train")
-)
-
-; Also allow success directly from stage 2 if census rises fast
-(defrule
-    (up-compare-goal probe-cl3-stage == 2)
-=>
-    (up-get-fact unit-type-count villager probe-cl3-current)
-    (up-modify-goal probe-cl3-current g:-= probe-cl3-baseline)
-)
-
-(defrule
-    (up-compare-goal probe-cl3-stage == 2)
-    (up-compare-goal probe-cl3-current >= 1)
-=>
-    (set-goal probe-cl3-stage 4)
-    (chat-to-all "CL3: SUCCESS - New villager appeared")
-    (chat-to-all "CL3: Train lifecycle works")
+    (chat-to-all "CL3: FAILED - No villager appeared")
 )
