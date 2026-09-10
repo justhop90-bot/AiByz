@@ -10,12 +10,12 @@
 
 1. `docs/FINAL_RECONSTRUCTION_AUDIT_2026-09-09.md` — open-proof register
 2. `docs/AEGIS_FORWARD_ENGINEERING_MANUAL_2026-09-07_REV2.md` — design manual
-3. `docs/progress/` — current working material (ownership, ABI policy, probes, residual risk)
-4. `docs/MACHINE_EVIDENCE/` — machine captures
-5. `AI_AGENT_START_HERE.md` + `CANONICAL_AUTHORITY.md` + this contract
-6. Everything else is historical or supporting unless explicitly promoted
-
-If documents conflict, the higher item wins unless it explicitly preserves the lower item as unresolved evidence.
+3. `docs/progress/` — current working material
+4. `docs/BOT_BUILD_ROADMAP.md` — build sequence
+5. `docs/MACHINE_EVIDENCE/` — machine captures
+6. `AI_AGENT_START_HERE.md` + `CANONICAL_AUTHORITY.md` + this contract
+7. `docs/SUPERSESSION_REGISTER_2026-09-09.md` + `docs/BRANCH_POLICY.md`
+8. Everything else is historical or supporting unless explicitly promoted
 
 ---
 
@@ -28,21 +28,19 @@ If documents conflict, the higher item wins unless it explicitly preserves the l
 - Do not restart broad Layer-1 or Layer-2 archaeology.
 - Do not resurrect ADprom, byzwarcouncil, XS, or scenario-loader automation as production paths.
 - Do not promote candidate `.per` to production without closed gates / explicit residual-risk acceptance.
-- Do not create parallel “final” handoffs that compete with the Final Audit or `docs/progress/`.
+- Do not create parallel “final” handoffs or authority-sounding branches.
+- Do not use Husky; shared automation is GitHub Actions only.
 
 ---
 
 ## 3. Primary vertical slice
 
-**Primary (current):** Civilian Production Loop — see `docs/progress/07_CIVILIAN_VERTICAL_SLICE_CONTRACT_V0_2026-09-09.md`
-
-**Secondary (deferred):** Cavalry Threat Containment — historical control strong; world realization still open.
+**Primary:** Civilian Production Loop — `docs/progress/07_CIVILIAN_VERTICAL_SLICE_CONTRACT_V0_2026-09-09.md`  
+**Secondary:** Cavalry Threat Containment — deferred.
 
 ---
 
-## 4. Evidence discipline (mandatory)
-
-Every non-trivial claim should be taggable as:
+## 4. Evidence discipline
 
 ```text
 CLAIM:
@@ -53,49 +51,43 @@ SOURCE:
 FALSIFIER:
 ```
 
-Never promote W0 → W2/W3/W4 by intuition.  
-A4/A5 can never clear numeric ABI allocation.
+Never promote W0 → W2/W3/W4 by intuition. A4/A5 cannot clear numeric ABI allocation.
 
 ---
 
-## 5. State envelope for AEGIS-owned channels
+## 5. State envelope
 
 ```text
 VALID + OWNER + GENERATION + STAGE + PAYLOAD + (optional) EVIDENCE_LEVEL / ATTEMPTS / OBSERVED-AT
 ```
 
+Candidate modules in `implementation/` must say **NOT LOADED by production root**.
+
 ---
 
 ## 6. Production coding gate
 
-Production `.per` remains **blocked** until:
+Blocked until minimum ownership/ABI freeze for used channels **and** command-lifecycle evidence for relied-upon actions (especially R5), **or** explicit residual-risk acceptance.
 
-- minimum ownership/ABI freeze for the channels used, and
-- command-lifecycle evidence for the actions relied upon (especially R5), or
-- an explicit, written residual-risk acceptance.
-
-Candidate / experimental modules must remain marked as not loaded by any production root.
+Live evidence goes in `docs/progress/evidence/`.
 
 ---
 
-## 7. Session re-anchor (use after substantial work)
+## 7. Version control
 
-State in ≤5 lines:
-
-1. Authority documents in force
-2. Primary vertical slice
-3. What remains blocked for production coding
-4. What this turn changed
-5. What evidence is still missing
+- Commit knowledge work to `main`
+- Use `feature/` or `probe/` for isolated code/evidence when needed
+- Never treat historical `aegis/*` branches as live authority
 
 ---
 
-## 8. Preferred work style
+## 8. Session re-anchor
 
-- Prefer labeling, supersession, and progress updates over rewriting history.
-- Prefer minimum evidence to close an open R-gate over broad rediscovery.
-- Prefer chatty, observable probes over silent assumptions.
-- Preserve failures and negative evidence.
+1. Authority documents in force  
+2. Primary vertical slice  
+3. What remains blocked for production coding  
+4. What this turn changed  
+5. What evidence is still missing  
 
 ---
 
