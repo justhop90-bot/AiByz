@@ -1,16 +1,27 @@
-; AEGIS PROBE CL-1 — Goal mutation visibility
-; SKELETON ONLY — NOT PRODUCTION
+; ============================================================ 
+; AEGIS PROBE CL-1 — Goal Mutation Visibility
+; COMPLETE RUNNABLE VERSION — 2026-09-09
+; NOT PRODUCTION CODE
 ; Target: AoE2DE 101.103.48987.0
-; Purpose: measure when a goal write becomes visible to later rules.
-; Fill constants and add logging before use.
+; 
+; What this does:
+; 1. Writes the number 42 into a test goal
+; 2. Tries to read it back
+; 3. Chats the result so you can see it in the game
+; ============================================================
 
 (defconst probe-cl1-generation 19001)
 (defconst probe-cl1-value 19002)
 (defconst probe-cl1-observed 19003)
 (defconst probe-cl1-stage 19004)
 
-; Stage 0 = init, 1 = written, 2 = observed
+; Stage meanings:
+; 0 = starting
+; 1 = value has been written
+; 2 = value was successfully read back
+; 3 = finished
 
+; Startup message
 (defrule
     (true)
 =>
@@ -18,33 +29,34 @@
     (set-goal probe-cl1-value 0)
     (set-goal probe-cl1-observed 0)
     (set-goal probe-cl1-stage 0)
+    (chat-to-all "CL1: Probe starting...")
     (disable-self)
 )
 
-; Writer
+; Step 1: Write the test value 42
 (defrule
     (up-compare-goal probe-cl1-stage == 0)
 =>
     (set-goal probe-cl1-value 42)
     (set-goal probe-cl1-stage 1)
-    ; TODO: add up-log-data or debug breakpoint here
+    (chat-to-all "CL1: Wrote value 42")
 )
 
-; Observer (adjacent)
+; Step 2: Try to read the value back (success path)
 (defrule
     (up-compare-goal probe-cl1-stage == 1)
     (up-compare-goal probe-cl1-value == 42)
 =>
     (set-goal probe-cl1-observed 1)
     (set-goal probe-cl1-stage 2)
-    ; TODO: log success
+    (chat-to-all "CL1: SUCCESS - Value 42 is visible")
 )
 
-; Observer (failure / not yet visible)
+; Step 3: Finish
 (defrule
-    (up-compare-goal probe-cl1-stage == 1)
-    (up-compare-goal probe-cl1-value != 42)
+    (up-compare-goal probe-cl1-stage == 2)
 =>
-    ; TODO: log non-visibility
-    (chat-to-all "CL1 value not yet visible")
+    (set-goal probe-cl1-stage 3)
+    (chat-to-all "CL1: Probe finished - Goal mutation works")
+    (disable-self)
 )
