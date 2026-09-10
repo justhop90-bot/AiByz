@@ -1,0 +1,30 @@
+; AEGIS PROBE CL-4 — Build foundation lifecycle
+; SKELETON ONLY — NOT PRODUCTION
+; Target: AoE2DE 101.103.48987.0
+; Purpose: distinguish issued build vs foundation appearance / progress / completion or failure.
+; Requires controlled conditions and safe building choice.
+
+(defconst probe-cl4-generation 19111)
+(defconst probe-cl4-valid 19112)
+(defconst probe-cl4-stage 19113)
+(defconst probe-cl4-baseline 19114)
+(defconst probe-cl4-observed 19115)
+
+; Stages: 0 init, 1 issued, 2 foundation-seen, 3 completed, 4 failed
+
+(defrule
+    (true)
+=>
+    (set-goal probe-cl4-generation 1)
+    (set-goal probe-cl4-valid 1)
+    (set-goal probe-cl4-stage 0)
+    (set-goal probe-cl4-baseline 0)
+    (set-goal probe-cl4-observed 0)
+    (disable-self)
+)
+
+; TODO:
+; 1. Capture baseline building-type-count for the chosen building.
+; 2. Issue a single can-build / build under controlled conditions.
+; 3. Observe foundation / object appearance if the engine exposes it.
+; 4. Confirm completion by count increase or fail closed.

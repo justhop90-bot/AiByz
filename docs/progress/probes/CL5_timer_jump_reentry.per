@@ -1,0 +1,38 @@
+; AEGIS PROBE CL-5 — Timer and jump re-entry
+; SKELETON ONLY — NOT PRODUCTION
+; Target: AoE2DE 101.103.48987.0
+; Purpose: establish basic timer trigger and up-jump-rule re-entry behaviour.
+
+(defconst probe-cl5-generation 19121)
+(defconst probe-cl5-stage 19122)
+(defconst probe-cl5-timer-fired 19123)
+(defconst probe-cl5-jump-seen 19124)
+
+(defconst probe-cl5-timer 19021)
+
+(defrule
+    (true)
+=>
+    (set-goal probe-cl5-generation 1)
+    (set-goal probe-cl5-stage 0)
+    (set-goal probe-cl5-timer-fired 0)
+    (set-goal probe-cl5-jump-seen 0)
+    (enable-timer probe-cl5-timer 3)
+    (disable-self)
+)
+
+(defrule
+    (timer-triggered probe-cl5-timer)
+=>
+    (set-goal probe-cl5-timer-fired 1)
+    (set-goal probe-cl5-stage 1)
+    ; Optional: (up-jump-rule ...) to test re-entry — fill carefully
+)
+
+(defrule
+    (up-compare-goal probe-cl5-stage == 1)
+    (up-compare-goal probe-cl5-timer-fired == 1)
+=>
+    (set-goal probe-cl5-jump-seen 1)
+    (set-goal probe-cl5-stage 2)
+)
