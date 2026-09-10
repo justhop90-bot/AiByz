@@ -1,0 +1,50 @@
+; AEGIS PROBE CL-1 — Goal mutation visibility
+; SKELETON ONLY — NOT PRODUCTION
+; Target: AoE2DE 101.103.48987.0
+; Purpose: measure when a goal write becomes visible to later rules.
+; Fill constants and add logging before use.
+
+(defconst probe-cl1-generation 19001)
+(defconst probe-cl1-value 19002)
+(defconst probe-cl1-observed 19003)
+(defconst probe-cl1-stage 19004)
+
+; Stage 0 = init, 1 = written, 2 = observed
+
+(defrule
+    (true)
+=>
+    (set-goal probe-cl1-generation 1)
+    (set-goal probe-cl1-value 0)
+    (set-goal probe-cl1-observed 0)
+    (set-goal probe-cl1-stage 0)
+    (disable-self)
+)
+
+; Writer
+(defrule
+    (up-compare-goal probe-cl1-stage == 0)
+=>
+    (set-goal probe-cl1-value 42)
+    (set-goal probe-cl1-stage 1)
+    ; TODO: add up-log-data or debug breakpoint here
+)
+
+; Observer (adjacent)
+(defrule
+    (up-compare-goal probe-cl1-stage == 1)
+    (up-compare-goal probe-cl1-value == 42)
+=>
+    (set-goal probe-cl1-observed 1)
+    (set-goal probe-cl1-stage 2)
+    ; TODO: log success
+)
+
+; Observer (failure / not yet visible)
+(defrule
+    (up-compare-goal probe-cl1-stage == 1)
+    (up-compare-goal probe-cl1-value != 42)
+=>
+    ; TODO: log non-visibility
+    (chat-to-all "CL1 value not yet visible")
+)

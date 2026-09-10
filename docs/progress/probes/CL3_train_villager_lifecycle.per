@@ -1,0 +1,65 @@
+; AEGIS PROBE CL-3 — Train villager lifecycle
+; SKELETON ONLY — NOT PRODUCTION
+; Target: AoE2DE 101.103.48987.0
+; Purpose: distinguish issued vs pending vs confirmed villager creation.
+; Requires controlled single-TC start conditions.
+; Fill safe constants and instrumentation before use.
+
+(defconst probe-cl3-generation 19101)
+(defconst probe-cl3-valid 19102)
+(defconst probe-cl3-stage 19103)
+(defconst probe-cl3-baseline 19104)
+(defconst probe-cl3-observed 19105)
+(defconst probe-cl3-pending 19106)
+
+; Stages: 0 init, 1 issued, 2 pending, 3 confirmed, 4 failed
+
+(defrule
+    (true)
+=>
+    (set-goal probe-cl3-generation 1)
+    (set-goal probe-cl3-valid 1)
+    (set-goal probe-cl3-stage 0)
+    (set-goal probe-cl3-baseline 0)
+    (set-goal probe-cl3-observed 0)
+    (set-goal probe-cl3-pending 0)
+    (disable-self)
+)
+
+; Capture baseline civilian count (replace with real fact when ready)
+; (defrule ... set baseline from unit-type-count or civilian-population ...)
+
+; Issue train under controlled conditions
+; (defrule
+;     (up-compare-goal probe-cl3-stage == 0)
+;     (can-train villager)          ; or appropriate form
+; =>
+;     (train villager)
+;     (set-goal probe-cl3-stage 1)
+; )
+
+; Detect pending (engine-specific signal required)
+; (defrule
+;     (up-compare-goal probe-cl3-stage == 1)
+;     ; pending condition
+; =>
+;     (set-goal probe-cl3-pending 1)
+;     (set-goal probe-cl3-stage 2)
+; )
+
+; Confirm by census increase
+; (defrule
+;     (up-compare-goal probe-cl3-stage == 2)
+;     ; observed civilians > baseline
+; =>
+;     (set-goal probe-cl3-stage 3)
+; )
+
+; Failure: pending gone, no census increase
+; (defrule
+;     (up-compare-goal probe-cl3-stage == 2)
+;     ; pending == 0 and census <= baseline
+; =>
+;     (set-goal probe-cl3-stage 4)
+;     (set-goal probe-cl3-valid 0)
+; )
