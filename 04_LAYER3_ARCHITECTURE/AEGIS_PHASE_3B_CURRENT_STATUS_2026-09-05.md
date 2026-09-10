@@ -1,3 +1,11 @@
+> **SUPERSEDED FOR NAVIGATION (2026-09-09)**  
+> Living Layer 3 status: `04_LAYER3_ARCHITECTURE/LAYER3_CURRENT.md`  
+> Open proofs: `docs/FINAL_RECONSTRUCTION_AUDIT_2026-09-09.md`  
+> Working material: `docs/progress/`  
+> This file is a historical snapshot from 2026-09-05. Do not treat it as current project status.
+
+---
+
 # AEGIS — Layer 3B Current Status
 
 **Date:** 2026-09-05  

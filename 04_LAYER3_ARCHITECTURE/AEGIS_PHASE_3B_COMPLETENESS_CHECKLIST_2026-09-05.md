@@ -1,33 +1,11 @@
-# AEGIS — Phase 3B Completeness Checklist
+> **SUPERSEDED FOR NAVIGATION (2026-09-09)**  
+> Living Layer 3 status: `04_LAYER3_ARCHITECTURE/LAYER3_CURRENT.md`  
+> Open proofs: `docs/FINAL_RECONSTRUCTION_AUDIT_2026-09-09.md`  
+> Working material: `docs/progress/`  
+> Historical snapshot only.
 
-**Date:** 2026-09-05
+---
 
-- [x] Target build fingerprint
-- [x] Stock AI baseline
-- [x] Shared qualification register
-- [x] Shared machine test matrix
-- [x] Channel-aware ABI audit
-- [x] Execution current-standard requalification
-- [x] Engine regression register
-- [x] Current engine evidence reconciliation
-- [x] Cavalry vertical-slice qualification contract
-- [x] Wave A experiment queue
-- [x] Wave A gate record
-- [x] Layer 3B exit criteria
-- [x] Goal namespace qualification specification
-- [x] Cavalry sensor qualification specification
-- [x] UNKNOWN/zero/absence qualification specification
-- [x] Generation/stale-authority qualification specification
-- [x] Standard experiment evidence template
+# AEGIS Phase 3B Completeness Checklist (historical)
 
-## Still open by design
-
-- [ ] Direct target-build execution of the P1 experiments
-- [ ] ABI promotion from candidate to qualified
-- [ ] Runtime generation qualification
-- [ ] Runtime UNKNOWN/zero/absence qualification
-- [ ] Runtime lifecycle qualification
-- [ ] Runtime performance qualification
-- [ ] Cavalry vertical-slice implementation qualification
-
-This checklist is intentionally not marked complete until direct machine evidence exists.
+See `LAYER3_CURRENT.md` for living status. This file is retained for provenance.
