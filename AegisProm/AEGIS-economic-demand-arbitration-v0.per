@@ -6,6 +6,7 @@
 ; Byzantine Architect: arbitration converts competing deficits into one actionable intent.
 ; Archaeologist: comparisons use already-published AEGIS goals; no same-pass engine state is assumed.
 ; AI(HD)+Promisory: explicit arbitration replaces fragile rule-order competition.
+; Canonical lifecycle: arbitration owns the request identity; downstream execution must carry it unchanged.
 
 (defconst aegis-eda-generation 490)
 (defconst aegis-eda-valid 491)
@@ -15,6 +16,7 @@
 (defconst aegis-eda-priority 495)
 (defconst aegis-eda-urgency 496)
 (defconst aegis-eda-observed-at 497)
+(defconst aegis-eda-request-id 498)
 
 (defconst aegis-eda-stage-init 0)
 (defconst aegis-eda-stage-arbitrated 1)
@@ -37,6 +39,9 @@
     (set-goal aegis-eda-urgency aegis-ed-urgency-normal)
     (up-modify-goal aegis-eda-generation g:= aegis-ed-generation)
     (up-modify-goal aegis-eda-observed-at g:= aegis-ed-observed-at)
+    ; Request identity is the arbitrated demand generation.
+    ; It is intentionally copied, never regenerated downstream.
+    (up-modify-goal aegis-eda-request-id g:= aegis-ed-generation)
 )
 
 (defrule
