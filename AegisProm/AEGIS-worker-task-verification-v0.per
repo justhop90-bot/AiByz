@@ -22,6 +22,8 @@
 (defconst aegis-wtv-cycle 545)
 (defconst aegis-wtv-request-id 546)
 (defconst aegis-wtv-authorization-id 547)
+(defconst aegis-wtv-reassess-generation 760)
+(defconst aegis-wtv-reassess-valid 761)
 (defconst aegis-wtv-stage-init 0)
 (defconst aegis-wtv-stage-observing 1)
 (defconst aegis-wtv-stage-confirmed 2)
@@ -34,9 +36,6 @@
 (defconst aegis-wtv-failure-target-not-observed 3)
 (defconst aegis-wtv-failure-identity-mismatch 4)
 
-; Begin verification from a fresh command generation.
-; Verification carries the same request and authorization identities; it never
-; creates a new request identity from the observed world state.
 (defrule
     (up-compare-goal aegis-wtc-valid == 1)
     (up-compare-goal aegis-wtc-stage == aegis-wtc-stage-issued)
@@ -58,9 +57,6 @@
     (set-goal aegis-wtv-failure aegis-wtv-failure-none)
 )
 
-; Refuse verification if the identity propagated from arbitration and command
-; execution is inconsistent. This prevents unrelated observations from closing
-; the request merely because the desired world state happens to exist.
 (defrule
     (up-compare-goal aegis-wtv-valid == 1)
     (up-compare-goal aegis-wtv-generation == aegis-wtc-generation)
@@ -71,7 +67,6 @@
     (set-goal aegis-wtv-valid 0)
 )
 
-; Observe the commanded worker population without assuming role identity.
 (defrule
     (up-compare-goal aegis-wtv-valid == 1)
     (up-compare-goal aegis-wtv-stage == aegis-wtv-stage-observing)
@@ -86,8 +81,6 @@
     (up-modify-goal aegis-wtv-worker-visible g:= local-total)
 )
 
-; A second local search tests whether a worker remains attached to a non-idle
-; task boundary. V0 uses object target presence as evidence, not income proof.
 (defrule
     (up-compare-goal aegis-wtv-valid == 1)
     (up-compare-goal aegis-wtv-stage == aegis-wtv-stage-observing)
@@ -101,8 +94,6 @@
     (set-goal aegis-wtv-target-visible aegis-wtv-task-visible)
 )
 
-; V0 confirms only when a worker and target are both observable after command issuance.
-; This remains WORLD_STATE_OBSERVED, not causal productivity proof.
 (defrule
     (up-compare-goal aegis-wtv-valid == 1)
     (up-compare-goal aegis-wtv-stage == aegis-wtv-stage-observing)
@@ -132,4 +123,24 @@
     (set-goal aegis-wtv-failure aegis-wtv-failure-target-not-observed)
     (set-goal aegis-wtv-stage aegis-wtv-stage-failed)
     (set-goal aegis-wtv-valid 0)
+)
+
+; Canonical reassessment boundary. This is a local event publication, not a
+; controller: the verification owner publishes one lifecycle-generation token
+; for downstream reassessment. Consumers must compare the token and decide
+; their own next state; this module does not select the next strategy.
+(defrule
+    (up-compare-goal aegis-wtv-stage == aegis-wtv-stage-confirmed)
+    (up-compare-goal aegis-wtv-reassess-generation != aegis-wtv-generation)
+=>
+    (up-modify-goal aegis-wtv-reassess-generation g:= aegis-wtv-generation)
+    (set-goal aegis-wtv-reassess-valid 1)
+)
+
+(defrule
+    (up-compare-goal aegis-wtv-stage == aegis-wtv-stage-failed)
+    (up-compare-goal aegis-wtv-reassess-generation != aegis-wtv-generation)
+=>
+    (up-modify-goal aegis-wtv-reassess-generation g:= aegis-wtv-generation)
+    (set-goal aegis-wtv-reassess-valid 1)
 )
