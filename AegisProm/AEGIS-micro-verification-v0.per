@@ -12,6 +12,8 @@
 (defconst aegis-mv-authorization-id 741)
 (defconst aegis-mv-world-evidence 742)
 (defconst aegis-mv-causal-evidence 743)
+(defconst aegis-mv-reassess-generation 770)
+(defconst aegis-mv-reassess-valid 771)
 (defconst aegis-mv-result-unknown 0)
 (defconst aegis-mv-result-applied 1)
 (defconst aegis-mv-result-partial 2)
@@ -36,7 +38,6 @@
     (set-goal aegis-mv-attempts 0)
 )
 
-; Dispatch is not success. Observe only the bounded post-dispatch state.
 (defrule
     (up-compare-goal aegis-mv-valid == 1)
     (up-compare-goal aegis-mc-stage == aegis-mc-stage-reassess)
@@ -47,7 +48,6 @@
     (set-goal aegis-mv-result aegis-mv-result-unknown)
 )
 
-; A nonempty friendly force after an engage dispatch is partial evidence only.
 (defrule
     (up-compare-goal aegis-mv-valid == 1)
     (up-compare-goal aegis-mv-stage == aegis-mv-stage-observing)
@@ -61,7 +61,6 @@
     (set-goal aegis-mc-valid 0)
 )
 
-; No-target is a failed observation, not a successful tactical outcome.
 (defrule
     (up-compare-goal aegis-mv-valid == 1)
     (up-compare-goal aegis-mc-failure == aegis-mc-failure-no-target)
@@ -71,4 +70,14 @@
     (set-goal aegis-mv-result aegis-mv-result-failed)
     (set-goal aegis-mv-stage aegis-mv-stage-reassess)
     (set-goal aegis-mc-valid 0)
+)
+
+; Canonical reassessment boundary. Tactical verification emits one event token
+; per Micro Control generation. It does not choose the next tactical intent.
+(defrule
+    (up-compare-goal aegis-mv-stage == aegis-mv-stage-reassess)
+    (up-compare-goal aegis-mv-reassess-generation != aegis-mv-generation)
+=>
+    (up-modify-goal aegis-mv-reassess-generation g:= aegis-mv-generation)
+    (set-goal aegis-mv-reassess-valid 1)
 )
