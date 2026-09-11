@@ -3,6 +3,7 @@
 ; Target: AoE2DE 101.103.48987.0 / BuildID 24094652
 ; Purpose: translate reconciled civilization state into typed civilian demand.
 ; Byzantine Architect pass: demand is policy; physical execution remains downstream.
+; REASSESS consumption is acknowledgement only: it never creates a generation.
 
 (defconst aegis-civ-demand-generation 421)
 (defconst aegis-civ-villager-demand 422)
@@ -10,6 +11,8 @@
 (defconst aegis-civ-urgency 424)
 (defconst aegis-civ-stage 425)
 (defconst aegis-civ-observed-at 426)
+(defconst aegis-civ-reassess-generation 774)
+(defconst aegis-civ-reassess-valid 775)
 
 (defconst aegis-civ-stage-init 0)
 (defconst aegis-civ-stage-derived 1)
@@ -20,7 +23,23 @@
 (defconst aegis-civ-urgency-normal 1)
 (defconst aegis-civ-urgency-high 2)
 
-; Consume only a qualified civilization-state generation.
+; Consume the villager-production/lifecycle REASSESS publication exactly once.
+; The publisher owns publication; civilian demand owns acknowledgement.
+; Acknowledgement does not increment or otherwise manufacture a generation.
+(defrule
+    (up-compare-goal aegis-vr-reassess-valid == 1)
+    (up-compare-goal aegis-vr-reassess-generation == aegis-vr-generation)
+    (up-compare-goal aegis-civ-reassess-generation != aegis-vr-reassess-generation)
+=>
+    (up-modify-goal aegis-civ-reassess-generation g:= aegis-vr-reassess-generation)
+    (set-goal aegis-vr-reassess-valid 0)
+)
+
+; Consume only a qualified civilization-state generation that is newer than the
+; generation already represented by civilian demand. REASSESS cannot manufacture
+; this generation; only the upstream civilization-state observation can do so.
+; This rule also resets typed demand, preventing a stale terminal result from
+; recreating the previous request.
 (defrule
     (up-compare-goal aegis-cs-valid == 1)
     (up-compare-goal aegis-cs-generation != aegis-civ-demand-generation)
