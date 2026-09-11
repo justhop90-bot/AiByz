@@ -2,7 +2,7 @@
 
 **Authority:** `main/AegisProm` source
 **Scope:** shared AegisProm `.per` goal namespace
-**Status:** NORMATIVE / COLLISION REPAIR BASELINE
+**Status:** NORMATIVE / COLLISION REPAIR + REASSESSMENT BOUNDARY BASELINE
 
 ## 1. Namespace rule
 
@@ -19,7 +19,7 @@ Rules:
 7. Every new goal must be registered here before source promotion.
 8. `0` values used as local enum values are not namespace allocations unless assigned to a `defconst` goal slot; enum literals remain module-local constants.
 
-## 2. Authoritative repaired allocations
+## 2. Authoritative allocations
 
 | Numeric block | Owner | Source | Purpose | Status |
 |---|---|---|---|---|
@@ -29,12 +29,12 @@ Rules:
 | 546–549 | WR | `AEGIS-worker-recovery-v0.per` | recovery lifecycle base state | ACTIVE |
 | 550–551 | EDA/WTS | `AEGIS-economic-demand-arbitration-v0.per`, `AEGIS-worker-target-selection-v0.per` | request identities | ACTIVE / EXCLUSIVELY OWNED |
 | 552–554 | WR | `AEGIS-worker-recovery-v0.per` | recovery disposition/observation/cycle | ACTIVE |
-| 555–556 | WR | `AEGIS-worker-recovery-v0.per` | **repaired failure + attempt fields** | ACTIVE / REPAIRED |
+| 555–556 | WR | `AEGIS-worker-recovery-v0.per` | repaired failure + attempt fields | ACTIVE / REPAIRED |
 | 570–585 | HC | `AEGIS-housing-construction-v0.per` | housing lifecycle + request/authorization/evidence | ACTIVE |
 | 600–612 | RA | `AEGIS-research-age-v0.per` | age-transition lifecycle + request/authorization/evidence | ACTIVE |
 | 620–629 | CR | `AEGIS-cavalry-response-v0.per` | anti-cavalry lifecycle + request/authorization | ACTIVE |
 | 630–637 | MP | `AEGIS-military-production-v0.per` | military-production candidate lifecycle | ACTIVE / CANDIDATE BLOCKED |
-| 638–641 | CR | `AEGIS-cavalry-response-v0.per` | **repaired spearman baseline/observed/world/causal evidence** | ACTIVE / REPAIRED |
+| 638–641 | CR | `AEGIS-cavalry-response-v0.per` | repaired spearman baseline/observed/world/causal evidence | ACTIVE / REPAIRED |
 | 670–677 | MC | `AEGIS-micro-control-v0.per` | tactical micro control state | ACTIVE |
 | 680–689 | MS | `AEGIS-micro-state-v0.per` | tactical micro force/state observation | ACTIVE |
 | 690–699 | MG | `AEGIS-micro-groups-v0.per` | tactical micro functional groups | ACTIVE |
@@ -45,12 +45,40 @@ Rules:
 | 734–735 | MC | `AEGIS-micro-control-v0.per` | stable tactical request identity | ACTIVE / SHARED RANGE PARTITION |
 | 736–739 | ME | `AEGIS-micro-execution-bridge-v0.per` | tactical authorization identity/generation/expiry | ACTIVE |
 | 740–743 | MV | `AEGIS-micro-verification-v0.per` | tactical request/auth/world/causal evidence | ACTIVE |
+| 760–761 | WTV | `AEGIS-worker-task-verification-v0.per` | worker-economy reassessment generation/valid event | ACTIVE / REASSESSMENT |
+| 762–763 | VR | `AEGIS-civilian-lifecycle-reconciler-v0.per` | villager-production reassessment generation/valid event | ACTIVE / REASSESSMENT |
+| 764–765 | HC | `AEGIS-housing-construction-v0.per` | housing reassessment generation/valid event | ACTIVE / REASSESSMENT |
+| 766–767 | RA | `AEGIS-research-age-v0.per` | age-transition reassessment generation/valid event | ACTIVE / REASSESSMENT |
+| 768–769 | CR | `AEGIS-cavalry-response-v0.per` | anti-cavalry reassessment generation/valid event | ACTIVE / REASSESSMENT |
+| 770–771 | MV | `AEGIS-micro-verification-v0.per` | tactical-micro reassessment generation/valid event | ACTIVE / REASSESSMENT |
+| 772–773 | MP | `AEGIS-military-production-v0.per` | military-production candidate reassessment generation/valid event | ACTIVE / REASSESSMENT |
 
 **Important:** the ranges above describe numeric goal-slot ownership, not semantic stage values. Stage constants such as `stage-authorized = 1` are ordinary symbolic enum values and are not competing global goal slots.
 
-## 3. Collision repairs performed
+## 3. Reassessment boundary rule
 
-### 3.1 Goals 550–551
+Every registered vertical now has a local reassessment publisher owned by the vertical's registry-defined `REASSESS` owner. The publisher emits a stable lifecycle-generation token exactly once per terminal request generation and raises a local `reassess-valid` event bit.
+
+The event means only:
+
+```text
+THIS VERTICAL LIFECYCLE HAS REACHED A TERMINAL OBSERVED OUTCOME.
+RECONSIDERATION IS NOW PERMITTED.
+```
+
+It does **not** mean:
+
+- strategic success;
+- causal success where causal evidence is absent;
+- permission to issue another physical command;
+- a particular next strategy;
+- authorization for another vertical.
+
+The consuming owner remains responsible for the next observation/demand/classification generation. No monolithic reassessment controller is introduced.
+
+## 4. Collision repairs performed
+
+### 4.1 Goals 550–551
 
 Previous collision:
 
@@ -66,9 +94,7 @@ Repair:
 - Worker Recovery `failure` moved **550 → 555**.
 - Worker Recovery `attempts` moved **551 → 556**.
 
-Semantic ownership did not change. Only the numeric slots changed.
-
-### 3.2 Goals 630–633
+### 4.2 Goals 630–633
 
 Previous collision:
 
@@ -83,25 +109,13 @@ Repair:
 - Anti-Cavalry world evidence moved **632 → 640**.
 - Anti-Cavalry causal evidence moved **633 → 641**.
 
-Semantic ownership did not change. Only the numeric slots changed.
-
-## 4. Why these owners were retained
-
-The repair intentionally keeps the fields with their existing semantic owners rather than moving the entire blocks of either vertical.
-
-- EDA remains the authoritative owner of economic request identity.
-- WTS remains the downstream carrier of that identity.
-- Worker Recovery remains the owner of recovery failure/attempt state.
-- Military Production remains the owner of its candidate production lifecycle.
-- Anti-Cavalry remains the owner of its spearman production evidence.
-
-This avoids an architectural change disguised as a namespace repair.
+Semantic ownership did not change. Only numeric slots changed.
 
 ## 5. Reserved allocation discipline
 
-The repaired slots **555–556** and **638–641** are now occupied and must not be reused.
+The repaired slots **555–556** and **638–641**, plus reassessment slots **760–773**, are occupied and must not be reused.
 
-The following ranges are explicitly protected from future lifecycle allocation because they are already occupied by current source architecture:
+Protected occupied ranges include:
 
 - 490–497
 - 510–530
@@ -110,6 +124,7 @@ The following ranges are explicitly protected from future lifecycle allocation b
 - 600–612
 - 620–641
 - 670–743
+- 760–773
 
 Future lifecycle fields must be allocated outside these occupied blocks and then added to this ledger before source use.
 
@@ -119,24 +134,31 @@ Runtime copies may contain experimental initializers or integration behavior. Th
 
 ## 7. Qualification gate
 
-This repair clears the **numeric namespace collision blocker only**. It does not clear:
+The reassessment boundary clears the **publication-boundary blocker** only. It does not imply that all seven verticals are qualified.
 
-- authorization expiry semantics;
-- active-request supersession in Worker Command/Villager Production;
-- canonical reassessment publication;
+Remaining independent gates include:
+
 - causal verification gaps;
-- Military Production candidate qualification.
+- target-build runtime evidence;
+- military-production selector initialization;
+- complete downstream consumption of reassessment events;
+- tactical command-to-world-effect qualification.
 
-Those remain independent lifecycle gates.
-
-## 8. Required validator invariant
+## 8. Required validator invariants
 
 A repository namespace validator should fail if any two source `defconst` declarations assign the same numeric goal slot, except where the duplicate numeric literal is an explicitly declared local enum value rather than a goal slot.
 
-The authoritative test condition is:
+A lifecycle validator should additionally require:
+
+```text
+registered vertical
+    -> terminal outcome
+    -> exactly one reassessment token per lifecycle generation
+    -> no strategy selection at the reassessment publisher
+```
+
+The authoritative namespace condition remains:
 
 ```text
 GLOBAL_GOAL_SLOT -> exactly one semantic owner
 ```
-
-A symbol can be referenced by many modules; the numeric goal slot cannot have two owners.
