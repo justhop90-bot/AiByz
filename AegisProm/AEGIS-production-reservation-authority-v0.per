@@ -174,7 +174,7 @@
 
 ; --------------------------- reserved -> flight ----------------------------
 ; The producer owns physical dispatch. This authority observes the resulting
-; lifecycle transition; it never executes up-train itself.
+; lifecycle transition; it never issues a physical production command itself.
 (defrule
     (up-compare-goal aegis-pr-valid == 1)
     (up-compare-goal aegis-pr-state == aegis-pr-state-reserved)
