@@ -1,0 +1,103 @@
+{
+  "schema_version": "0.1",
+  "schema_id": "ACAP-CAUSAL-EVIDENCE-0.1",
+  "status": "NORMATIVE",
+  "description": "Machine-readable causal-evidence contract for six AegisProm qualification verticals. World evidence, causal attribution, and confirmation are separate claims.",
+  "evidence_states": ["UNKNOWN", "WORLD_OBSERVED", "CAUSALLY_VERIFIED", "CONFIRMED", "FAILED"],
+  "universal_rules": {
+    "identity_continuity": true,
+    "authorization_continuity": true,
+    "temporal_order_required": true,
+    "baseline_required_for_delta": true,
+    "expected_transition_required": true,
+    "attribution_required": true,
+    "unknown_is_not_success": true,
+    "failed_is_not_success": true,
+    "evidence_monotonic": true,
+    "reassessment_cannot_select_strategy": true,
+    "forbidden_shortcuts": [
+      "PHYSICAL_ACTION_TO_CAUSAL_EVIDENCE",
+      "PENDING_TO_CAUSAL_EVIDENCE",
+      "WORLD_DELTA_TO_CAUSAL_EVIDENCE",
+      "TIME_ELAPSED_TO_CAUSAL_EVIDENCE",
+      "COMMAND_ISSUED_TO_ENGINE_ACCEPTED",
+      "ENGINE_ACCEPTED_TO_COMPLETED",
+      "WORLD_CHANGE_TO_REQUEST_CAUSED_CHANGE"
+    ]
+  },
+  "required_evidence_fields": {
+    "request_id": "string",
+    "authorization_id": "string",
+    "action_generation": "integer",
+    "baseline": "object",
+    "engine_evidence": "object",
+    "world_evidence": "object",
+    "expected_transition": "object",
+    "attribution": "object",
+    "causal_state": "string",
+    "confirmation": "object"
+  },
+  "causal_state_values": ["UNKNOWN", "PENDING", "CONFIRMED", "FAILED"],
+  "verticals": {
+    "villager_production": {
+      "world_evidence": ["PENDING_VILLAGER", "VILLAGER_COUNT_DELTA"],
+      "required_baseline": ["villager_count"],
+      "required_engine_evidence": ["pending_villager_observed", "pending_resolution_observed"],
+      "expected_transition": "authorized_villager_request_to_post_request_villager_census_increase",
+      "attribution_predicates": ["request_identity_match", "authorization_identity_match", "dispatch_precedes_observation", "pending_belongs_to_request", "pending_resolved", "census_delta_positive", "no_unresolved_alternative_producer"],
+      "confirmation_predicate": "causal_state_CONFIRMED"
+    },
+    "housing": {
+      "world_evidence": ["PENDING_HOUSE", "HOUSE_COUNT_DELTA"],
+      "required_baseline": ["house_count"],
+      "required_engine_evidence": ["foundation_or_pending_house_observed", "pending_resolution_observed"],
+      "expected_transition": "authorized_house_request_to_post_request_house_observation",
+      "attribution_predicates": ["request_identity_match", "authorization_identity_match", "dispatch_precedes_observation", "pending_belongs_to_request", "pending_resolved", "house_count_delta_positive", "no_unresolved_alternative_builder"],
+      "confirmation_predicate": "causal_state_CONFIRMED"
+    },
+    "anti_cavalry": {
+      "world_evidence": ["PENDING_SPEARMAN", "SPEARMAN_COUNT_DELTA"],
+      "required_baseline": ["spearman_count"],
+      "required_engine_evidence": ["pending_spearman_observed", "pending_resolution_observed"],
+      "expected_transition": "authorized_anti_cavalry_request_to_post_request_counter_unit_observation",
+      "attribution_predicates": ["request_identity_match", "authorization_identity_match", "dispatch_precedes_observation", "pending_belongs_to_request", "pending_resolved", "spearman_count_delta_positive", "no_unresolved_alternative_producer"],
+      "confirmation_predicate": "causal_state_CONFIRMED"
+    },
+    "age_transition": {
+      "world_evidence": ["DIRECT_ENGINE_AGE"],
+      "required_baseline": ["current_age_before_request"],
+      "required_engine_evidence": ["direct_current_age_observed"],
+      "expected_transition": "authorized_age_request_to_direct_engine_age_transition",
+      "attribution_predicates": ["request_identity_match", "authorization_identity_match", "dispatch_precedes_observation", "direct_engine_age_reached"],
+      "confirmation_predicate": "world_age_target_reached",
+      "notes": "World confirmation may be stronger than causal attribution when the engine exposes no unique request-to-age correlation. Do not manufacture causal evidence."
+    },
+    "tactical_micro": {
+      "world_evidence": ["INTENT_SPECIFIC_TACTICAL_TRANSITION"],
+      "required_baseline": ["intent_specific_world_baseline"],
+      "required_engine_evidence": ["authorized_dispatch_observed"],
+      "expected_transition": "intent_specific_expected_tactical_world_transition",
+      "attribution_predicates": ["request_identity_match", "authorization_identity_match", "dispatch_precedes_observation", "intent_matches_expected_transition", "tactical_effect_observed"],
+      "confirmation_predicate": "intent_specific_causal_outcome_confirmed",
+      "intent_outcomes": {
+        "ENGAGE": ["target_acquired", "attack_state_or_damage_observed"],
+        "RETREAT": ["unit_state_or_position_changed", "threat_relationship_reduced"],
+        "REGROUP": ["movement_observed", "regroup_condition_observed"]
+      }
+    },
+    "military_production": {
+      "world_evidence": ["PENDING_REQUESTED_UNIT", "REQUESTED_UNIT_COUNT_DELTA"],
+      "required_baseline": ["requested_unit_count"],
+      "required_engine_evidence": ["pending_requested_unit_observed", "pending_resolution_observed"],
+      "expected_transition": "authorized_military_request_to_post_request_unit_observation",
+      "attribution_predicates": ["request_identity_match", "authorization_identity_match", "dispatch_precedes_observation", "pending_belongs_to_request", "pending_resolved", "unit_count_delta_positive", "no_unresolved_alternative_producer"],
+      "confirmation_predicate": "causal_state_CONFIRMED",
+      "promotion_blockers": ["SELECTOR_INITIALIZATION", "CAUSAL_SHORTCUT_REPAIR"]
+    }
+  },
+  "confirmation_rules": {
+    "required": ["world_evidence", "causal_evidence_or_explicit_direct_world_confirmation", "request_identity_match", "authorization_identity_match"],
+    "strategic_success_is_separate": true,
+    "reassessment_is_downstream": true
+  }
+}
