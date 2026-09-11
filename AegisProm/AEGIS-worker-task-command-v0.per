@@ -28,15 +28,17 @@
 (defconst aegis-wtc-action-none 0)
 (defconst aegis-wtc-action-gather 1)
 
-; A request is admitted only from a fresh arbitrated/selected generation.
+; A request is admitted only from a fresh arbitrated/selected generation and
+; only when no execution lifecycle is currently active. This prevents a newer
+; upstream generation from superseding an outstanding physical request.
 ; The request identity is copied from arbitration; execution never invents a new one.
-; Authorization is valid only for the current request generation and only while
-; the command remains in the authorized state. Leaving that state expires it.
+; Authorization is valid only for the current upstream request generation.
 (defrule
     (up-compare-goal aegis-wts-valid == 1)
     (up-compare-goal aegis-wts-selected == 1)
     (up-compare-goal aegis-sds-valid == 1)
     (up-compare-goal aegis-sds-serviceable == 1)
+    (up-compare-goal aegis-wtc-valid == 0)
     (up-compare-goal aegis-wtc-generation != aegis-wts-generation)
 =>
     (set-goal aegis-wtc-valid 0)
@@ -54,11 +56,12 @@
     (set-goal aegis-wtc-valid 1)
 )
 
-; A stale authorization fails closed.
+; Authorization expires when the upstream request generation advances.
+; This is explicit supersession, not a fabricated wall-clock timer.
 (defrule
     (up-compare-goal aegis-wtc-valid == 1)
     (up-compare-goal aegis-wtc-authorization-valid == 1)
-    (up-compare-goal aegis-wtc-authorization-generation != aegis-wtc-generation)
+    (up-compare-goal aegis-wtc-authorization-generation != aegis-wts-generation)
 =>
     (set-goal aegis-wtc-authorization-valid 0)
     (set-goal aegis-wtc-stage aegis-wtc-stage-failed)
