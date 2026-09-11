@@ -59,7 +59,7 @@ def valid_trace(vertical_id, generation=1):
         elif stage == "WORLD_STATE_VERIFIED":
             event["request_id"] = request_id
             event["world_state_evidence"] = True
-            if vertical_id in CAUSAL:
+            if vertical_id in CAUSAL["verticals"]:
                 event["causal_evidence"] = causal_payload(vertical_id, generation, request_id)
         elif stage == "REASSESS":
             event["reassessment_published"] = True
@@ -263,3 +263,4 @@ class TestAuthoritativeVerticalSliceContracts(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
