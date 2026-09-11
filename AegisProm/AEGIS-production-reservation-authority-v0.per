@@ -1,24 +1,14 @@
 ; AEGIS PRODUCTION RESERVATION AUTHORITY V0.1
-; Exclusive conflict authority for AEGIS production opportunities.
+; Candidate only: NOT LOADED BY PRODUCTION ROOT.
+; Exclusive ownership authority for the AEGIS production conflict resource.
 ; Certified global block: 806-817.
+; Does not own strategy, producer lifecycle, physical production, world
+; verification, causal confirmation, or strategic success.
 ;
-; Boundary:
-;   - owns exclusive reservation of a conflicting production resource
-;   - does not own strategy, producer lifecycle, physical production, world verification,
-;     causal confirmation, or strategic success
-;
-; Normative separation:
-;   AUTHORIZATION != RESERVATION
-;   RESERVATION != SUCCESS
-;   WORLD TRANSITION != CAUSAL ATTRIBUTION
-;
-; v0.1 resource domain:
-;   AEGIS + spearman-line
-;
-; Producer identities:
-;   1 = MILITARY_PRODUCTION
-;   2 = CAVALRY_RESPONSE
-;
+; Resource v0.1: AEGIS:spearman-line
+; AUTHORIZATION != RESERVATION != SUCCESS
+; WORLD TRANSITION != CAUSAL ATTRIBUTION
+
 (defconst aegis-pr-generation 806)
 (defconst aegis-pr-state 807)
 (defconst aegis-pr-reservation-id 808)
@@ -50,11 +40,7 @@
 (defconst aegis-pr-resource-spearman-line 1)
 (defconst aegis-pr-unit-spearman-line 1)
 
-; ---------------------------------------------------------------------------
-; INITIALIZATION
-; ---------------------------------------------------------------------------
-; A new authority generation may initialize only when no live reservation
-; remains. Active reservations are first fenced by the stale-generation rule.
+; ----------------------------- initialization -----------------------------
 (defrule
     (up-compare-goal aegis-st-valid == 1)
     (up-compare-goal aegis-pr-generation != aegis-st-generation)
@@ -92,11 +78,8 @@
     (set-goal aegis-pr-release-reason aegis-pr-release-none)
 )
 
-; ---------------------------------------------------------------------------
-; GRANT: MILITARY PRODUCTION
-; ---------------------------------------------------------------------------
-; Authorization is a prerequisite; it is not granted by this module.
-; The reservation ID is request-bound in v0.1. No implicit ownership transfer.
+; ------------------------------ grant: MP ----------------------------------
+; Only a current, already-authorized producer can claim the resource.
 (defrule
     (up-compare-goal aegis-st-valid == 1)
     (up-compare-goal aegis-pr-state == aegis-pr-state-free)
@@ -122,10 +105,8 @@
     (set-goal aegis-pr-state aegis-pr-state-reserved)
 )
 
-; ---------------------------------------------------------------------------
-; GRANT: CAVALRY RESPONSE
-; ---------------------------------------------------------------------------
-; Same exclusive resource. If MP already owns it, this rule cannot match.
+; ------------------------------ grant: CR ----------------------------------
+; If MP owns the resource, CR cannot match this FREE-state rule and is denied.
 (defrule
     (up-compare-goal aegis-st-valid == 1)
     (up-compare-goal aegis-pr-state == aegis-pr-state-free)
@@ -150,19 +131,8 @@
     (set-goal aegis-pr-state aegis-pr-state-reserved)
 )
 
-; ---------------------------------------------------------------------------
-; DENIAL / DEFERRED OWNERSHIP
-; ---------------------------------------------------------------------------
-; A conflict produces no mutation and therefore cannot revoke or transfer
-; the current reservation. The requesting producer remains responsible for
-; deciding whether to defer, abandon, or reassess.
-; There is intentionally no persistent DENIED state in v0.1.
-
-; ---------------------------------------------------------------------------
-; STALE AUTHORIZATION / GENERATION FENCE
-; ---------------------------------------------------------------------------
-; A reservation can never authorize physical dispatch across generations.
-; Keep identity intact until the explicit release rule settles it.
+; ------------------------- stale / expiry fences ---------------------------
+; No implicit transfer. An active stale reservation is settled explicitly.
 (defrule
     (up-compare-goal aegis-pr-valid == 1)
     (up-compare-goal aegis-pr-state == aegis-pr-state-reserved)
@@ -181,8 +151,7 @@
     (set-goal aegis-pr-state aegis-pr-state-release-pending)
 )
 
-; Expiry is checked independently of the generation fence. v0.1 uses the
-; producer's authorization-expiry token; a zero token is fail-closed.
+; Current producer expiry tokens are fail-closed at zero. No silent renewal.
 (defrule
     (up-compare-goal aegis-pr-valid == 1)
     (up-compare-goal aegis-pr-state == aegis-pr-state-reserved)
@@ -201,11 +170,9 @@
     (set-goal aegis-pr-state aegis-pr-state-release-pending)
 )
 
-; ---------------------------------------------------------------------------
-; RESERVED -> IN_FLIGHT
-; ---------------------------------------------------------------------------
-; Dispatch itself remains owned by the producer. This module observes only
-; the producer lifecycle transition after dispatch has been authorized.
+; --------------------------- reserved -> flight ----------------------------
+; The producer owns physical dispatch. This authority observes the resulting
+; lifecycle transition; it never executes up-train itself.
 (defrule
     (up-compare-goal aegis-pr-valid == 1)
     (up-compare-goal aegis-pr-state == aegis-pr-state-reserved)
@@ -228,11 +195,7 @@
     (set-goal aegis-pr-state aegis-pr-state-in-flight)
 )
 
-; ---------------------------------------------------------------------------
-; TERMINAL RELEASE REQUEST
-; ---------------------------------------------------------------------------
-; Terminal lifecycle outcome is owned by the producer. Reservation authority
-; records only the release request and reason; it does not infer success.
+; --------------------------- terminal release ------------------------------
 (defrule
     (up-compare-goal aegis-pr-valid == 1)
     (up-compare-goal aegis-pr-state == aegis-pr-state-in-flight)
@@ -281,10 +244,8 @@
     (set-goal aegis-pr-state aegis-pr-state-release-pending)
 )
 
-; ---------------------------------------------------------------------------
-; RELEASE
-; ---------------------------------------------------------------------------
-; Identity must match before ownership can be cleared. Release is idempotent.
+; ------------------------------- release -----------------------------------
+; Release is identity-checked and idempotent.
 (defrule
     (up-compare-goal aegis-pr-valid == 1)
     (up-compare-goal aegis-pr-state == aegis-pr-state-release-pending)
@@ -303,21 +264,7 @@
     (set-goal aegis-pr-valid 0)
 )
 
-; ---------------------------------------------------------------------------
-; DISPATCH GATE CONTRACT
-; ---------------------------------------------------------------------------
-; The producers must include the reservation predicates below in their own
-; physical dispatch rules. This authority never executes up-train itself.
-;
-; MP required reservation gate:
-;   aegis-pr-state == RESERVED
-;   aegis-pr-valid == 1
-;   aegis-pr-owner == MILITARY_PRODUCTION
-;   aegis-pr-request-id == aegis-mp-request-id
-;   aegis-pr-authorization-id == aegis-mp-authorization-id
-;   aegis-pr-authorization-generation == aegis-mp-generation
-;   aegis-pr-resource-key == AEGIS:spearman-line
-;
-; CR uses the identical gate with CAVALRY_RESPONSE producer identity.
-;
-; No rule in this module sets causal evidence or strategic success.
+; Dispatch gate required in both producers:
+; RESERVED + valid + owner + request-id + authorization-id + generation
+; + resource-key + unit-line + producer feasibility/authorization.
+; This module never executes physical production and never sets causal evidence.
