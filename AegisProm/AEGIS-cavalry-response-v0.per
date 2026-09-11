@@ -1,32 +1,160 @@
 ; AEGIS CAVALRY RESPONSE V0 - bounded defensive production
+; Canonical lifecycle: threat classification -> capability demand ->
+; feasibility -> authorization -> physical production -> pending evidence.
+; This module does not collapse threat observation into production success.
 (defconst aegis-cr-generation 620)
 (defconst aegis-cr-valid 621)
 (defconst aegis-cr-stage 622)
 (defconst aegis-cr-attempts 623)
 (defconst aegis-cr-baseline 624)
+(defconst aegis-cr-request-id 625)
+(defconst aegis-cr-authorization-id 626)
+(defconst aegis-cr-authorization-generation 627)
+(defconst aegis-cr-authorization-valid 628)
+(defconst aegis-cr-authorization-expiry 629)
+(defconst aegis-cr-baseline-spears 630)
+(defconst aegis-cr-observed-spears 631)
+(defconst aegis-cr-world-evidence 632)
+(defconst aegis-cr-causal-evidence 633)
+
 (defconst aegis-cr-stage-idle 0)
 (defconst aegis-cr-stage-authorized 1)
 (defconst aegis-cr-stage-issued 2)
 (defconst aegis-cr-stage-pending 3)
-(defconst aegis-cr-stage-failed 4)
-(defrule (up-compare-goal aegis-st-valid == 1) (up-compare-goal aegis-cr-generation != aegis-st-generation) =>
+(defconst aegis-cr-stage-confirmed 4)
+(defconst aegis-cr-stage-failed 5)
+
+(defconst aegis-cr-failure-none 0)
+(defconst aegis-cr-failure-not-feasible 1)
+(defconst aegis-cr-failure-stale-authorization 2)
+(defconst aegis-cr-failure-pending-lost 3)
+(defconst aegis-cr-failure-causality-unproven 4)
+
+; Fresh threat frame creates one capability-demand request.
+; The threat generation is copied as identity; it is never regenerated downstream.
+(defrule
+    (up-compare-goal aegis-st-valid == 1)
+    (up-compare-goal aegis-cr-generation != aegis-st-generation)
+    (up-compare-goal aegis-cr-valid == 0)
+=>
     (up-modify-goal aegis-cr-generation g:= aegis-st-generation)
+    (up-modify-goal aegis-cr-request-id g:= aegis-st-generation)
+    (up-modify-goal aegis-cr-authorization-id g:= aegis-st-generation)
+    (up-modify-goal aegis-cr-authorization-generation g:= aegis-st-generation)
+    (up-modify-goal aegis-cr-authorization-expiry g:= aegis-st-generation)
+    (up-get-fact unit-type-count spearman aegis-cr-baseline-spears)
+    (set-goal aegis-cr-baseline 0)
     (set-goal aegis-cr-stage aegis-cr-stage-idle)
     (set-goal aegis-cr-attempts 0)
+    (set-goal aegis-cr-authorization-valid 0)
+    (set-goal aegis-cr-world-evidence 0)
+    (set-goal aegis-cr-causal-evidence 0)
     (set-goal aegis-cr-valid 1)
+    (set-goal aegis-cr-failure aegis-cr-failure-none)
 )
-(defrule (up-compare-goal aegis-cr-valid == 1) (up-compare-goal aegis-st-threat == aegis-st-threat-cavalry) (up-compare-goal aegis-cr-stage == aegis-cr-stage-idle) (can-train spearman-line) =>
+
+; Threat classification -> capability demand. Cavalry threat is a demand for
+; anti-cavalry capability, not permission to issue the physical command.
+(defrule
+    (up-compare-goal aegis-cr-valid == 1)
+    (up-compare-goal aegis-cr-stage == aegis-cr-stage-idle)
+    (up-compare-goal aegis-st-threat == aegis-st-threat-cavalry)
+    (can-train spearman-line)
+=>
     (set-goal aegis-cr-stage aegis-cr-stage-authorized)
+    (set-goal aegis-cr-authorization-valid 1)
 )
-(defrule (up-compare-goal aegis-cr-valid == 1) (up-compare-goal aegis-cr-stage == aegis-cr-stage-authorized) (up-compare-goal aegis-cr-attempts < 1) (can-train spearman-line) =>
+
+; Authorization becomes invalid if the originating threat generation is no
+; longer current. No native time-based expiry is invented in this slice.
+(defrule
+    (up-compare-goal aegis-cr-valid == 1)
+    (up-compare-goal aegis-cr-authorization-valid == 1)
+    (up-compare-goal aegis-cr-authorization-generation != aegis-cr-generation)
+=>
+    (set-goal aegis-cr-authorization-valid 0)
+    (set-goal aegis-cr-failure aegis-cr-failure-stale-authorization)
+    (set-goal aegis-cr-stage aegis-cr-stage-failed)
+    (set-goal aegis-cr-valid 0)
+)
+
+; Physical production boundary. Feasibility remains separate from authorization.
+; Authorization is consumed at dispatch; one request cannot fire repeatedly.
+(defrule
+    (up-compare-goal aegis-cr-valid == 1)
+    (up-compare-goal aegis-cr-authorization-valid == 1)
+    (up-compare-goal aegis-cr-stage == aegis-cr-stage-authorized)
+    (up-compare-goal aegis-cr-attempts < 1)
+    (can-train spearman-line)
+=>
     (up-train escrow-state c: spearman-line)
     (up-modify-goal aegis-cr-attempts g:+ 1)
     (set-goal aegis-cr-stage aegis-cr-stage-issued)
+    (set-goal aegis-cr-authorization-valid 0)
 )
-(defrule (up-compare-goal aegis-cr-valid == 1) (up-compare-goal aegis-cr-stage == aegis-cr-stage-issued) (up-pending-objects c: spearman-line >= 1) =>
+
+; Feasibility loss before dispatch fails closed.
+(defrule
+    (up-compare-goal aegis-cr-valid == 1)
+    (up-compare-goal aegis-cr-authorization-valid == 1)
+    (up-compare-goal aegis-cr-stage == aegis-cr-stage-authorized)
+    (up-compare-goal aegis-cr-attempts < 1)
+    (not (can-train spearman-line))
+=>
+    (set-goal aegis-cr-failure aegis-cr-failure-not-feasible)
+    (set-goal aegis-cr-stage aegis-cr-stage-failed)
+    (set-goal aegis-cr-authorization-valid 0)
+    (set-goal aegis-cr-valid 0)
+)
+
+; Pending production evidence is preserved as a distinct intermediate state.
+; DE_QUEUE/production admission is not treated as a spawned spearman.
+(defrule
+    (up-compare-goal aegis-cr-valid == 1)
+    (up-compare-goal aegis-cr-stage == aegis-cr-stage-issued)
+    (up-pending-objects c: spearman-line >= 1)
+=>
     (set-goal aegis-cr-stage aegis-cr-stage-pending)
 )
-(defrule (up-compare-goal aegis-cr-valid == 1) (up-compare-goal aegis-cr-stage == aegis-cr-stage-issued) (up-compare-goal aegis-cr-attempts >= 1) (up-pending-objects c: spearman-line <= 0) =>
+
+; Observe the actual spearman count independently of the production command.
+; Count growth is world-state evidence, not causal proof by itself.
+(defrule
+    (up-compare-goal aegis-cr-valid == 1)
+    (up-compare-goal aegis-cr-stage == aegis-cr-stage-pending)
+=>
+    (up-get-fact unit-type-count spearman aegis-cr-observed-spears)
+)
+
+(defrule
+    (up-compare-goal aegis-cr-valid == 1)
+    (up-compare-goal aegis-cr-stage == aegis-cr-stage-pending)
+    (up-compare-goal aegis-cr-observed-spears > aegis-cr-baseline-spears)
+=>
+    (set-goal aegis-cr-world-evidence 1)
+)
+
+; Completion is never manufactured from pending state or command issuance.
+; A request-specific causal writer must independently establish the causal bit.
+(defrule
+    (up-compare-goal aegis-cr-valid == 1)
+    (up-compare-goal aegis-cr-stage == aegis-cr-stage-pending)
+    (up-compare-goal aegis-cr-world-evidence == 1)
+    (up-compare-goal aegis-cr-causal-evidence == 1)
+    (up-compare-goal aegis-cr-request-id == aegis-cr-authorization-id)
+=>
+    (set-goal aegis-cr-stage aegis-cr-stage-confirmed)
+    (set-goal aegis-cr-valid 0)
+)
+
+; Pending production that disappears without world-state growth is failure.
+(defrule
+    (up-compare-goal aegis-cr-valid == 1)
+    (up-compare-goal aegis-cr-stage == aegis-cr-stage-pending)
+    (up-pending-objects c: spearman-line <= 0)
+    (up-compare-goal aegis-cr-observed-spears <= aegis-cr-baseline-spears)
+=>
+    (set-goal aegis-cr-failure aegis-cr-failure-pending-lost)
     (set-goal aegis-cr-stage aegis-cr-stage-failed)
     (set-goal aegis-cr-valid 0)
 )
