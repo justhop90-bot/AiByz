@@ -61,53 +61,55 @@ Absence from the corpus is **not** proof that an engine primitive does not exist
 
 At the beginning of this study, the repository contains the root `AiBuilder.per` plus the nine-module `AiBuilder/` corpus listed above. The current repository source is the object under study; installed runtime files and historical AI(HD)/Promi sources are separate evidence layers and must not be silently conflated with this corpus.
 
-## Study sequence
+## Governing study path
 
-### Phase A — Structural reconstruction
+The study proceeds in this order:
 
-- Establish exact load order.
-- Inventory every Goal definition and numeric allocation visible in the root.
-- Inventory timers and their allocation.
-- Inventory Strategic Numbers used by each module.
-- Map every module's inputs, outputs, state mutations, and dependencies.
+`SOURCE → ABI → OWNERSHIP → LIVENESS → AUTHORITY → RUNTIME QUALIFICATION → VERTICAL SLICE → AEGIS POLICY`
 
-### Phase B — Execution semantics
+The governing work plan is [`06_NEXT_PATH.md`](06_NEXT_PATH.md). It is the controlling sequence for this study.
 
-- Trace representative rules from condition → action.
-- Identify feasibility gates (`can-build`, `can-train`, `can-buy`, escrow conditions, pending-object conditions).
-- Determine where AiBuilder requests actions versus where it can actually establish completion.
-- Identify rule-order and state-persistence dependencies.
+### Gate A — Static ABI
 
-### Phase C — Defect and hazard audit
+Reconcile the Goal, working/register, timer, Strategic Number, operation-width, and alias inventories against the actual source. In particular, distinguish repository allocation from engine-safe allocation. The range 122–479 is not treated as free ABI merely because the current AiBuilder root does not allocate it.
 
-- Undefined/unresolved symbols.
-- Duplicate or conflicting state allocation.
-- Goal spans used by multi-Goal operations.
-- Timer allocation hazards.
-- Phase-transition defects.
-- Cross-module scratch-state hazards.
-- Difficulty-conditional compilation hazards.
-- Action-without-confirmation paths.
+### Gate B — Ownership and liveness
 
-### Phase D — Vertical-slice qualification
+Trace each selected policy channel completely:
 
-Select a small number of representative execution paths and trace them completely before permitting Byzantine policy work to depend on them. The first candidate is **unique-unit production / Cataphract production**, because it exercises phase policy, desired counts, feasibility, production, and reassessment without requiring a new production subsystem.
+`declaration → all writers → all readers → predicates → feasibility → action request → downstream consumer → reassessment`
 
-## First conclusions
+Existing traces are evidence for the individual channels they cover; they do not authorize generalization to untraced Goals.
 
-- `AiBuilder.per` is a real composition root; there is no `AiBuilder/aibuilder.per` file to treat as an alternative root.
-- `constantsUP.per` is foundational and is loaded first.
-- The root establishes working Goal state including `local-total` 495 through `temporary-goal` 510, and the search-state goals are deliberately grouped there.
-- Root timers currently include `town-size-timer` 1 through `naval-attack-timer` 5.
+### Gate C — Runtime authority
+
+Use one deliberately minimal qualification to answer the narrow runtime question static source cannot answer: whether a proposed writer can affect an existing consumer at the relevant execution point. The tester is not a discovery mechanism.
+
+### Gate D — Vertical slice
+
+Promote one complete production lifecycle. The governing first slice is the **Civilian Production Loop**, not a broad military override layer.
+
+### Gate E — AEGIS policy
+
+Only after the substrate and authority boundaries are established should Byzantine policy be layered onto the existing execution machinery.
+
+## Current conclusions
+
+- `AiBuilder.per` is the composition root; the loaded execution corpus is under `AiBuilder/`.
+- `constantsUP.per` is foundational and loads first.
+- The root establishes working Goal state including `local-total` 495 through `temporary-goal` 510, with structured search-state and scratch reuse that must not be treated as automatically safe for Byzantine storage.
+- Root timers currently include `town-size-timer` 1 through `naval-attack-timer` 5; arbitrary new timer allocation remains unauthorized.
 - Module load order is explicit and materially affects state reuse and execution assumptions.
 - `phaseUpdate.per` is the major producer of `desired-*` policy inputs.
 - `economy.per`, `construction.per`, and `militaryUnits.per` consume those policy inputs to perform resource, construction, and training behavior.
 - `technologies.per` provides upgrade/research behavior and escrow management.
 - `market.per` contains reactive resource-exchange behavior.
-- `militaryBehavior.per` controls military targeting, grouping, and attack behavior.
-- The blanket proposal to replace `unit-type-count` with `unit-type-count-total` in `technologies.per` is **disproven by the current static trace**; those rules use specific unit types appropriate to the upgrades they guard.
-- `previous-phase` is a direct static defect candidate because the current corpus shows it being read without a corresponding writer; the runtime effect of any repair remains a runtime-semantics question.
+- The blanket proposal to replace `unit-type-count` with `unit-type-count-total` in `technologies.per` is disproven by the current static trace; those rules use specific unit types appropriate to the upgrades they guard.
+- `previous-phase` is a direct static defect candidate because the current corpus shows it being read without a corresponding writer; its runtime effect and any repair remain separate questions.
 - `any-enemy` semantics for primitives not demonstrated in the corpus remain unconfirmed and must not be silently promoted to production assumptions.
+- Goals 48, 49, and 57 have individual source-backed existing-channel traces. Those traces establish static ownership/liveness facts for those channels only; runtime writer precedence and world-state causality remain unproven.
+- Goal 54 is the next military-channel trace target only after its actual source occurrences are recovered and inspected; inventory-table presence alone is insufficient evidence.
+- UC-04 has been narrowed: symbolic-to-numeric binding is directly established by the composition root. The remaining UC-04' question is extension legality, slot safety, duplicate behavior, and declaration-order/loader effects. New Goal allocation remains unauthorized.
 
 ## What this section is not
 
@@ -115,4 +117,4 @@ This is not a Byzantine strategy specification, not a replacement for AEGIS, and
 
 ## Next study artifact
 
-`02_EXECUTION_CONTRACT.md` records the initial module-by-module contract and its evidence status. It is intentionally conservative and will be revised as source tracing establishes stronger evidence.
+[`06_NEXT_PATH.md`](06_NEXT_PATH.md) is now the governing forward plan. The immediate work is static reconciliation and ownership/liveness closure, followed by one frozen runtime authority qualification. No Byzantine implementation is authorized before those gates pass.
