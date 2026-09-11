@@ -1,0 +1,22 @@
+{
+  "vertical": "civilian-production-loop",
+  "intended_experiment": {
+    "map": "controlled single-TC test",
+    "producer": "Town Center",
+    "unit": "villager",
+    "baseline": "record villager census before demand/production cycle",
+    "positive_cycles_required": 3,
+    "required_chain": ["demand", "authorization", "issue", "pending", "census-increase"],
+    "negative_cases": [
+      "insufficient-resource",
+      "no-legal-producer",
+      "duplicate-request",
+      "stale-generation",
+      "pending-disappears-without-census-increase",
+      "world-delta-without-request-attribution",
+      "competing-producer"
+    ]
+  },
+  "execution_status": "NOT_EXECUTED",
+  "blocker": "No reliable controlled in-game stimulus/observation interface was available through the authorized remote execution path during this attempt. Direct executable launch was non-responsive."
+}
