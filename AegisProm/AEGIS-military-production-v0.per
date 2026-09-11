@@ -42,9 +42,9 @@
 (defconst aegis-mp-causal-failed 3)
 
 ; ----------------------------- initialization -----------------------------
-; V0 is the cavalry-response composition slice. Its selector is therefore
-; explicitly initialized to the only unit this bounded producer is authorized
-; to request: spearman-line. No implicit engine/default selector is assumed.
+; V0 is the cavalry-response composition slice. Its selector is explicitly
+; initialized to the only unit this bounded producer is authorized to request:
+; spearman-line. No implicit engine/default selector is assumed.
 (defrule
     (up-compare-goal aegis-st-valid == 1)
     (up-compare-goal aegis-mp-generation != aegis-st-generation)
@@ -139,6 +139,7 @@
 )
 
 ; Pending disappearance is an observation, not proof of successful spawning.
+; The subsequent count observation supplies the world-state transition.
 (defrule
     (up-compare-goal aegis-mp-valid == 1)
     (up-compare-goal aegis-mp-stage == aegis-mp-stage-pending)
@@ -149,6 +150,7 @@
     (set-goal aegis-mp-stage aegis-mp-stage-world-observed)
 )
 
+; World evidence is deliberately separated from causal confirmation.
 (defrule
     (up-compare-goal aegis-mp-valid == 1)
     (up-compare-goal aegis-mp-stage == aegis-mp-stage-pending)
@@ -159,6 +161,12 @@
     (set-goal aegis-mp-stage aegis-mp-stage-world-observed)
 )
 
+; Request-bound attribution producer.
+; This rule is intentionally stronger than a count-delta test. It requires the
+; complete lifecycle identity chain AND an independent assertion that no
+; unresolved alternative producer can explain the observed requested unit.
+; Without that final predicate, causal attribution remains UNKNOWN and
+; confirmation cannot occur.
 (defrule
     (up-compare-goal aegis-mp-valid == 1)
     (up-compare-goal aegis-mp-stage == aegis-mp-stage-world-observed)
@@ -175,6 +183,8 @@
     (set-goal aegis-mp-causal-state aegis-mp-causal-pending)
 )
 
+; Causal confirmation requires every request-bound attribution predicate.
+; A positive count delta alone can never enter this rule.
 (defrule
     (up-compare-goal aegis-mp-valid == 1)
     (up-compare-goal aegis-mp-stage == aegis-mp-stage-world-observed)
@@ -193,6 +203,8 @@
     (set-goal aegis-mp-valid 0)
 )
 
+; Attribution remains UNKNOWN until the independent alternative-producer
+; predicate is established. This file never manufactures that predicate.
 (defrule
     (up-compare-goal aegis-mp-valid == 1)
     (up-compare-goal aegis-mp-stage == aegis-mp-stage-world-observed)
@@ -202,6 +214,7 @@
     (set-goal aegis-mp-causal-state aegis-mp-causal-unknown)
 )
 
+; Bounded failure: request issued but no pending production remains.
 (defrule
     (up-compare-goal aegis-mp-valid == 1)
     (up-compare-goal aegis-mp-stage == aegis-mp-stage-issued)
@@ -213,6 +226,7 @@
     (set-goal aegis-mp-valid 0)
 )
 
+; Canonical reassessment boundary. Only confirmed or failed terminal outcomes publish.
 (defrule
     (up-compare-goal aegis-mp-stage == aegis-mp-stage-causally-confirmed)
     (up-compare-goal aegis-mp-reassess-generation != aegis-mp-generation)
