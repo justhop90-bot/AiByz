@@ -1,4 +1,5 @@
 ; AEGIS MILITARY PRODUCTION V0 - bounded composition lifecycle
+; Candidate only: authorization is explicit but qualification/promotion remains blocked.
 (defconst aegis-mp-generation 630)
 (defconst aegis-mp-valid 631)
 (defconst aegis-mp-stage 632)
@@ -9,6 +10,11 @@
 (defconst aegis-mp-pending 637)
 (defconst aegis-mp-reassess-generation 772)
 (defconst aegis-mp-reassess-valid 773)
+(defconst aegis-mp-request-id 788)
+(defconst aegis-mp-authorization-id 789)
+(defconst aegis-mp-authorization-generation 790)
+(defconst aegis-mp-authorization-valid 791)
+(defconst aegis-mp-authorization-expiry 792)
 (defconst aegis-mp-stage-idle 0)
 (defconst aegis-mp-stage-authorized 1)
 (defconst aegis-mp-stage-issued 2)
@@ -21,8 +27,14 @@
 (defrule
     (up-compare-goal aegis-st-valid == 1)
     (up-compare-goal aegis-mp-generation != aegis-st-generation)
+    (up-compare-goal aegis-mp-valid == 0)
 =>
     (up-modify-goal aegis-mp-generation g:= aegis-st-generation)
+    (up-modify-goal aegis-mp-request-id g:= aegis-st-generation)
+    (up-modify-goal aegis-mp-authorization-id g:= aegis-st-generation)
+    (up-modify-goal aegis-mp-authorization-generation g:= aegis-st-generation)
+    (up-modify-goal aegis-mp-authorization-expiry g:= aegis-st-generation)
+    (set-goal aegis-mp-authorization-valid 0)
     (set-goal aegis-mp-valid 1)
     (set-goal aegis-mp-stage aegis-mp-stage-idle)
     (set-goal aegis-mp-attempts 0)
@@ -38,18 +50,37 @@
     (up-compare-goal aegis-mp-baseline < 6)
     (can-train spearman-line)
 =>
+    ; Feasibility establishes authorization for this exact request generation.
     (set-goal aegis-mp-stage aegis-mp-stage-authorized)
+    (set-goal aegis-mp-authorization-valid 1)
 )
 
+; Authorization expires when the originating Scouting/Threat generation advances.
+(defrule
+    (up-compare-goal aegis-mp-valid == 1)
+    (up-compare-goal aegis-mp-authorization-valid == 1)
+    (up-compare-goal aegis-mp-authorization-generation != aegis-st-generation)
+=>
+    (set-goal aegis-mp-authorization-valid 0)
+    (set-goal aegis-mp-stage aegis-mp-stage-failed)
+    (set-goal aegis-mp-valid 0)
+)
+
+; Physical production requires the explicit, current authorization boundary.
+; This candidate still cannot qualify merely from count increase.
 (defrule
     (up-compare-goal aegis-mp-valid == 1)
     (up-compare-goal aegis-mp-stage == aegis-mp-stage-authorized)
+    (up-compare-goal aegis-mp-authorization-valid == 1)
+    (up-compare-goal aegis-mp-authorization-generation == aegis-st-generation)
+    (up-compare-goal aegis-mp-authorization-id == aegis-mp-request-id)
     (up-compare-goal aegis-mp-attempts < 1)
     (can-train spearman-line)
 =>
     (up-train escrow-state c: spearman-line)
     (up-modify-goal aegis-mp-attempts g:+ 1)
     (set-goal aegis-mp-stage aegis-mp-stage-issued)
+    (set-goal aegis-mp-authorization-valid 0)
 )
 
 (defrule
