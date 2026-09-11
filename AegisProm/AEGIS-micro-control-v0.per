@@ -94,3 +94,16 @@
     (set-goal aegis-mc-intent aegis-mc-intent-regroup)
     (set-goal aegis-mc-stage aegis-mc-stage-authorized)
 )
+
+; Physical adapter reports dispatch through its own evidence boundary.
+; MC, as lifecycle owner, alone advances authorized -> issued.
+(defrule
+    (up-compare-goal aegis-mc-valid == 1)
+    (up-compare-goal aegis-mc-stage == aegis-mc-stage-authorized)
+    (up-compare-goal aegis-mpa-dispatch-valid == 1)
+    (up-compare-goal aegis-mpa-dispatch-generation == aegis-mc-request-generation)
+=>
+    (up-modify-goal aegis-mc-attempts g:+ 1)
+    (set-goal aegis-mc-stage aegis-mc-stage-issued)
+    (set-goal aegis-mpa-dispatch-valid 0)
+)
