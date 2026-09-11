@@ -1,0 +1,13 @@
+{
+  "target_ai_directory": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\ai",
+  "root": "AEGIS-BYZ.per",
+  "root_sha256": "3128E9A40D9A077B5110365EDEC841A461557A0996F899164F76EB036F2CB9FD",
+  "civilian_modules": {
+    "AEGIS-civilian-census-v0.per": "9ABB27B203CA0EAACB4315ACEC441B13C31C91D8BBAFEB6127B07855C9F380E7",
+    "AEGIS-civilian-demand-v0.per": "2637A1B234B5C43764D6B36936B3F04C11FC4835D6CFA7387B45A6BEBE7B26C2",
+    "AEGIS-villager-production-v0.per": "AF469CD2FFE555E5569AE2755BA05AC1DCD8B7299FE42A5C3733D49158CC35A0",
+    "AEGIS-civilian-lifecycle-reconciler-v0.per": "3BB800B602A01C6A56DCD983B4E3D452007BD32A25B49AD797B9D6E99109A5C5"
+  },
+  "load_graph_inspected": true,
+  "engine_load_proof": false
+}
