@@ -6,6 +6,7 @@
 ; Byzantine Architect pass: desired roles are strategic/economic policy inputs.
 ; Archaeologist constraint: observed role counts come from the worker-role census.
 ; AI(HD)+Promisory constraint: preserve explicit deficit/reconciliation semantics.
+; REASSESS consumption is acknowledgement only: it never creates a worker-census generation.
 
 (defconst aegis-wrv-generation 465)
 (defconst aegis-wrv-valid 466)
@@ -21,6 +22,8 @@
 (defconst aegis-wrv-deficit-stone 476)
 (defconst aegis-wrv-deficit-builder 477)
 (defconst aegis-wrv-observed-at 478)
+(defconst aegis-wrv-reassess-generation 778)
+(defconst aegis-wrv-reassess-valid 779)
 
 (defconst aegis-wrv-stage-init 0)
 (defconst aegis-wrv-stage-derived 1)
@@ -34,7 +37,22 @@
 (defconst aegis-wrv-target-stone 0)
 (defconst aegis-wrv-target-builder 0)
 
+; Consume the worker-task-verification REASSESS publication exactly once.
+; WTV owns publication; worker-role-vector owns acknowledgement because it
+; converts a fresh worker census into the next economic-demand generation.
+; REASSESS does not increment or manufacture the worker-role-vector generation.
+(defrule
+    (up-compare-goal aegis-wtv-reassess-valid == 1)
+    (up-compare-goal aegis-wtv-reassess-generation == aegis-wtv-generation)
+    (up-compare-goal aegis-wrv-reassess-generation != aegis-wtv-reassess-generation)
+=>
+    (up-modify-goal aegis-wrv-reassess-generation g:= aegis-wtv-reassess-generation)
+    (set-goal aegis-wrv-reassess-valid 1)
+    (set-goal aegis-wtv-reassess-valid 0)
+)
+
 ; Start a new vector only when a fresh worker-role census exists.
+; This is the sole generation boundary for WRV. REASSESS cannot manufacture it.
 (defrule
     (up-compare-goal aegis-wrc-valid == 1)
     (up-compare-goal aegis-wrv-generation != aegis-wrc-generation)
@@ -51,6 +69,7 @@
     (set-goal aegis-wrv-deficit-gold 0)
     (set-goal aegis-wrv-deficit-stone 0)
     (set-goal aegis-wrv-deficit-builder 0)
+    (set-goal aegis-wrv-reassess-valid 0)
     (up-modify-goal aegis-wrv-generation g:= aegis-wrc-generation)
     (up-modify-goal aegis-wrv-observed-at g:= aegis-wrc-observed-at)
     (set-goal aegis-wrv-valid 1)
