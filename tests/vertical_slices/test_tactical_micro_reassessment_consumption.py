@@ -60,8 +60,10 @@ def test_reassess_ack_is_not_strategy_selection():
 def test_micro_verification_does_not_promote_unknown_to_success():
     mv = read("AEGIS-micro-verification-v0.per")
     assert "aegis-mv-result aegis-mv-result-unknown" in mv
-    assert "aegis-mv-world-evidence == 1" in mv
-    assert "aegis-mv-causal-evidence == 1" in mv
+    assert "set-goal aegis-mv-world-evidence 1" in mv
+    # Causal evidence remains explicitly unproven in this vertical.
+    assert "set-goal aegis-mv-causal-evidence 1" not in mv
+    assert "set-goal aegis-mv-causal-evidence 0" in mv
 
 
 def test_no_central_reassessment_controller_source_exists():
