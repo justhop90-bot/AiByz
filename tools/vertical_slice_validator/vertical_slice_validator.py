@@ -33,6 +33,10 @@ def validate_vertical_slice(trace: dict[str, Any], registry: dict[str, Any] | No
     requires target-build runtime/engine-specific verification and registry
     promotion eligibility. A candidate or blocked contract cannot qualify even
     when a trace is structurally complete.
+
+    REASSESS is a publication boundary, not a strategy controller. The final
+    event must carry the same lifecycle generation and explicitly state that a
+    reassessment token was published by the registry-defined REASSESS owner.
     """
     registry = registry or load_registry()
     errors: list[dict[str, str]] = []
@@ -148,6 +152,15 @@ def validate_vertical_slice(trace: dict[str, Any], registry: dict[str, Any] | No
             errors.append(_error("VSL-007", "Unknown outcome received credit."))
         if event.get("outcome") == "FAILED" and event.get("credited"):
             errors.append(_error("VSL-010", "Failed outcome received credit."))
+
+    if required_terminal_stage == "REASSESS" and stages and stages[-1] == "REASSESS":
+        reassess = events[-1]
+        if reassess.get("reassessment_published") is not True:
+            errors.append(_error("VSL-029", "REASSESS must explicitly publish a reassessment token."))
+        if reassess.get("reassessment_generation") != generation:
+            errors.append(_error("VSL-030", "REASSESS token generation must equal the lifecycle generation."))
+        if reassess.get("reassessment_strategy") is not None:
+            errors.append(_error("VSL-031", "REASSESS publisher cannot select the next strategy."))
 
     contract_valid = not errors
     promotion_eligible = (
