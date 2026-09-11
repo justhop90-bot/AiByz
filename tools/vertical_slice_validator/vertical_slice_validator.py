@@ -4,7 +4,6 @@ import json
 from pathlib import Path
 from typing import Any
 
-
 REGISTRY_PATH = Path(__file__).resolve().parents[2] / "schemas" / "AEGIS-VERTICAL-SLICE-CONTRACTS-1.0.json"
 
 
@@ -27,22 +26,26 @@ def _error(code: str, message: str) -> dict[str, str]:
 
 
 def validate_vertical_slice(trace: dict[str, Any], registry: dict[str, Any] | None = None) -> dict[str, Any]:
-    """Validate evidence against the authoritative contract selected by vertical_id.
+    """Validate a trace against the authoritative contract selected by vertical_id.
 
-    The trace is evidence only. It cannot define expected stages, owners,
-    evidence requirements, or allowed transitions.
+    The trace is evidence only. It cannot define stages, owners, evidence
+    requirements, or allowed transitions. ``contract_valid`` means the trace
+    conforms to the contract. ``qualified`` additionally requires target-build
+    runtime/engine-specific verification evidence and therefore remains a
+    promotion-level result.
     """
     registry = registry or load_registry()
     errors: list[dict[str, str]] = []
 
     vertical_id = trace.get("vertical_id")
     if not vertical_id:
-        return {"qualified": False, "errors": [_error("VSL-011", "Trace must identify vertical_id.")]}
+        return {"qualified": False, "contract_valid": False, "errors": [_error("VSL-011", "Trace must identify vertical_id.")]}
 
     contract = registry["contracts"].get(vertical_id)
     if contract is None:
-        return {"qualified": False, "errors": [_error("VSL-012", f"Unknown vertical_id {vertical_id!r}.")]}
+        return {"qualified": False, "contract_valid": False, "vertical_id": vertical_id, "errors": [_error("VSL-012", f"Unknown vertical_id {vertical_id!r}.")]}
 
+    # Contract authority is external to the trace. Reject attempts to shadow it.
     for field in {"expected_stages", "owners", "required_evidence", "allowed_transitions"}:
         if field in trace:
             errors.append(_error("VSL-013", f"Trace cannot define authoritative contract field {field!r}."))
@@ -50,9 +53,9 @@ def validate_vertical_slice(trace: dict[str, Any], registry: dict[str, Any] | No
     expected = contract["stages"]
     events = trace.get("events", [])
     if not isinstance(events, list):
-        return {"qualified": False, "vertical_id": vertical_id, "contract_version": contract["version"], "errors": errors + [_error("VSL-014", "Trace events must be a list.")]}
+        return {"qualified": False, "contract_valid": False, "vertical_id": vertical_id, "contract_version": contract["version"], "errors": errors + [_error("VSL-014", "Trace events must be a list.")]}
 
-    stages = [e.get("stage") for e in events]
+    stages = [event.get("stage") for event in events]
     positions = {stage: index for index, stage in enumerate(stages) if stage is not None}
 
     for stage in expected:
@@ -76,6 +79,7 @@ def validate_vertical_slice(trace: dict[str, Any], registry: dict[str, Any] | No
     authorization_events: dict[str, dict[str, Any]] = {}
     required_evidence = contract["required_evidence"]
     owners = contract["owners"]
+    runtime_evidence_seen = False
 
     for event in events:
         stage = event.get("stage")
@@ -86,15 +90,18 @@ def validate_vertical_slice(trace: dict[str, Any], registry: dict[str, Any] | No
         if generation is None or event.get("generation") != generation:
             errors.append(_error("VSL-008", "Event generation does not match trace generation."))
 
-        if not event.get("owner"):
+        owner = event.get("owner")
+        if not owner:
             errors.append(_error("VSL-018", f"Stage {stage!r} lacks state-owner evidence."))
-        elif event["owner"] != owners[stage]:
-            errors.append(_error("VSL-019", f"Stage {stage!r} names non-authoritative owner {event['owner']!r}."))
+        elif owner != owners[stage]:
+            errors.append(_error("VSL-019", f"Stage {stage!r} names non-authoritative owner {owner!r}."))
 
         evidence_type = event.get("evidence_type")
         allowed_evidence = required_evidence.get(stage, [])
         if evidence_type not in allowed_evidence:
             errors.append(_error("VSL-020", f"Stage {stage!r} has evidence type {evidence_type!r}; allowed: {allowed_evidence}."))
+        if evidence_type in {"TARGET_BUILD_RUNTIME", "ENGINE_SPECIFIC"}:
+            runtime_evidence_seen = True
 
         rid = event.get("request_id")
         if stage == "AUTHORIZATION":
@@ -129,7 +136,7 @@ def validate_vertical_slice(trace: dict[str, Any], registry: dict[str, Any] | No
         if stage == "WORLD_STATE_VERIFIED":
             if not event.get("world_state_evidence"):
                 errors.append(_error("VSL-005", "Verification lacks world-state evidence."))
-            if evidence_type in {"SYNTHETIC_TEST", "STATIC_SOURCE", "COMPOSED", "INFERRED"}:
+            if evidence_type not in {"TARGET_BUILD_RUNTIME", "ENGINE_SPECIFIC"}:
                 errors.append(_error("VSL-027", "World-state verification requires target-build runtime or engine-specific evidence."))
 
         if event.get("strategic_success") and stage != "WORLD_STATE_VERIFIED":
@@ -139,4 +146,17 @@ def validate_vertical_slice(trace: dict[str, Any], registry: dict[str, Any] | No
         if event.get("outcome") == "FAILED" and event.get("credited"):
             errors.append(_error("VSL-010", "Failed outcome received credit."))
 
-    return {"qualified": not errors, "vertical_id": vertical_id, "contract_version": contract["version"], "errors": errors}
+    contract_valid = not errors
+    qualified = contract_valid and runtime_evidence_seen and any(
+        event.get("stage") == "WORLD_STATE_VERIFIED"
+        and event.get("evidence_type") in {"TARGET_BUILD_RUNTIME", "ENGINE_SPECIFIC"}
+        for event in events
+    )
+
+    return {
+        "qualified": qualified,
+        "contract_valid": contract_valid,
+        "vertical_id": vertical_id,
+        "contract_version": contract["version"],
+        "errors": errors,
+    }
