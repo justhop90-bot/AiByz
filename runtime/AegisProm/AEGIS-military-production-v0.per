@@ -1,0 +1,97 @@
+; AEGIS MILITARY PRODUCTION V0 - bounded composition lifecycle
+; Single consequential spearman production path for the cavalry-response demand.
+
+(defconst aegis-mp-generation 630)
+(defconst aegis-mp-valid 631)
+(defconst aegis-mp-stage 632)
+(defconst aegis-mp-unit 633)
+(defconst aegis-mp-attempts 634)
+(defconst aegis-mp-baseline 635)
+(defconst aegis-mp-observed 636)
+(defconst aegis-mp-pending 637)
+(defconst aegis-mp-stage-idle 0)
+(defconst aegis-mp-stage-authorized 1)
+(defconst aegis-mp-stage-issued 2)
+(defconst aegis-mp-stage-pending 3)
+(defconst aegis-mp-stage-confirmed 4)
+(defconst aegis-mp-stage-failed 5)
+(defconst aegis-mp-unit-spearman 1)
+(defconst aegis-mp-unit-camel 2)
+
+; The selector is explicit and initialized here rather than relying on the
+; engine's zero initialization. This keeps the unit domain deterministic.
+(defrule
+    (up-compare-goal aegis-st-valid == 1)
+    (up-compare-goal aegis-mp-generation != aegis-st-generation)
+=>
+    (up-modify-goal aegis-mp-generation g:= aegis-st-generation)
+    (set-goal aegis-mp-valid 1)
+    (set-goal aegis-mp-stage aegis-mp-stage-idle)
+    (set-goal aegis-mp-unit aegis-mp-unit-spearman)
+    (set-goal aegis-mp-attempts 0)
+    (set-goal aegis-mp-pending 0)
+)
+
+; Only consume an explicit cavalry-response authorization. This prevents
+; military production from independently duplicating the response decision.
+(defrule
+    (up-compare-goal aegis-mp-valid == 1)
+    (up-compare-goal aegis-mp-stage == aegis-mp-stage-idle)
+    (up-compare-goal aegis-cr-valid == 1)
+    (up-compare-goal aegis-cr-stage == aegis-cr-stage-authorized)
+    (up-compare-goal aegis-mp-unit == aegis-mp-unit-spearman)
+    (up-get-fact unit-type-count-total spearman-line aegis-mp-baseline)
+    (up-compare-goal aegis-mp-baseline < 6)
+    (can-train spearman)
+=>
+    (set-goal aegis-mp-stage aegis-mp-stage-authorized)
+)
+
+(defrule
+    (up-compare-goal aegis-mp-valid == 1)
+    (up-compare-goal aegis-mp-stage == aegis-mp-stage-authorized)
+    (up-compare-goal aegis-mp-attempts < 1)
+    (can-train spearman)
+=>
+    (up-train escrow-state c: spearman)
+    (up-modify-goal aegis-mp-attempts g:+ 1)
+    (set-goal aegis-mp-stage aegis-mp-stage-issued)
+    (set-goal aegis-cr-stage aegis-cr-stage-issued)
+)
+
+(defrule
+    (up-compare-goal aegis-mp-valid == 1)
+    (up-compare-goal aegis-mp-stage == aegis-mp-stage-issued)
+    (up-pending-objects c: spearman >= 1)
+=>
+    (set-goal aegis-mp-pending 1)
+    (set-goal aegis-mp-stage aegis-mp-stage-pending)
+)
+
+(defrule
+    (up-compare-goal aegis-mp-valid == 1)
+    (up-compare-goal aegis-mp-stage == aegis-mp-stage-pending)
+=>
+    (up-get-fact unit-type-count-total spearman-line aegis-mp-observed)
+)
+
+(defrule
+    (up-compare-goal aegis-mp-valid == 1)
+    (up-compare-goal aegis-mp-stage == aegis-mp-stage-pending)
+    (up-compare-goal aegis-mp-observed > aegis-mp-baseline)
+=>
+    (set-goal aegis-mp-stage aegis-mp-stage-confirmed)
+    (set-goal aegis-mp-valid 0)
+    (set-goal aegis-cr-valid 0)
+)
+
+(defrule
+    (up-compare-goal aegis-mp-valid == 1)
+    (up-compare-goal aegis-mp-stage == aegis-mp-stage-issued)
+    (up-compare-goal aegis-mp-attempts >= 1)
+    (up-pending-objects c: spearman <= 0)
+=>
+    (set-goal aegis-mp-stage aegis-mp-stage-failed)
+    (set-goal aegis-mp-valid 0)
+    (set-goal aegis-cr-valid 0)
+)
