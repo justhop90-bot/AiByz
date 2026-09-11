@@ -1,14 +1,21 @@
-; AEGIS MICRO EXECUTION BRIDGE V0 - authority gate for physical dispatch
+; AEGIS MICRO EXECUTION BRIDGE V0 - explicit authorization boundary
+; Converts governor intent into a single-use authorization. It does not dispatch.
 (defconst aegis-me-generation 730)
 (defconst aegis-me-valid 731)
 (defconst aegis-me-authorized 732)
 (defconst aegis-me-purpose 733)
+(defconst aegis-me-request-id 736)
+(defconst aegis-me-authorization-id 737)
+(defconst aegis-me-authorization-generation 738)
+(defconst aegis-me-authorization-expiry 739)
 (defconst aegis-me-purpose-none 0)
 (defconst aegis-me-purpose-engage 1)
 (defconst aegis-me-purpose-disengage 2)
 (defconst aegis-me-purpose-regroup 3)
 (defconst aegis-me-purpose-pursue 4)
 
+; New governor epoch opens a new authorization record only after the bridge
+; observes a valid upstream decision/execution authority.
 (defrule
     (up-compare-goal aegis-mg3-valid == 1)
     (up-compare-goal aegis-me-generation != aegis-mg3-epoch)
@@ -16,36 +23,54 @@
     (up-compare-goal aegis-decision-valid == 1)
 =>
     (up-modify-goal aegis-me-generation g:= aegis-mg3-epoch)
+    (up-modify-goal aegis-me-request-id g:= aegis-mc-request-id)
+    (up-modify-goal aegis-me-authorization-id g:= aegis-mg3-epoch)
+    (up-modify-goal aegis-me-authorization-generation g:= aegis-mc-request-generation)
+    (up-modify-goal aegis-me-authorization-expiry g:= aegis-mc-request-generation)
     (set-goal aegis-me-authorized 0)
     (set-goal aegis-me-purpose aegis-me-purpose-none)
     (set-goal aegis-me-valid 1)
 )
 
+; Authorization expires when the originating request generation is no longer
+; the current tactical generation. No time-based expiry is invented.
 (defrule
     (up-compare-goal aegis-me-valid == 1)
+    (up-compare-goal aegis-me-authorized == 1)
+    (up-compare-goal aegis-me-authorization-generation != aegis-mc-generation)
+=>
+    (set-goal aegis-me-authorized 0)
+)
+
+; Only supported physical commands are authorized here. Pursuit remains a
+; governor intent until a physical pursuit adapter is separately qualified.
+(defrule
+    (up-compare-goal aegis-me-valid == 1)
+    (up-compare-goal aegis-me-authorized == 0)
+    (up-compare-goal aegis-mc-stage == aegis-mc-stage-authorized)
     (up-compare-goal aegis-mg3-command == aegis-mg3-command-engage)
+    (up-compare-goal aegis-me-request-id == aegis-mc-request-id)
 =>
     (set-goal aegis-me-purpose aegis-me-purpose-engage)
     (set-goal aegis-me-authorized 1)
 )
 (defrule
     (up-compare-goal aegis-me-valid == 1)
+    (up-compare-goal aegis-me-authorized == 0)
+    (up-compare-goal aegis-mc-stage == aegis-mc-stage-authorized)
     (up-compare-goal aegis-mg3-command == aegis-mg3-command-disengage)
+    (up-compare-goal aegis-me-request-id == aegis-mc-request-id)
 =>
     (set-goal aegis-me-purpose aegis-me-purpose-disengage)
     (set-goal aegis-me-authorized 1)
 )
 (defrule
     (up-compare-goal aegis-me-valid == 1)
+    (up-compare-goal aegis-me-authorized == 0)
+    (up-compare-goal aegis-mc-stage == aegis-mc-stage-authorized)
     (up-compare-goal aegis-mg3-command == aegis-mg3-command-regroup)
+    (up-compare-goal aegis-me-request-id == aegis-mc-request-id)
 =>
     (set-goal aegis-me-purpose aegis-me-purpose-regroup)
-    (set-goal aegis-me-authorized 1)
-)
-(defrule
-    (up-compare-goal aegis-me-valid == 1)
-    (up-compare-goal aegis-mg3-command == aegis-mg3-command-pursue)
-=>
-    (set-goal aegis-me-purpose aegis-me-purpose-pursue)
     (set-goal aegis-me-authorized 1)
 )
