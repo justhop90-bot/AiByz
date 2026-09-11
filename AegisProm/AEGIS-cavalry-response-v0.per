@@ -55,6 +55,7 @@
 
 ; Threat classification -> capability demand. Cavalry threat is a demand for
 ; anti-cavalry capability, not permission to issue the physical command.
+defrule
 (defrule
     (up-compare-goal aegis-cr-valid == 1)
     (up-compare-goal aegis-cr-stage == aegis-cr-stage-idle)
@@ -65,12 +66,12 @@
     (set-goal aegis-cr-authorization-valid 1)
 )
 
-; Authorization becomes invalid if the originating threat generation is no
-; longer current. No native time-based expiry is invented in this slice.
+; Authorization expires when the originating threat generation advances.
+; This is explicit supersession, not a fabricated wall-clock timer.
 (defrule
     (up-compare-goal aegis-cr-valid == 1)
     (up-compare-goal aegis-cr-authorization-valid == 1)
-    (up-compare-goal aegis-cr-authorization-generation != aegis-cr-generation)
+    (up-compare-goal aegis-cr-authorization-generation != aegis-st-generation)
 =>
     (set-goal aegis-cr-authorization-valid 0)
     (set-goal aegis-cr-failure aegis-cr-failure-stale-authorization)
