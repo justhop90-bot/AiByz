@@ -58,13 +58,14 @@
 )
 
 ; Age-transition REASSESS acknowledgement.
-; Civilization State acknowledges the exact terminal age-transition generation,
-; consumes the one-shot publication token, and records that acknowledgement.
-; It does not advance the World Model or manufacture a new civilization-state
-; generation. The next lifecycle can arise only from a later World Model snapshot.
+; The consumer must match the terminal age lifecycle to the exact
+; civilization-state frame that authorized/observed that lifecycle.
+; This prevents a delayed RA token from being acknowledged after a newer
+; World Model generation has already replaced the state frame.
 (defrule
     (up-compare-goal aegis-ra-reassess-valid == 1)
     (up-compare-goal aegis-ra-reassess-generation == aegis-ra-generation)
+    (up-compare-goal aegis-ra-generation == aegis-cs-generation)
     (up-compare-goal aegis-cs-age-reassess-generation != aegis-ra-reassess-generation)
 =>
     (up-modify-goal aegis-cs-age-reassess-generation g:= aegis-ra-reassess-generation)
