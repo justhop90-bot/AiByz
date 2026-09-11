@@ -80,6 +80,12 @@ class TestAuthoritativeVerticalSliceContracts(unittest.TestCase):
                 result = validate_vertical_slice(valid_trace(vertical_id))
                 self.assertTrue(result["contract_valid"], result["errors"])
 
+    def test_candidate_trace_can_be_contract_valid_but_never_qualified(self):
+        result = validate_vertical_slice(valid_trace("military_production"))
+        self.assertTrue(result["contract_valid"], result["errors"])
+        self.assertFalse(result["promotion_eligible"])
+        self.assertFalse(result["qualified"])
+
     def test_trace_cannot_shadow_authoritative_contract(self):
         for vertical_id in SLICES:
             with self.subTest(slice=vertical_id):
@@ -184,6 +190,14 @@ class TestAuthoritativeVerticalSliceContracts(unittest.TestCase):
             self.assertFalse(result["contract_valid"])
             expected = "VSL-007" if outcome == "UNKNOWN" else "VSL-010"
             self.assertIn(expected, {e["error_code"] for e in result["errors"]})
+
+    def test_nonterminal_trace_is_rejected(self):
+        broken = valid_trace("villager_production")
+        broken["events"].pop()
+        result = validate_vertical_slice(broken)
+        self.assertFalse(result["contract_valid"])
+        self.assertIn("VSL-001", {e["error_code"] for e in result["errors"]})
+        self.assertIn("VSL-028", {e["error_code"] for e in result["errors"]})
 
 
 if __name__ == "__main__":
