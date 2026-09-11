@@ -26,7 +26,7 @@
 ; Consume the villager-production/lifecycle REASSESS publication exactly once.
 ; The publisher owns publication; civilian demand owns acknowledgement.
 ; Acknowledgement does not increment or otherwise manufacture a generation.
-defrule
+(defrule
     (up-compare-goal aegis-vr-reassess-valid == 1)
     (up-compare-goal aegis-vr-reassess-generation == aegis-vr-generation)
     (up-compare-goal aegis-civ-reassess-generation != aegis-vr-reassess-generation)
