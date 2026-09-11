@@ -1,5 +1,6 @@
 ; AEGIS MICRO PHYSICAL ADAPTER V0
 ; Isolated physical dispatch boundary.
+; Authorization is consumed at the physical boundary; dispatch != success.
 ; action-stop/action-move are established stock forms; attack-move remains
 ; separately runtime-qualified even though the form exists in stock.
 
@@ -12,6 +13,8 @@
     (up-compare-goal aegis-mc-target-ready > 0)
     (up-compare-goal aegis-mg3-command == aegis-mg3-command-engage)
     (up-compare-goal aegis-me-authorized == 1)
+    (up-compare-goal aegis-me-request-id == aegis-mc-request-id)
+    (up-compare-goal aegis-me-authorization-generation == aegis-mc-request-generation)
     (up-compare-goal aegis-mg2-target-ready == 1)
     (up-compare-goal aegis-mc-attempts < 1)
 =>
@@ -19,6 +22,7 @@
     (up-set-target-object search-remote c: 0)
     (up-target-objects 0 action-attack-move -1 -1)
     (up-modify-goal aegis-mc-attempts g:+ 1)
+    (set-goal aegis-me-authorized 0)
     (set-goal aegis-mc-stage aegis-mc-stage-issued)
 )
 
@@ -29,11 +33,14 @@
     (up-compare-goal aegis-mc-intent == aegis-mc-intent-retreat)
     (up-compare-goal aegis-mg3-command == aegis-mg3-command-disengage)
     (up-compare-goal aegis-me-authorized == 1)
+    (up-compare-goal aegis-me-request-id == aegis-mc-request-id)
+    (up-compare-goal aegis-me-authorization-generation == aegis-mc-request-generation)
     (up-compare-goal aegis-mg2-fallback-ready == 1)
     (up-compare-goal aegis-mc-attempts < 1)
 =>
     (up-target-point 0 action-stop -1 -1)
     (up-modify-goal aegis-mc-attempts g:+ 1)
+    (set-goal aegis-me-authorized 0)
     (set-goal aegis-mc-stage aegis-mc-stage-issued)
 )
 
@@ -45,15 +52,19 @@
     (up-compare-goal aegis-mc-intent == aegis-mc-intent-regroup)
     (up-compare-goal aegis-mg3-command == aegis-mg3-command-regroup)
     (up-compare-goal aegis-me-authorized == 1)
+    (up-compare-goal aegis-me-request-id == aegis-mc-request-id)
+    (up-compare-goal aegis-me-authorization-generation == aegis-mc-request-generation)
     (up-compare-goal aegis-mg2-fallback-ready == 1)
     (up-compare-goal aegis-mc-attempts < 1)
 =>
     (up-target-point position-self-x action-move -1 stance-defensive)
     (up-modify-goal aegis-mc-attempts g:+ 1)
+    (set-goal aegis-me-authorized 0)
     (set-goal aegis-mc-stage aegis-mc-stage-issued)
 )
 
-; Physical completion is deliberately not inferred from dispatch.
+; Physical completion is deliberately not inferred from dispatch. Verification
+; owns the post-dispatch evidence and reassessment boundary.
 (defrule
     (up-compare-goal aegis-mc-valid == 1)
     (up-compare-goal aegis-mc-stage == aegis-mc-stage-issued)
