@@ -1,0 +1,10 @@
+{"seq":0,"stage":"SOURCE_LOAD_INSPECTION","status":"OBSERVED","target":"101.103.48987.0","root":"AEGIS-BYZ.per","engine_load_proof":false}
+{"seq":1,"stage":"GAME_LAUNCH","status":"BLOCKED","observation":"AoE2DE_s.exe created a non-responsive Age of Empires II: Definitive Edition window; process terminated"}
+{"seq":2,"stage":"OBSERVATION","status":"NOT_EXECUTED"}
+{"seq":3,"stage":"DEMAND","status":"NOT_EXECUTED"}
+{"seq":4,"stage":"AUTHORIZATION","status":"NOT_EXECUTED"}
+{"seq":5,"stage":"PHYSICAL_REQUEST","status":"NOT_EXECUTED"}
+{"seq":6,"stage":"ENGINE_PENDING","status":"NOT_EXECUTED"}
+{"seq":7,"stage":"WORLD_TRANSITION","status":"NOT_EXECUTED"}
+{"seq":8,"stage":"CAUSAL_CONFIRMATION","status":"NOT_EXECUTED"}
+{"seq":9,"stage":"REASSESSMENT","status":"NOT_EXECUTED"}
