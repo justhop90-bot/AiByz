@@ -19,6 +19,10 @@
 (defconst aegis-mp-causal-pending-resolved 802)
 (defconst aegis-mp-causal-world-transition 803)
 (defconst aegis-mp-causal-attribution 804)
+; Attribution producer input: an authoritative observer must prove that no
+; unresolved alternative producer can explain the observed requested unit.
+; This is deliberately not manufactured from the unit-count delta.
+(defconst aegis-mp-causal-alternative-producer-clear 805)
 (defconst aegis-mp-reassess-generation 772)
 (defconst aegis-mp-reassess-valid 773)
 (defconst aegis-mp-request-id 788)
@@ -65,6 +69,7 @@
     (set-goal aegis-mp-causal-pending-resolved 0)
     (set-goal aegis-mp-causal-world-transition 0)
     (set-goal aegis-mp-causal-attribution 0)
+    (set-goal aegis-mp-causal-alternative-producer-clear 0)
 )
 
 (defrule
@@ -146,6 +151,27 @@
     (set-goal aegis-mp-stage aegis-mp-stage-world-observed)
 )
 
+; Request-bound attribution producer.
+; This rule is intentionally stronger than a count-delta test. It requires the
+; complete lifecycle identity chain AND an independent assertion that no
+; unresolved alternative producer can explain the observed unit. Without that
+; final predicate, causal attribution remains UNKNOWN and confirmation cannot occur.
+(defrule
+    (up-compare-goal aegis-mp-valid == 1)
+    (up-compare-goal aegis-mp-stage == aegis-mp-stage-world-observed)
+    (up-compare-goal aegis-mp-causal-request-id == aegis-mp-request-id)
+    (up-compare-goal aegis-mp-causal-authorization-id == aegis-mp-authorization-id)
+    (up-compare-goal aegis-mp-causal-generation == aegis-mp-generation)
+    (up-compare-goal aegis-mp-causal-dispatch-observed == 1)
+    (up-compare-goal aegis-mp-causal-pending-observed == 1)
+    (up-compare-goal aegis-mp-causal-pending-resolved == 1)
+    (up-compare-goal aegis-mp-causal-world-transition == 1)
+    (up-compare-goal aegis-mp-causal-alternative-producer-clear == 1)
+=>
+    (set-goal aegis-mp-causal-attribution 1)
+    (set-goal aegis-mp-causal-state aegis-mp-causal-pending)
+)
+
 ; Causal confirmation requires every request-bound attribution predicate.
 ; A positive count delta alone can never enter this rule.
 (defrule
@@ -166,10 +192,8 @@
     (set-goal aegis-mp-valid 0)
 )
 
-; Attribution remains UNKNOWN unless a separate, request-bound attribution
-; producer proves that the observed unit is attributable to this request.
-; This file intentionally does not manufacture that evidence from count deltas.
-
+; Attribution remains UNKNOWN until the independent alternative-producer
+; predicate is established. This file never manufactures that predicate.
 (defrule
     (up-compare-goal aegis-mp-valid == 1)
     (up-compare-goal aegis-mp-stage == aegis-mp-stage-world-observed)
