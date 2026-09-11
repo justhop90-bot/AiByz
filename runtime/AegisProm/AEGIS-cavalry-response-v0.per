@@ -1,0 +1,35 @@
+; AEGIS CAVALRY RESPONSE V0 - bounded defensive production request
+; This module authorizes a spearman response to cavalry pressure.
+; It does NOT issue the train command. AEGIS-military-production-v0 owns
+; the consequential production command so there is one military train path.
+
+(defconst aegis-cr-generation 620)
+(defconst aegis-cr-valid 621)
+(defconst aegis-cr-stage 622)
+(defconst aegis-cr-attempts 623)
+(defconst aegis-cr-baseline 624)
+(defconst aegis-cr-stage-idle 0)
+(defconst aegis-cr-stage-authorized 1)
+(defconst aegis-cr-stage-issued 2)
+(defconst aegis-cr-stage-pending 3)
+(defconst aegis-cr-stage-failed 4)
+
+(defrule
+    (up-compare-goal aegis-st-valid == 1)
+    (up-compare-goal aegis-cr-generation != aegis-st-generation)
+=>
+    (up-modify-goal aegis-cr-generation g:= aegis-st-generation)
+    (set-goal aegis-cr-stage aegis-cr-stage-idle)
+    (set-goal aegis-cr-attempts 0)
+    (set-goal aegis-cr-valid 1)
+)
+
+; Publish a bounded production authorization. Military Production consumes it.
+(defrule
+    (up-compare-goal aegis-cr-valid == 1)
+    (up-compare-goal aegis-st-threat == aegis-st-threat-cavalry)
+    (up-compare-goal aegis-cr-stage == aegis-cr-stage-idle)
+    (can-train spearman)
+=>
+    (set-goal aegis-cr-stage aegis-cr-stage-authorized)
+)
