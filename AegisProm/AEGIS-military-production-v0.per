@@ -7,6 +7,8 @@
 (defconst aegis-mp-baseline 635)
 (defconst aegis-mp-observed 636)
 (defconst aegis-mp-pending 637)
+(defconst aegis-mp-reassess-generation 772)
+(defconst aegis-mp-reassess-valid 773)
 (defconst aegis-mp-stage-idle 0)
 (defconst aegis-mp-stage-authorized 1)
 (defconst aegis-mp-stage-issued 2)
@@ -27,7 +29,6 @@
     (set-goal aegis-mp-pending 0)
 )
 
-; Cavalry threat selects spearmen first. The response remains bounded to one queue request.
 (defrule
     (up-compare-goal aegis-mp-valid == 1)
     (up-compare-goal aegis-mp-stage == aegis-mp-stage-idle)
@@ -67,6 +68,8 @@
     (up-get-fact unit-type-count-total spearman-line aegis-mp-observed)
 )
 
+; NOTE: This remains the known candidate behavior. A count increase is not,
+; by itself, promoted to qualified causal evidence by this reassessment pass.
 (defrule
     (up-compare-goal aegis-mp-valid == 1)
     (up-compare-goal aegis-mp-stage == aegis-mp-stage-pending)
@@ -84,4 +87,22 @@
 =>
     (set-goal aegis-mp-stage aegis-mp-stage-failed)
     (set-goal aegis-mp-valid 0)
+)
+
+; Canonical reassessment boundary. This candidate publishes only its local
+; lifecycle outcome. The registry still controls qualification/promotion.
+(defrule
+    (up-compare-goal aegis-mp-stage == aegis-mp-stage-confirmed)
+    (up-compare-goal aegis-mp-reassess-generation != aegis-mp-generation)
+=>
+    (up-modify-goal aegis-mp-reassess-generation g:= aegis-mp-generation)
+    (set-goal aegis-mp-reassess-valid 1)
+)
+
+(defrule
+    (up-compare-goal aegis-mp-stage == aegis-mp-stage-failed)
+    (up-compare-goal aegis-mp-reassess-generation != aegis-mp-generation)
+=>
+    (up-modify-goal aegis-mp-reassess-generation g:= aegis-mp-generation)
+    (set-goal aegis-mp-reassess-valid 1)
 )
