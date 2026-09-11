@@ -63,6 +63,13 @@ def test_tactical_micro_lifecycle_owner_closes_itself():
     assert "up-modify-goal aegis-mc-valid" not in mv
 
 
+def test_military_production_selector_is_explicitly_initialized():
+    mp = read("AEGIS-military-production-v0.per")
+    assert "set-goal aegis-mp-unit aegis-mp-unit-spearman" in mp
+    assert "aegis-mp-unit == aegis-mp-unit-spearman" in mp
+    assert "aegis-mp-unit == aegis-mp-unit-camel" not in mp.split("; ----------------------------- initialization", 1)[1].split("; ------------------------------ grant", 1)[0]
+
+
 def test_military_production_has_explicit_single_use_authorization():
     mp = read("AEGIS-military-production-v0.per")
     for symbol in (
