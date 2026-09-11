@@ -19,21 +19,19 @@
 (defconst aegis-vr-authorization-id 458)
 (defconst aegis-vr-causal-status 459)
 (defconst aegis-vr-causal-evidence 460)
+(defconst aegis-vr-reassess-generation 762)
+(defconst aegis-vr-reassess-valid 763)
 
 (defconst aegis-vr-stage-init 0)
 (defconst aegis-vr-stage-issued 1)
 (defconst aegis-vr-stage-pending 2)
 (defconst aegis-vr-stage-confirmed 3)
 (defconst aegis-vr-stage-failed 4)
-
 (defconst aegis-vr-causal-unknown 0)
 (defconst aegis-vr-causal-pending 1)
 (defconst aegis-vr-causal-confirmed 2)
 (defconst aegis-vr-causal-failed 3)
 
-; Start exactly one lifecycle record for a fresh production request.
-; Preserve the production request/authorization identity rather than
-; manufacturing a new verification identity.
 (defrule
     (up-compare-goal aegis-vp-valid == 1)
     (up-compare-goal aegis-vp-stage == aegis-vp-stage-issued)
@@ -55,8 +53,6 @@
     (set-goal aegis-vr-valid 1)
 )
 
-; Queue admission remains an intermediate state. It proves only that an
-; engine-visible pending object exists, not that a villager was created.
 (defrule
     (up-compare-goal aegis-vr-valid == 1)
     (up-compare-goal aegis-vr-stage == aegis-vr-stage-issued)
@@ -67,11 +63,6 @@
     (set-goal aegis-vr-causal-status aegis-vr-causal-pending)
 )
 
-; Request-bound causal verification. A census increase is necessary world
-; evidence, but this module does not infer causality from the increase alone.
-; It only records the evidence and requires a distinct causal-evidence flag
-; before the lifecycle can become confirmed. A separate proven attribution
-; mechanism may set that flag when engine evidence rules out concurrent causes.
 (defrule
     (up-compare-goal aegis-vr-valid == 1)
     (up-compare-goal aegis-vr-stage == aegis-vr-stage-pending)
@@ -82,8 +73,6 @@
     (up-modify-goal aegis-vr-confirmed-delta g:- aegis-vr-baseline-villagers)
 )
 
-; Causal verification is explicit and request-bound. World-state evidence
-; without attribution cannot receive completion credit.
 (defrule
     (up-compare-goal aegis-vr-valid == 1)
     (up-compare-goal aegis-vr-stage == aegis-vr-stage-pending)
@@ -96,8 +85,6 @@
     (set-goal aegis-vr-stage aegis-vr-stage-confirmed)
 )
 
-; Pending disappearance without world-state increase is a bounded failure.
-; It does not become a successful completion by queue closure.
 (defrule
     (up-compare-goal aegis-vr-valid == 1)
     (up-compare-goal aegis-vr-stage == aegis-vr-stage-pending)
@@ -117,4 +104,22 @@
     (up-compare-goal aegis-vr-stage == aegis-vr-stage-confirmed)
 =>
     (set-goal aegis-vr-valid 0)
+)
+
+; Canonical reassessment boundary. The reconciler publishes the terminal
+; lifecycle generation; it does not choose the next demand or strategy.
+(defrule
+    (up-compare-goal aegis-vr-stage == aegis-vr-stage-confirmed)
+    (up-compare-goal aegis-vr-reassess-generation != aegis-vr-generation)
+=>
+    (up-modify-goal aegis-vr-reassess-generation g:= aegis-vr-generation)
+    (set-goal aegis-vr-reassess-valid 1)
+)
+
+(defrule
+    (up-compare-goal aegis-vr-stage == aegis-vr-stage-failed)
+    (up-compare-goal aegis-vr-reassess-generation != aegis-vr-generation)
+=>
+    (up-modify-goal aegis-vr-reassess-generation g:= aegis-vr-generation)
+    (set-goal aegis-vr-reassess-valid 1)
 )
