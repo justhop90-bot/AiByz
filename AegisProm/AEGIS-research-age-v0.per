@@ -16,22 +16,18 @@
 (defconst aegis-ra-authorization-expiry 610)
 (defconst aegis-ra-world-evidence 611)
 (defconst aegis-ra-causal-evidence 612)
-
+(defconst aegis-ra-reassess-generation 766)
+(defconst aegis-ra-reassess-valid 767)
 (defconst aegis-ra-stage-idle 0)
 (defconst aegis-ra-stage-authorized 1)
 (defconst aegis-ra-stage-issued 2)
 (defconst aegis-ra-stage-confirmed 3)
 (defconst aegis-ra-stage-failed 4)
-
 (defconst aegis-ra-failure-none 0)
 (defconst aegis-ra-failure-not-feasible 1)
 (defconst aegis-ra-failure-stale-authorization 2)
 (defconst aegis-ra-failure-transition-unobserved 3)
 
-; Create one age-transition request when no active request exists.
-; The requirement owner creates request identity because no separate age-demand
-; writer is currently established. A newer World Model snapshot must NOT reset
-; an already-issued request before its engine outcome is observed.
 (defrule
     (up-compare-goal aegis-wm-valid == 1)
     (up-compare-goal aegis-ra-valid == 0)
@@ -53,9 +49,6 @@
     (set-goal aegis-ra-valid 1)
 )
 
-; Feasibility and authorization remain distinct.
-; These predicates authorize the specific request; they do not imply that
-; research has been issued or completed.
 (defrule
     (up-compare-goal aegis-ra-valid == 1)
     (up-compare-goal aegis-ra-stage == aegis-ra-stage-idle)
@@ -65,14 +58,11 @@
     (up-compare-goal aegis-wm-food >= 800)
     (up-compare-goal aegis-wm-gold >= 200)
 =>
-    ; Preserve the existing target-age baseline semantics: Feudal -> Castle.
     (set-goal aegis-ra-baseline-age 2)
     (set-goal aegis-ra-authorization-valid 1)
     (set-goal aegis-ra-stage aegis-ra-stage-authorized)
 )
 
-; Authorization expires when the upstream World Model generation advances.
-; This is explicit supersession, not a fabricated wall-clock timer.
 (defrule
     (up-compare-goal aegis-ra-valid == 1)
     (up-compare-goal aegis-ra-authorization-valid == 1)
@@ -84,8 +74,6 @@
     (set-goal aegis-ra-valid 0)
 )
 
-; Physical research request. Authorization is consumed on dispatch, so this
-; request cannot issue a duplicate research command merely by rule re-firing.
 (defrule
     (up-compare-goal aegis-ra-valid == 1)
     (up-compare-goal aegis-ra-authorization-valid == 1)
@@ -99,8 +87,6 @@
     (set-goal aegis-ra-authorization-valid 0)
 )
 
-; If feasibility is lost before dispatch, fail closed rather than issuing an
-; unauthorized research request.
 (defrule
     (up-compare-goal aegis-ra-valid == 1)
     (up-compare-goal aegis-ra-authorization-valid == 1)
@@ -114,11 +100,6 @@
     (set-goal aegis-ra-valid 0)
 )
 
-; VERIFIED AGE-TRANSITION EVIDENCE.
-; The engine-facing current-age fact is the completion evidence. We deliberately
-; wait here if the command has been issued but the age has not changed yet.
-; Feudal remaining after one research command is NOT immediate failure because
-; no proven research-completion timeout exists in this source slice.
 (defrule
     (up-compare-goal aegis-ra-valid == 1)
     (up-compare-goal aegis-ra-stage == aegis-ra-stage-issued)
@@ -130,11 +111,20 @@
     (set-goal aegis-ra-valid 0)
 )
 
-; The canonical contract distinguishes world-state verification from causal
-; attribution. This source slice does not manufacture causal evidence: the
-; research completion fact proves the age transition, but does not create a
-; separate source-level claim about why the engine reached that state.
-; aegis-ra-causal-evidence remains available for future engine-proven attribution.
+; Canonical reassessment boundary. The age-transition owner emits only the
+; terminal lifecycle generation; it does not decide the next strategic action.
+(defrule
+    (up-compare-goal aegis-ra-stage == aegis-ra-stage-confirmed)
+    (up-compare-goal aegis-ra-reassess-generation != aegis-ra-generation)
+=>
+    (up-modify-goal aegis-ra-reassess-generation g:= aegis-ra-generation)
+    (set-goal aegis-ra-reassess-valid 1)
+)
 
-; A failed request is terminal for this request identity. Retry/replan belongs
-; to the higher-level reassessment boundary and must create a new authorization.
+(defrule
+    (up-compare-goal aegis-ra-stage == aegis-ra-stage-failed)
+    (up-compare-goal aegis-ra-reassess-generation != aegis-ra-generation)
+=>
+    (up-modify-goal aegis-ra-reassess-generation g:= aegis-ra-generation)
+    (set-goal aegis-ra-reassess-valid 1)
+)
