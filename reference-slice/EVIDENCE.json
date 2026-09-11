@@ -1,0 +1,24 @@
+{
+  "gate": "A",
+  "result": "BLOCKED",
+  "source_load": {
+    "status": "OBSERVED_STATICALLY",
+    "root_present": true,
+    "root_hash_captured": true,
+    "civilian_modules_present": true,
+    "root_declares_civilian_loads": true
+  },
+  "runtime": {
+    "engine_loaded_exact_source": false,
+    "observation": false,
+    "demand": false,
+    "authorization": false,
+    "physical_request": false,
+    "engine_acceptance_pending": false,
+    "world_transition": false,
+    "causal_attribution": false,
+    "reassessment": false
+  },
+  "promotion": "NOT_AUTHORIZED",
+  "reason": "A controlled target-build match was not successfully executed and observed."
+}
