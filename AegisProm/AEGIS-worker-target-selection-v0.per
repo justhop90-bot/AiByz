@@ -6,6 +6,7 @@
 ; Archaeologist: candidate selection follows observed stock search/filter contracts.
 ; Byzantine Architect: any eligible villager may be retasked; existing role is not a worker identity.
 ; AI(HD)+Promisory: preserve worker protection and interruption-aware filtering.
+; Canonical lifecycle: request identity is propagated unchanged from arbitration to execution.
 
 (defconst aegis-wts-generation 510)
 (defconst aegis-wts-valid 511)
@@ -16,6 +17,8 @@
 (defconst aegis-wts-observed-at 516)
 (defconst aegis-wts-cycle 517)
 (defconst aegis-wts-candidates 518)
+(defconst aegis-wts-request-id 519)
+
 (defconst aegis-wts-stage-init 0)
 (defconst aegis-wts-stage-searching 1)
 (defconst aegis-wts-stage-qualified 2)
@@ -38,6 +41,7 @@
     (up-modify-goal aegis-wts-generation g:= aegis-eda-generation)
     (up-modify-goal aegis-wts-observed-at g:= aegis-eda-observed-at)
     (up-modify-goal aegis-wts-cycle g:+ 1)
+    (up-modify-goal aegis-wts-request-id g:= aegis-eda-request-id)
     (set-goal aegis-wts-valid 1)
 )
 
