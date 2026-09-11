@@ -1,7 +1,5 @@
 ; AEGIS HOUSING CONSTRUCTION V0
-; Final runtime module - loaded by AEGIS-BYZ.per.
-; Target: AoE2DE 101.103.48987.0 / BuildID 24094652
-; Purpose: bounded civilian housing lifecycle from demand to observation.
+; Bounded civilian housing lifecycle from demand to observation.
 ; Construction is execution infrastructure, not strategic policy.
 ; Native build issuance is not proof of foundation or completion.
 ; Canonical lifecycle: request identity and authorization are explicit and current at dispatch.
@@ -143,7 +141,8 @@
     (up-compare-goal aegis-hc-causal-evidence == 1)
 =>
     (set-goal aegis-hc-stage aegis-hc-stage-confirmed)
-    (set-goal aegis-civ-housing-demand aegis-civ-demand-none)
+    ; Housing lifecycle owns its terminal state. Civilian demand must consume
+    ; the later REASSESS publication rather than being mutated by HC directly.
     (set-goal aegis-hc-valid 0)
 )
 
