@@ -1,15 +1,24 @@
 ; AEGIS SCOUTING/THREAT V0 - enemy information frame
-(defconst aegis-st-generation 610)
-(defconst aegis-st-valid 611)
-(defconst aegis-st-enemy-age 612)
-(defconst aegis-st-cavalry 613)
-(defconst aegis-st-cavalry-archer 614)
-(defconst aegis-st-knight 615)
-(defconst aegis-st-threat 616)
-(defconst aegis-st-confidence 617)
+; Source namespace repaired: 642-649. Previous 610-617 collided with
+; the Age Transition lifecycle (600-612) and was not source-safe.
+(defconst aegis-st-generation 642)
+(defconst aegis-st-valid 643)
+(defconst aegis-st-enemy-age 644)
+(defconst aegis-st-cavalry 645)
+(defconst aegis-st-cavalry-archer 646)
+(defconst aegis-st-knight 647)
+(defconst aegis-st-threat 648)
+(defconst aegis-st-confidence 649)
+(defconst aegis-st-reassess-generation 782)
+(defconst aegis-st-reassess-valid 783)
 (defconst aegis-st-threat-none 0)
 (defconst aegis-st-threat-cavalry 1)
-(defrule (up-compare-goal aegis-wm-valid == 1) (up-compare-goal aegis-st-generation != aegis-wm-generation) =>
+
+; Consume a published World Model generation.
+(defrule
+    (up-compare-goal aegis-wm-valid == 1)
+    (up-compare-goal aegis-st-generation != aegis-wm-generation)
+=>
     (up-modify-goal aegis-st-generation g:= aegis-wm-generation)
     (set-goal aegis-st-enemy-age 0)
     (set-goal aegis-st-cavalry 0)
@@ -18,14 +27,47 @@
     (set-goal aegis-st-threat aegis-st-threat-none)
     (set-goal aegis-st-confidence 0)
     (set-goal aegis-st-valid 1)
+    (set-goal aegis-st-reassess-valid 0)
 )
-(defrule (up-compare-goal aegis-st-valid == 1) =>
+
+(defrule
+    (up-compare-goal aegis-st-valid == 1)
+=>
     (up-get-fact-max any-enemy unit-type-count scout-cavalry-line aegis-st-cavalry)
     (up-get-fact-max any-enemy unit-type-count cavalry-archer-line aegis-st-cavalry-archer)
     (up-get-fact-max any-enemy unit-type-count knight-line aegis-st-knight)
     (set-goal aegis-st-confidence 1)
 )
-(defrule (up-compare-goal aegis-st-valid == 1) (or (up-compare-goal aegis-st-cavalry >= 3) (up-compare-goal aegis-st-cavalry-archer >= 2) (up-compare-goal aegis-st-knight >= 2)) =>
+
+(defrule
+    (up-compare-goal aegis-st-valid == 1)
+    (or (up-compare-goal aegis-st-cavalry >= 3) (up-compare-goal aegis-st-cavalry-archer >= 2) (up-compare-goal aegis-st-knight >= 2))
+=>
     (set-goal aegis-st-threat aegis-st-threat-cavalry)
     (set-goal aegis-st-confidence 2)
+)
+
+; Anti-cavalry REASSESS acknowledgement.
+; Scouting/Threat is the correct downstream owner because it owns the
+; upstream threat-generation boundary consumed by Anti-Cavalry. The consumer
+; acknowledges only the exact terminal CR lifecycle generation and consumes
+; the one-shot CR publication token. It does not manufacture a new threat
+; generation; only a newer World Model snapshot may do that.
+(defrule
+    (up-compare-goal aegis-cr-reassess-valid == 1)
+    (up-compare-goal aegis-cr-reassess-generation == aegis-cr-generation)
+    (up-compare-goal aegis-st-reassess-generation != aegis-cr-reassess-generation)
+=>
+    (up-modify-goal aegis-st-reassess-generation g:= aegis-cr-reassess-generation)
+    (set-goal aegis-st-reassess-valid 1)
+    (set-goal aegis-cr-reassess-valid 0)
+)
+
+; A fresh World Model generation invalidates the local acknowledgement state.
+; REASSESS itself never creates the next threat generation.
+(defrule
+    (up-compare-goal aegis-st-valid == 1)
+    (up-compare-goal aegis-st-generation != aegis-wm-generation)
+=>
+    (set-goal aegis-st-reassess-valid 0)
 )
