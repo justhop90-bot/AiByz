@@ -4,6 +4,7 @@
 ; Purpose: bounded civilian housing lifecycle from demand to observation.
 ; Construction is execution infrastructure, not strategic policy.
 ; Native build issuance is not proof of foundation or completion.
+; Canonical lifecycle: request identity and authorization are explicit and current at dispatch.
 
 (defconst aegis-hc-generation 570)
 (defconst aegis-hc-valid 571)
@@ -14,6 +15,13 @@
 (defconst aegis-hc-attempts 576)
 (defconst aegis-hc-observed-at 577)
 (defconst aegis-hc-failure 578)
+(defconst aegis-hc-request-id 579)
+(defconst aegis-hc-authorization-id 580)
+(defconst aegis-hc-authorization-generation 581)
+(defconst aegis-hc-authorization-valid 582)
+(defconst aegis-hc-authorization-expiry 583)
+(defconst aegis-hc-world-evidence 584)
+(defconst aegis-hc-causal-evidence 585)
 
 (defconst aegis-hc-stage-init 0)
 (defconst aegis-hc-stage-authorized 1)
@@ -25,8 +33,11 @@
 (defconst aegis-hc-failure-none 0)
 (defconst aegis-hc-failure-cannot-build 1)
 (defconst aegis-hc-failure-pending-lost 2)
+(defconst aegis-hc-failure-stale-authorization 3)
+(defconst aegis-hc-failure-causality-unproven 4)
 
-; Admit one construction record for a fresh civilian-demand generation.
+; Admit one construction request for a fresh civilian-demand generation.
+; Request identity originates at the demand generation and is never regenerated here.
 ; The baseline is captured before any build command is issued.
 (defrule
     (up-compare-goal aegis-civ-stage == aegis-civ-stage-qualified)
@@ -34,22 +45,46 @@
     (up-compare-goal aegis-hc-generation != aegis-civ-demand-generation)
     (up-compare-goal aegis-hc-valid == 0)
 =>
+    (set-goal aegis-hc-valid 0)
     (set-goal aegis-hc-stage aegis-hc-stage-authorized)
     (set-goal aegis-hc-baseline-houses 0)
     (set-goal aegis-hc-observed-houses 0)
     (set-goal aegis-hc-pending 0)
     (set-goal aegis-hc-attempts 0)
     (set-goal aegis-hc-failure aegis-hc-failure-none)
+    (set-goal aegis-hc-world-evidence 0)
+    (set-goal aegis-hc-causal-evidence 0)
     (up-get-fact building-type-count-total house aegis-hc-baseline-houses)
     (up-modify-goal aegis-hc-generation g:= aegis-civ-demand-generation)
     (up-modify-goal aegis-hc-observed-at g:= aegis-civ-observed-at)
+    (up-modify-goal aegis-hc-request-id g:= aegis-civ-demand-generation)
+    (up-modify-goal aegis-hc-authorization-id g:= aegis-civ-demand-generation)
+    (up-modify-goal aegis-hc-authorization-generation g:= aegis-civ-demand-generation)
+    (up-modify-goal aegis-hc-authorization-expiry g:= aegis-civ-demand-generation)
+    (set-goal aegis-hc-authorization-valid 1)
     (set-goal aegis-hc-valid 1)
 )
 
-; Authorization is bounded by native feasibility and one command attempt.
-; can-build is an admission predicate, not completion evidence.
+; Authorization is current only for this request generation.
+; Generation freshness is the current-state expiry condition until a proven
+; engine-time authorization clock is available. A newer demand generation
+; supersedes the authorization rather than silently renewing it.
 (defrule
     (up-compare-goal aegis-hc-valid == 1)
+    (up-compare-goal aegis-hc-authorization-valid == 1)
+    (up-compare-goal aegis-hc-authorization-generation != aegis-hc-generation)
+=>
+    (set-goal aegis-hc-authorization-valid 0)
+    (set-goal aegis-hc-failure aegis-hc-failure-stale-authorization)
+    (set-goal aegis-hc-stage aegis-hc-stage-failed)
+    (set-goal aegis-hc-valid 0)
+)
+
+; Physical authorization: require native build feasibility and a bounded
+; one-command request. can-build is admission evidence, not completion evidence.
+(defrule
+    (up-compare-goal aegis-hc-valid == 1)
+    (up-compare-goal aegis-hc-authorization-valid == 1)
     (up-compare-goal aegis-hc-stage == aegis-hc-stage-authorized)
     (up-compare-goal aegis-hc-attempts < 1)
     (can-build house)
@@ -57,21 +92,25 @@
     (build house)
     (up-modify-goal aegis-hc-attempts g:+ 1)
     (set-goal aegis-hc-stage aegis-hc-stage-issued)
+    (set-goal aegis-hc-authorization-valid 0)
 )
 
-; Fail closed when the native authorization predicate is unavailable.
+; Fail closed when native feasibility is unavailable.
 (defrule
     (up-compare-goal aegis-hc-valid == 1)
+    (up-compare-goal aegis-hc-authorization-valid == 1)
     (up-compare-goal aegis-hc-stage == aegis-hc-stage-authorized)
     (up-compare-goal aegis-hc-attempts < 1)
     (not (can-build house))
 =>
     (set-goal aegis-hc-failure aegis-hc-failure-cannot-build)
     (set-goal aegis-hc-stage aegis-hc-stage-failed)
+    (set-goal aegis-hc-authorization-valid 0)
     (set-goal aegis-hc-valid 0)
 )
 
-; Pending house objects establish an intermediate construction state only.
+; Pending foundation is an intermediate engine-observable construction state.
+; It preserves the originating request identity.
 (defrule
     (up-compare-goal aegis-hc-valid == 1)
     (up-compare-goal aegis-hc-stage == aegis-hc-stage-issued)
@@ -81,7 +120,8 @@
     (set-goal aegis-hc-stage aegis-hc-stage-pending)
 )
 
-; Confirm completion only from an observed increase in completed house count.
+; Observe completed-house state independently of the original command.
+; Observation is evidence of world transition, not yet causal attribution.
 (defrule
     (up-compare-goal aegis-hc-valid == 1)
     (up-compare-goal aegis-hc-stage == aegis-hc-stage-pending)
@@ -89,18 +129,47 @@
     (up-get-fact building-type-count-total house aegis-hc-observed-houses)
 )
 
+; A completed-house increase establishes WORLD_STATE_OBSERVED.
+; It does not by itself establish that this request caused the increase.
 (defrule
     (up-compare-goal aegis-hc-valid == 1)
     (up-compare-goal aegis-hc-stage == aegis-hc-stage-pending)
     (up-compare-goal aegis-hc-observed-houses > aegis-hc-baseline-houses)
+=>
+    (set-goal aegis-hc-world-evidence 1)
+)
+
+; Causal verification is deliberately explicit. V0 has no independently proven
+; engine fact tying a particular completed house to this request identity.
+; Therefore static count evidence MUST NOT manufacture causal credit.
+(defrule
+    (up-compare-goal aegis-hc-valid == 1)
+    (up-compare-goal aegis-hc-stage == aegis-hc-stage-pending)
+    (up-compare-goal aegis-hc-world-evidence == 1)
+    (up-compare-goal aegis-hc-causal-evidence == 0)
+    (up-pending-objects c: house <= 0)
+=>
+    (set-goal aegis-hc-failure aegis-hc-failure-causality-unproven)
+    (set-goal aegis-hc-stage aegis-hc-stage-failed)
+    (set-goal aegis-hc-valid 0)
+)
+
+; Confirmation is permitted only when both world-state and causal evidence
+; have been independently established. No source rule currently supplies the
+; causal-evidence bit, so this gate intentionally remains closed in V0.
+(defrule
+    (up-compare-goal aegis-hc-valid == 1)
+    (up-compare-goal aegis-hc-stage == aegis-hc-stage-pending)
+    (up-compare-goal aegis-hc-world-evidence == 1)
+    (up-compare-goal aegis-hc-causal-evidence == 1)
 =>
     (set-goal aegis-hc-stage aegis-hc-stage-confirmed)
     (set-goal aegis-civ-housing-demand aegis-civ-demand-none)
     (set-goal aegis-hc-valid 0)
 )
 
-; A pending object disappearing without a completed-house increase is failure.
-; A later demand generation owns retry/replan rather than this record looping.
+; A pending foundation disappearing without a completed-house increase is failure.
+; Retry belongs to a later demand/reassessment generation.
 (defrule
     (up-compare-goal aegis-hc-valid == 1)
     (up-compare-goal aegis-hc-stage == aegis-hc-stage-pending)
