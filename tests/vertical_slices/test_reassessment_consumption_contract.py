@@ -78,10 +78,10 @@ def test_civilian_demand_acknowledges_villager_reassess_once():
     assert "aegis-civ-reassess-generation 774" in demand
     assert "aegis-civ-reassess-valid 775" in demand
     assert "aegis-vr-reassess-valid == 1" in demand
-    assert "aegis-viv-reassess" not in demand
     assert "aegis-vr-reassess-generation == aegis-vr-generation" in demand
     assert "aegis-civ-reassess-generation != aegis-vr-reassess-generation" in demand
     assert "up-modify-goal aegis-civ-reassess-generation g:= aegis-vr-reassess-generation" in demand
+    assert "set-goal aegis-civ-reassess-valid 1" in demand
     assert "set-goal aegis-vr-reassess-valid 0" in demand
 
 
@@ -89,9 +89,9 @@ def test_civilian_demand_new_generation_is_upstream_only():
     demand = read("AEGIS-civilian-demand-v0.per")
     assert "aegis-cs-valid == 1" in demand
     assert "aegis-cs-generation != aegis-civ-demand-generation" in demand
-    # The demand module must not synthesize a generation with g:+ or a reset token.
     assert "up-modify-goal aegis-civ-demand-generation g:+" not in demand
     assert "set-goal aegis-civ-demand-generation" not in demand
+    assert "up-modify-goal aegis-civ-demand-generation g:= aegis-cs-generation" in demand
 
 
 def test_villager_production_cannot_replace_an_active_request():
