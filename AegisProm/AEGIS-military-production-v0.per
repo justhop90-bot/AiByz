@@ -96,14 +96,22 @@
     (set-goal aegis-mp-valid 0)
 )
 
-; Physical production requires the explicit, current authorization boundary.
-; Dispatch proves only that AEGIS issued the authorized production request.
-(defrule
+; Physical production requires producer authorization AND exclusive
+; reservation authority. Reservation does not execute production itself.
+defrule
     (up-compare-goal aegis-mp-valid == 1)
     (up-compare-goal aegis-mp-stage == aegis-mp-stage-authorized)
     (up-compare-goal aegis-mp-authorization-valid == 1)
     (up-compare-goal aegis-mp-authorization-generation == aegis-st-generation)
     (up-compare-goal aegis-mp-authorization-id == aegis-mp-request-id)
+    (up-compare-goal aegis-pr-state == aegis-pr-state-reserved)
+    (up-compare-goal aegis-pr-valid == 1)
+    (up-compare-goal aegis-pr-owner == aegis-pr-owner-military-production)
+    (up-compare-goal aegis-pr-request-id == aegis-mp-request-id)
+    (up-compare-goal aegis-pr-authorization-id == aegis-mp-authorization-id)
+    (up-compare-goal aegis-pr-authorization-generation == aegis-mp-generation)
+    (up-compare-goal aegis-pr-resource-key == aegis-pr-resource-spearman-line)
+    (up-compare-goal aegis-pr-unit-line == aegis-pr-unit-spearman-line)
     (up-compare-goal aegis-mp-attempts < 1)
     (can-train spearman-line)
 =>
