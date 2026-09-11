@@ -54,13 +54,13 @@ def test_reassess_ack_is_one_shot_and_generation_exact():
     assert block.count("aegis-mp-reassess-valid 0") == 1
 
 
-def test_candidate_blocker_is_not_cleared_by_reassess():
+def test_military_production_selector_is_initialized_before_authorization():
     text = read("AEGIS-military-production-v0.per")
-    assert "aegis-mp-unit" in text
-    assert "aegis-mp-unit-spearman" in text
-    assert "(can-train spearman-line)" in text
-    # No selector initializer is introduced by the reassessment pass.
-    assert "set-goal aegis-mp-unit" not in text
+    init_start = text.index("; ----------------------------- initialization")
+    grant_start = text.index("; Physical production requires producer authorization")
+    init = text[init_start:grant_start]
+    assert "set-goal aegis-mp-unit aegis-mp-unit-spearman" in init
+    assert init.index("set-goal aegis-mp-unit aegis-mp-unit-spearman") < init.index("set-goal aegis-mp-stage aegis-mp-stage-idle")
 
 
 def test_military_production_reassess_does_not_select_strategy():
