@@ -63,6 +63,7 @@ Rules:
 | 780–781 | CS | `AEGIS-civilization-state-v0.per` | civilization-state acknowledgement of age-transition REASSESS | ACTIVE / REASSESSMENT CONSUMER |
 | 782–783 | ST | `AEGIS-scouting-threat-v0.per` | scouting/threat acknowledgement of anti-cavalry REASSESS | ACTIVE / REASSESSMENT CONSUMER |
 | 784–785 | MC | `AEGIS-micro-control-v0.per` | micro-control acknowledgement of tactical-micro REASSESS | ACTIVE / REASSESSMENT CONSUMER |
+| 786–787 | ST | `AEGIS-scouting-threat-v0.per` | scouting/threat acknowledgement of military-production REASSESS | ACTIVE / REASSESSMENT CONSUMER |
 
 ## 3. Reassessment boundary rule
 
@@ -83,7 +84,8 @@ It does **not** mean:
 - causal success where causal evidence is absent;
 - permission to issue another physical command;
 - a particular next strategy;
-- authorization for another vertical.
+- authorization for another vertical;
+- promotion of a candidate vertical.
 
 The consuming owner remains responsible for the next observation/demand/classification generation. No monolithic reassessment controller is introduced.
 
@@ -164,7 +166,7 @@ Occupied/protected blocks now include:
 - 600–612
 - 620–650
 - 670–743
-- 760–785
+- 760–787
 
 Future lifecycle fields must be allocated outside these occupied blocks and then added to this ledger before source use.
 
@@ -176,12 +178,13 @@ Runtime copies may contain experimental initializers or integration behavior. Th
 
 The reassessment boundary clears the **publication-boundary blocker** only. It does not imply that all seven verticals are qualified.
 
+Military Production remains **CANDIDATE_BLOCKED / NOT_QUALIFIED**. The selector-initialization blocker remains independent of reassessment consumption.
+
 Remaining independent gates include:
 
 - causal verification gaps;
 - target-build runtime evidence;
 - military-production selector initialization;
-- complete downstream consumption of reassessment events;
 - tactical command-to-world-effect qualification;
 - authoritative engine-age observation in the World Model.
 
@@ -196,6 +199,8 @@ registered vertical
     -> terminal outcome
     -> exactly one reassessment token per lifecycle generation
     -> no strategy selection at the reassessment publisher
+    -> consumer acknowledges exact generation
+    -> consumer cannot manufacture upstream generation
 ```
 
 The authoritative namespace condition remains:
