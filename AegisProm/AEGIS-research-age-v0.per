@@ -71,13 +71,12 @@
     (set-goal aegis-ra-stage aegis-ra-stage-authorized)
 )
 
-; Authorization expires if its request generation is no longer current.
-; No native time-based expiry is invented here; generation supersession is the
-; explicit current-state expiry mechanism for this source slice.
+; Authorization expires when the upstream World Model generation advances.
+; This is explicit supersession, not a fabricated wall-clock timer.
 (defrule
     (up-compare-goal aegis-ra-valid == 1)
     (up-compare-goal aegis-ra-authorization-valid == 1)
-    (up-compare-goal aegis-ra-authorization-generation != aegis-ra-generation)
+    (up-compare-goal aegis-ra-authorization-generation != aegis-wm-generation)
 =>
     (set-goal aegis-ra-authorization-valid 0)
     (set-goal aegis-ra-failure aegis-ra-failure-stale-authorization)
