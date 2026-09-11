@@ -34,9 +34,10 @@ class TestACAPCrossRecordSemantics(unittest.TestCase):
         self.assertTrue(result["qualified"])
         self.assertEqual(result["errors"], [])
 
-    def test_claimed_range_inside_demonstrated_range_qualifies(self):
+    def test_claimed_range_inside_demonstrated_range_still_requires_claimed_boundaries(self):
         result = validate_cross_record(promotion("r1", "r2", value_range={"minimum": 12, "maximum": 18}), [evidence("r1", 10), evidence("r2", 20)])
-        self.assertTrue(result["qualified"])
+        self.assertFalse(result["qualified"])
+        self.assertIn("EVD-009", {e["error_code"] for e in result["errors"]})
 
     def test_claimed_lower_bound_outside_demonstrated_range_fails_closed(self):
         result = validate_cross_record(promotion("r1", "r2", value_range={"minimum": 9, "maximum": 20}), [evidence("r1", 10), evidence("r2", 20)])
