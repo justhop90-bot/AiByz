@@ -6,6 +6,7 @@
 ; Archaeologist: COMMAND_ISSUED is not ENGINE_STATE_OBSERVED.
 ; Byzantine Architect: useful allocation requires persistent task state.
 ; AI(HD)+Promisory: interruption and source failure remain distinct dispositions.
+; Canonical lifecycle: verification must match the exact request generation/identity that caused dispatch.
 
 (defconst aegis-wtv-generation 534)
 (defconst aegis-wtv-valid 535)
@@ -19,6 +20,8 @@
 (defconst aegis-wtv-failure 543)
 (defconst aegis-wtv-observed-at 544)
 (defconst aegis-wtv-cycle 545)
+(defconst aegis-wtv-request-id 546)
+(defconst aegis-wtv-authorization-id 547)
 (defconst aegis-wtv-stage-init 0)
 (defconst aegis-wtv-stage-observing 1)
 (defconst aegis-wtv-stage-confirmed 2)
@@ -29,8 +32,11 @@
 (defconst aegis-wtv-failure-worker-missing 1)
 (defconst aegis-wtv-failure-task-not-observed 2)
 (defconst aegis-wtv-failure-target-not-observed 3)
+(defconst aegis-wtv-failure-identity-mismatch 4)
 
 ; Begin verification from a fresh command generation.
+; Verification carries the same request and authorization identities; it never
+; creates a new request identity from the observed world state.
 (defrule
     (up-compare-goal aegis-wtc-valid == 1)
     (up-compare-goal aegis-wtc-stage == aegis-wtc-stage-issued)
@@ -42,12 +48,27 @@
     (up-modify-goal aegis-wtv-generation g:= aegis-wtc-generation)
     (up-modify-goal aegis-wtv-observed-at g:= aegis-wtc-observed-at)
     (up-modify-goal aegis-wtv-cycle g:+ 1)
+    (up-modify-goal aegis-wtv-request-id g:= aegis-wtc-request-id)
+    (up-modify-goal aegis-wtv-authorization-id g:= aegis-wtc-authorization-id)
     (set-goal aegis-wtv-worker-visible 0)
     (set-goal aegis-wtv-task-visible 0)
     (set-goal aegis-wtv-target-visible 0)
     (set-goal aegis-wtv-carry-visible 0)
     (set-goal aegis-wtv-result aegis-wtv-result-unknown)
     (set-goal aegis-wtv-failure aegis-wtv-failure-none)
+)
+
+; Refuse verification if the identity propagated from arbitration and command
+; execution is inconsistent. This prevents unrelated observations from closing
+; the request merely because the desired world state happens to exist.
+(defrule
+    (up-compare-goal aegis-wtv-valid == 1)
+    (up-compare-goal aegis-wtv-generation == aegis-wtc-generation)
+    (up-compare-goal aegis-wtv-request-id != aegis-wtc-request-id)
+=>
+    (set-goal aegis-wtv-failure aegis-wtv-failure-identity-mismatch)
+    (set-goal aegis-wtv-stage aegis-wtv-stage-failed)
+    (set-goal aegis-wtv-valid 0)
 )
 
 ; Observe the commanded worker population without assuming role identity.
@@ -81,6 +102,7 @@
 )
 
 ; V0 confirms only when a worker and target are both observable after command issuance.
+; This remains WORLD_STATE_OBSERVED, not causal productivity proof.
 (defrule
     (up-compare-goal aegis-wtv-valid == 1)
     (up-compare-goal aegis-wtv-stage == aegis-wtv-stage-observing)
