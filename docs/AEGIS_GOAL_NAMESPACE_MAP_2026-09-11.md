@@ -55,10 +55,15 @@ Rules:
 | 768–769 | CR | `AEGIS-cavalry-response-v0.per` | anti-cavalry reassessment generation/valid event | ACTIVE / REASSESSMENT |
 | 770–771 | MV | `AEGIS-micro-verification-v0.per` | tactical-micro reassessment generation/valid event | ACTIVE / REASSESSMENT |
 | 772–773 | MP | `AEGIS-military-production-v0.per` | military-production candidate reassessment generation/valid event | ACTIVE / REASSESSMENT |
+| 774–775 | CIV | `AEGIS-civilian-demand-v0.per` | civilian-demand acknowledgement of villager-production REASSESS | ACTIVE / REASSESSMENT CONSUMER |
+| 776–777 | CIV | `AEGIS-civilian-demand-v0.per` | civilian-demand acknowledgement of housing REASSESS | ACTIVE / REASSESSMENT CONSUMER |
+| 778–779 | WRV | `AEGIS-worker-role-vector-v0.per` | worker-role-vector acknowledgement of worker-task-verification REASSESS | ACTIVE / REASSESSMENT CONSUMER |
 
 ## 3. Reassessment boundary rule
 
 Every registered vertical now has a local reassessment publisher owned by the vertical's registry-defined `REASSESS` owner. The publisher emits a stable lifecycle-generation token exactly once per terminal request generation and raises a local `reassess-valid` event bit.
+
+Consumers acknowledge the exact published lifecycle generation once. Acknowledgement is not a new observation and cannot manufacture a new lifecycle generation. The consuming owner remains responsible for waiting for and consuming its own next upstream observation/demand generation.
 
 The event means only:
 
@@ -132,7 +137,7 @@ Occupied/protected blocks now include:
 - 600–612
 - 620–641
 - 670–743
-- 760–773
+- 760–779
 
 Future lifecycle fields must be allocated outside these occupied blocks and then added to this ledger before source use.
 
