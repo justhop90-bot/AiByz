@@ -4,6 +4,9 @@
 ; Purpose: turn civilian villager demand into a bounded physical train command.
 ; Byzantine Architect pass: production is execution infrastructure, not strategy.
 ; Archaeologist constraint: command issuance is not confirmation.
+; Canonical lifecycle: request identity and authorization are explicit.
+; Pending remains queue admission only; completion is owned by lifecycle reconciliation.
+; Causal verification requires a request-bound census transition before completion credit.
 
 (defconst aegis-vp-generation 427)
 (defconst aegis-vp-valid 428)
@@ -11,6 +14,13 @@
 (defconst aegis-vp-action 430)
 (defconst aegis-vp-attempts 431)
 (defconst aegis-vp-observed 432)
+(defconst aegis-vp-request-id 450)
+(defconst aegis-vp-authorization-id 451)
+(defconst aegis-vp-authorization-generation 452)
+(defconst aegis-vp-authorization-valid 453)
+(defconst aegis-vp-authorization-expiry 454)
+(defconst aegis-vp-baseline-villagers 455)
+(defconst aegis-vp-causal-status 456)
 
 (defconst aegis-vp-stage-init 0)
 (defconst aegis-vp-stage-authorized 1)
@@ -20,8 +30,14 @@
 
 (defconst aegis-vp-action-none 0)
 (defconst aegis-vp-action-villager 1)
+(defconst aegis-vp-causal-unknown 0)
+(defconst aegis-vp-causal-pending 1)
+(defconst aegis-vp-causal-confirmed 2)
+(defconst aegis-vp-causal-failed 3)
 
-; Admit only a qualified civilian-demand generation.
+; Admit one fresh civilian-demand request. The request identity originates at
+; civilian demand generation and is copied unchanged into the production record.
+; Authorization is created here, at the consequential production boundary.
 (defrule
     (up-compare-goal aegis-civ-stage == aegis-civ-stage-qualified)
     (up-compare-goal aegis-civ-villager-demand == aegis-civ-demand-needed)
@@ -32,14 +48,34 @@
     (set-goal aegis-vp-action aegis-vp-action-villager)
     (set-goal aegis-vp-attempts 0)
     (set-goal aegis-vp-observed 0)
+    (set-goal aegis-vp-causal-status aegis-vp-causal-unknown)
     (up-modify-goal aegis-vp-generation g:= aegis-civ-demand-generation)
+    (up-modify-goal aegis-vp-request-id g:= aegis-civ-demand-generation)
+    (up-modify-goal aegis-vp-authorization-id g:= aegis-civ-demand-generation)
+    (up-modify-goal aegis-vp-authorization-generation g:= aegis-civ-demand-generation)
+    (up-modify-goal aegis-vp-authorization-expiry g:= aegis-civ-demand-generation)
+    (up-get-fact unit-type-count villager aegis-vp-baseline-villagers)
+    (set-goal aegis-vp-authorization-valid 1)
     (set-goal aegis-vp-valid 1)
 )
 
-; Physical authorization: require engine affordability and a real TC endpoint.
-; Do not interpret can-train as proof that the command has executed.
+; A request-bound authorization cannot survive a generation mismatch.
 (defrule
     (up-compare-goal aegis-vp-valid == 1)
+    (up-compare-goal aegis-vp-authorization-valid == 1)
+    (up-compare-goal aegis-vp-authorization-generation != aegis-vp-generation)
+=>
+    (set-goal aegis-vp-authorization-valid 0)
+    (set-goal aegis-vp-stage aegis-vp-stage-failed)
+    (set-goal aegis-vp-causal-status aegis-vp-causal-failed)
+    (set-goal aegis-vp-valid 0)
+)
+
+; Physical authorization: require engine affordability and a real TC endpoint.
+; can-train is admission evidence, never completion evidence.
+(defrule
+    (up-compare-goal aegis-vp-valid == 1)
+    (up-compare-goal aegis-vp-authorization-valid == 1)
     (up-compare-goal aegis-vp-stage == aegis-vp-stage-authorized)
     (up-compare-goal aegis-vp-action == aegis-vp-action-villager)
     (can-train villager)
@@ -49,10 +85,12 @@
     (up-modify-goal aegis-vp-attempts g:+ 1)
     (up-train escrow-state c: villager)
     (set-goal aegis-vp-stage aegis-vp-stage-issued)
+    ; Authorization is single-use. Verification owns the next phase.
+    (set-goal aegis-vp-authorization-valid 0)
 )
 
-; Wait for engine-observable pending state. Pending is evidence of queue admission,
-; not evidence of completed villager production.
+; Observe engine queue admission. Pending is deliberately preserved as an
+; intermediate lifecycle state and does not close the request.
 (defrule
     (up-compare-goal aegis-vp-valid == 1)
     (up-compare-goal aegis-vp-stage == aegis-vp-stage-issued)
@@ -60,10 +98,10 @@
 =>
     (set-goal aegis-vp-stage aegis-vp-stage-waiting)
     (set-goal aegis-vp-observed 1)
+    (set-goal aegis-vp-causal-status aegis-vp-causal-pending)
 )
 
 ; If no pending object is observed after the bounded command phase, fail closed.
-; A later generation may re-admit the request rather than looping indefinitely.
 (defrule
     (up-compare-goal aegis-vp-valid == 1)
     (up-compare-goal aegis-vp-stage == aegis-vp-stage-issued)
@@ -71,16 +109,11 @@
     (up-pending-objects c: villager <= 0)
 =>
     (set-goal aegis-vp-stage aegis-vp-stage-failed)
+    (set-goal aegis-vp-causal-status aegis-vp-causal-failed)
     (set-goal aegis-vp-valid 0)
 )
 
-; Once the command is observed in the engine queue, consume the demand.
-; Completion remains a separate census/verification responsibility.
-(defrule
-    (up-compare-goal aegis-vp-valid == 1)
-    (up-compare-goal aegis-vp-stage == aegis-vp-stage-waiting)
-    (up-compare-goal aegis-civ-villager-demand == aegis-civ-demand-needed)
-=>
-    (set-goal aegis-civ-villager-demand aegis-civ-demand-none)
-    (set-goal aegis-vp-valid 0)
-)
+; Completion is NOT declared here. The lifecycle reconciler must prove a
+; request-bound census increase against the baseline captured before dispatch.
+; This module therefore exposes the baseline and causal status but never
+; promotes pending to completion on its own.
