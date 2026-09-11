@@ -106,7 +106,8 @@
 )
 
 ; ------------------------------ grant: CR ----------------------------------
-; If MP owns the resource, CR cannot match this FREE-state rule and is denied.
+; CR may reserve this resource only for an explicitly requested spearman unit.
+; Wrong-unit requests must never reach RESERVED state.
 (defrule
     (up-compare-goal aegis-st-valid == 1)
     (up-compare-goal aegis-pr-state == aegis-pr-state-free)
@@ -116,6 +117,7 @@
     (up-compare-goal aegis-cr-authorization-valid == 1)
     (up-compare-goal aegis-cr-authorization-generation == aegis-st-generation)
     (up-compare-goal aegis-cr-authorization-id == aegis-cr-request-id)
+    (up-compare-goal aegis-cr-unit == aegis-pr-unit-spearman-line)
 =>
     (up-modify-goal aegis-pr-generation g:= aegis-st-generation)
     (up-modify-goal aegis-pr-reservation-id g:= aegis-cr-request-id)
@@ -246,7 +248,7 @@
 
 ; ------------------------------- release -----------------------------------
 ; Release is identity-checked and idempotent.
-(defrule
+defrule
     (up-compare-goal aegis-pr-valid == 1)
     (up-compare-goal aegis-pr-state == aegis-pr-state-release-pending)
     (up-compare-goal aegis-pr-reservation-id == aegis-pr-request-id)
