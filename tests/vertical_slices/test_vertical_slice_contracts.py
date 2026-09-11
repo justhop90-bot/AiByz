@@ -38,6 +38,9 @@ def valid_trace(vertical_id, generation=1):
             event["request_id"] = request_id
         elif stage == "WORLD_STATE_VERIFIED":
             event["world_state_evidence"] = True
+        elif stage == "REASSESS":
+            event["reassessment_published"] = True
+            event["reassessment_generation"] = generation
         events.append(event)
     return {"vertical_id": vertical_id, "generation": generation, "events": events}
 
@@ -198,6 +201,28 @@ class TestAuthoritativeVerticalSliceContracts(unittest.TestCase):
         self.assertFalse(result["contract_valid"])
         self.assertIn("VSL-001", {e["error_code"] for e in result["errors"]})
         self.assertIn("VSL-028", {e["error_code"] for e in result["errors"]})
+
+    def test_reassessment_publication_is_required(self):
+        broken = valid_trace("housing")
+        reassess = broken["events"][-1]
+        reassess.pop("reassessment_published")
+        result = validate_vertical_slice(broken)
+        self.assertFalse(result["contract_valid"])
+        self.assertIn("VSL-029", {e["error_code"] for e in result["errors"]})
+
+    def test_reassessment_generation_must_match_lifecycle(self):
+        broken = valid_trace("anti_cavalry", generation=12)
+        broken["events"][-1]["reassessment_generation"] = 11
+        result = validate_vertical_slice(broken)
+        self.assertFalse(result["contract_valid"])
+        self.assertIn("VSL-030", {e["error_code"] for e in result["errors"]})
+
+    def test_reassessment_cannot_select_strategy(self):
+        broken = valid_trace("tactical_micro")
+        broken["events"][-1]["reassessment_strategy"] = "ENGAGE"
+        result = validate_vertical_slice(broken)
+        self.assertFalse(result["contract_valid"])
+        self.assertIn("VSL-031", {e["error_code"] for e in result["errors"]})
 
 
 if __name__ == "__main__":
