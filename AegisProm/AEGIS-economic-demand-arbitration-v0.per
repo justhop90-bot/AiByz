@@ -16,7 +16,7 @@
 (defconst aegis-eda-priority 495)
 (defconst aegis-eda-urgency 496)
 (defconst aegis-eda-observed-at 497)
-(defconst aegis-eda-request-id 498)
+(defconst aegis-eda-request-id 550)
 
 (defconst aegis-eda-stage-init 0)
 (defconst aegis-eda-stage-arbitrated 1)
@@ -51,7 +51,7 @@
 =>
     (set-goal aegis-eda-selected-resource aegis-eda-resource-gold)
     (up-modify-goal aegis-eda-selected-deficit g:= aegis-ed-gold-demand)
-    (set-goal aegis-eda-priority aegis-ed-priority-high)
+    (set-goal aegis-eda-priority aegis-eda-priority-high)
 )
 
 (defrule
