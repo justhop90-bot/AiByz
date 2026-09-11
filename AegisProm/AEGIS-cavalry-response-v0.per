@@ -1,6 +1,6 @@
 ; AEGIS CAVALRY RESPONSE V0 - bounded defensive production
 ; Canonical lifecycle: threat classification -> capability demand ->
-; feasibility -> authorization -> physical production -> pending evidence.
+; feasibility -> authorization -> reservation -> physical production -> pending evidence.
 ; This module does not collapse threat observation into production success.
 (defconst aegis-cr-generation 620)
 (defconst aegis-cr-valid 621)
@@ -73,11 +73,23 @@
     (set-goal aegis-cr-valid 0)
 )
 
+; Physical production requires both producer authorization and exclusive
+; reservation authority. Reservation is a separate ownership boundary.
 (defrule
     (up-compare-goal aegis-cr-valid == 1)
     (up-compare-goal aegis-cr-authorization-valid == 1)
     (up-compare-goal aegis-cr-stage == aegis-cr-stage-authorized)
     (up-compare-goal aegis-cr-attempts < 1)
+    (up-compare-goal aegis-cr-authorization-generation == aegis-st-generation)
+    (up-compare-goal aegis-cr-authorization-id == aegis-cr-request-id)
+    (up-compare-goal aegis-pr-state == aegis-pr-state-reserved)
+    (up-compare-goal aegis-pr-valid == 1)
+    (up-compare-goal aegis-pr-owner == aegis-pr-owner-cavalry-response)
+    (up-compare-goal aegis-pr-request-id == aegis-cr-request-id)
+    (up-compare-goal aegis-pr-authorization-id == aegis-cr-authorization-id)
+    (up-compare-goal aegis-pr-authorization-generation == aegis-cr-generation)
+    (up-compare-goal aegis-pr-resource-key == aegis-pr-resource-spearman-line)
+    (up-compare-goal aegis-pr-unit-line == aegis-pr-unit-spearman-line)
     (can-train spearman-line)
 =>
     (up-train escrow-state c: spearman-line)
