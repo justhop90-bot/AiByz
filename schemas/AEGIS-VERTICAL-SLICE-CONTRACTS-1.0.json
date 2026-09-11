@@ -1,16 +1,8 @@
 {
   "schema_version": "1.0",
   "registry_id": "AEGIS-VERTICAL-SLICE-CONTRACTS-1.0",
-  "description": "Authoritative contracts for the six bounded AegisProm vertical slices. Traces identify a vertical_id and provide observations/evidence only; they cannot redefine contract stages, owners, evidence requirements, or transitions.",
-  "evidence_types": [
-    "STATIC_SOURCE",
-    "COMPOSED",
-    "INFERRED",
-    "TARGET_BUILD_RUNTIME",
-    "ENGINE_SPECIFIC",
-    "REPLAY_DERIVED",
-    "SYNTHETIC_TEST"
-  ],
+  "description": "Authoritative contracts for seven bounded AegisProm vertical slices. Six are current qualification slices; military_production is a candidate seventh slice and is currently blocked by selector initialization. Traces identify a vertical_id and provide observations/evidence only; they cannot redefine contract stages, owners, evidence requirements, or transitions.",
+  "evidence_types": ["STATIC_SOURCE", "COMPOSED", "INFERRED", "TARGET_BUILD_RUNTIME", "ENGINE_SPECIFIC", "REPLAY_DERIVED", "SYNTHETIC_TEST"],
   "common": {
     "required_terminal_stage": "REASSESS",
     "forbidden_shortcuts": [
@@ -27,210 +19,60 @@
   "contracts": {
     "worker_economy": {
       "version": "1.0",
+      "status": "QUALIFICATION_SLICE",
       "stages": ["OBSERVE", "CLASSIFY", "DEMAND", "FEASIBILITY", "AUTHORIZATION", "PHYSICAL_REQUEST", "ENGINE_ACCEPTED_PENDING", "WORLD_STATE_VERIFIED", "REASSESS"],
-      "owners": {
-        "OBSERVE": "worker_economy.observation",
-        "CLASSIFY": "worker_economy.classification",
-        "DEMAND": "worker_economy.demand",
-        "FEASIBILITY": "worker_economy.feasibility",
-        "AUTHORIZATION": "worker_economy.authorization",
-        "PHYSICAL_REQUEST": "worker_economy.task_command",
-        "ENGINE_ACCEPTED_PENDING": "worker_economy.lifecycle",
-        "WORLD_STATE_VERIFIED": "worker_economy.verification",
-        "REASSESS": "worker_economy.reassessment"
-      },
-      "required_evidence": {
-        "OBSERVE": ["STATIC_SOURCE", "TARGET_BUILD_RUNTIME"],
-        "CLASSIFY": ["COMPOSED", "TARGET_BUILD_RUNTIME"],
-        "DEMAND": ["COMPOSED", "TARGET_BUILD_RUNTIME"],
-        "FEASIBILITY": ["COMPOSED", "TARGET_BUILD_RUNTIME"],
-        "AUTHORIZATION": ["COMPOSED", "TARGET_BUILD_RUNTIME"],
-        "PHYSICAL_REQUEST": ["TARGET_BUILD_RUNTIME", "ENGINE_SPECIFIC"],
-        "ENGINE_ACCEPTED_PENDING": ["TARGET_BUILD_RUNTIME", "ENGINE_SPECIFIC"],
-        "WORLD_STATE_VERIFIED": ["TARGET_BUILD_RUNTIME", "ENGINE_SPECIFIC"],
-        "REASSESS": ["TARGET_BUILD_RUNTIME", "ENGINE_SPECIFIC"]
-      },
-      "allowed_transitions": {
-        "OBSERVE": ["CLASSIFY"],
-        "CLASSIFY": ["DEMAND"],
-        "DEMAND": ["FEASIBILITY"],
-        "FEASIBILITY": ["AUTHORIZATION"],
-        "AUTHORIZATION": ["PHYSICAL_REQUEST"],
-        "PHYSICAL_REQUEST": ["ENGINE_ACCEPTED_PENDING"],
-        "ENGINE_ACCEPTED_PENDING": ["WORLD_STATE_VERIFIED", "REASSESS"],
-        "WORLD_STATE_VERIFIED": ["REASSESS"],
-        "REASSESS": ["DEMAND", "CLASSIFY", "CLOSE", "RECOVER"]
-      }
+      "owners": {"OBSERVE":"worker_economy.observation","CLASSIFY":"worker_economy.classification","DEMAND":"worker_economy.demand","FEASIBILITY":"worker_economy.feasibility","AUTHORIZATION":"worker_economy.authorization","PHYSICAL_REQUEST":"worker_economy.task_command","ENGINE_ACCEPTED_PENDING":"worker_economy.lifecycle","WORLD_STATE_VERIFIED":"worker_economy.verification","REASSESS":"worker_economy.reassessment"},
+      "required_evidence": {"OBSERVE":["STATIC_SOURCE","TARGET_BUILD_RUNTIME"],"CLASSIFY":["COMPOSED","TARGET_BUILD_RUNTIME"],"DEMAND":["COMPOSED","TARGET_BUILD_RUNTIME"],"FEASIBILITY":["COMPOSED","TARGET_BUILD_RUNTIME"],"AUTHORIZATION":["COMPOSED","TARGET_BUILD_RUNTIME"],"PHYSICAL_REQUEST":["TARGET_BUILD_RUNTIME","ENGINE_SPECIFIC"],"ENGINE_ACCEPTED_PENDING":["TARGET_BUILD_RUNTIME","ENGINE_SPECIFIC"],"WORLD_STATE_VERIFIED":["TARGET_BUILD_RUNTIME","ENGINE_SPECIFIC"],"REASSESS":["TARGET_BUILD_RUNTIME","ENGINE_SPECIFIC"]},
+      "allowed_transitions": {"OBSERVE":["CLASSIFY"],"CLASSIFY":["DEMAND"],"DEMAND":["FEASIBILITY"],"FEASIBILITY":["AUTHORIZATION"],"AUTHORIZATION":["PHYSICAL_REQUEST"],"PHYSICAL_REQUEST":["ENGINE_ACCEPTED_PENDING"],"ENGINE_ACCEPTED_PENDING":["WORLD_STATE_VERIFIED","REASSESS"],"WORLD_STATE_VERIFIED":["REASSESS"],"REASSESS":["DEMAND","CLASSIFY","CLOSE","RECOVER"]}
     },
     "villager_production": {
-      "version": "1.0",
-      "stages": ["OBSERVE", "DEMAND", "FEASIBILITY", "AUTHORIZATION", "PHYSICAL_REQUEST", "ENGINE_ACCEPTED_PENDING", "WORLD_STATE_VERIFIED", "REASSESS"],
-      "owners": {
-        "OBSERVE": "villager_production.observation",
-        "DEMAND": "villager_production.demand",
-        "FEASIBILITY": "villager_production.feasibility",
-        "AUTHORIZATION": "villager_production.authorization",
-        "PHYSICAL_REQUEST": "villager_production.train_command",
-        "ENGINE_ACCEPTED_PENDING": "villager_production.lifecycle",
-        "WORLD_STATE_VERIFIED": "villager_production.verification",
-        "REASSESS": "villager_production.reassessment"
-      },
-      "required_evidence": {
-        "OBSERVE": ["STATIC_SOURCE", "TARGET_BUILD_RUNTIME"],
-        "DEMAND": ["COMPOSED", "TARGET_BUILD_RUNTIME"],
-        "FEASIBILITY": ["COMPOSED", "TARGET_BUILD_RUNTIME"],
-        "AUTHORIZATION": ["COMPOSED", "TARGET_BUILD_RUNTIME"],
-        "PHYSICAL_REQUEST": ["TARGET_BUILD_RUNTIME", "ENGINE_SPECIFIC"],
-        "ENGINE_ACCEPTED_PENDING": ["TARGET_BUILD_RUNTIME", "ENGINE_SPECIFIC"],
-        "WORLD_STATE_VERIFIED": ["TARGET_BUILD_RUNTIME", "ENGINE_SPECIFIC"],
-        "REASSESS": ["TARGET_BUILD_RUNTIME", "ENGINE_SPECIFIC"]
-      },
-      "allowed_transitions": {
-        "OBSERVE": ["DEMAND"],
-        "DEMAND": ["FEASIBILITY"],
-        "FEASIBILITY": ["AUTHORIZATION"],
-        "AUTHORIZATION": ["PHYSICAL_REQUEST"],
-        "PHYSICAL_REQUEST": ["ENGINE_ACCEPTED_PENDING"],
-        "ENGINE_ACCEPTED_PENDING": ["WORLD_STATE_VERIFIED", "REASSESS"],
-        "WORLD_STATE_VERIFIED": ["REASSESS"],
-        "REASSESS": ["DEMAND", "CLOSE", "RECOVER"]
-      }
+      "version":"1.0","status":"QUALIFICATION_SLICE",
+      "stages":["OBSERVE","DEMAND","FEASIBILITY","AUTHORIZATION","PHYSICAL_REQUEST","ENGINE_ACCEPTED_PENDING","WORLD_STATE_VERIFIED","REASSESS"],
+      "owners":{"OBSERVE":"villager_production.observation","DEMAND":"villager_production.demand","FEASIBILITY":"villager_production.feasibility","AUTHORIZATION":"villager_production.authorization","PHYSICAL_REQUEST":"villager_production.train_command","ENGINE_ACCEPTED_PENDING":"villager_production.lifecycle","WORLD_STATE_VERIFIED":"villager_production.verification","REASSESS":"villager_production.reassessment"},
+      "required_evidence":{"OBSERVE":["STATIC_SOURCE","TARGET_BUILD_RUNTIME"],"DEMAND":["COMPOSED","TARGET_BUILD_RUNTIME"],"FEASIBILITY":["COMPOSED","TARGET_BUILD_RUNTIME"],"AUTHORIZATION":["COMPOSED","TARGET_BUILD_RUNTIME"],"PHYSICAL_REQUEST":["TARGET_BUILD_RUNTIME","ENGINE_SPECIFIC"],"ENGINE_ACCEPTED_PENDING":["TARGET_BUILD_RUNTIME","ENGINE_SPECIFIC"],"WORLD_STATE_VERIFIED":["TARGET_BUILD_RUNTIME","ENGINE_SPECIFIC"],"REASSESS":["TARGET_BUILD_RUNTIME","ENGINE_SPECIFIC"]},
+      "allowed_transitions":{"OBSERVE":["DEMAND"],"DEMAND":["FEASIBILITY"],"FEASIBILITY":["AUTHORIZATION"],"AUTHORIZATION":["PHYSICAL_REQUEST"],"PHYSICAL_REQUEST":["ENGINE_ACCEPTED_PENDING"],"ENGINE_ACCEPTED_PENDING":["WORLD_STATE_VERIFIED","REASSESS"],"WORLD_STATE_VERIFIED":["REASSESS"],"REASSESS":["DEMAND","CLOSE","RECOVER"]}
     },
     "housing": {
-      "version": "1.0",
-      "stages": ["OBSERVE", "DEMAND", "FEASIBILITY", "AUTHORIZATION", "PHYSICAL_REQUEST", "ENGINE_ACCEPTED_PENDING", "WORLD_STATE_VERIFIED", "REASSESS"],
-      "owners": {
-        "OBSERVE": "housing.observation",
-        "DEMAND": "housing.demand",
-        "FEASIBILITY": "housing.feasibility",
-        "AUTHORIZATION": "housing.authorization",
-        "PHYSICAL_REQUEST": "housing.build_command",
-        "ENGINE_ACCEPTED_PENDING": "housing.lifecycle",
-        "WORLD_STATE_VERIFIED": "housing.verification",
-        "REASSESS": "housing.reassessment"
-      },
-      "required_evidence": {
-        "OBSERVE": ["STATIC_SOURCE", "TARGET_BUILD_RUNTIME"],
-        "DEMAND": ["COMPOSED", "TARGET_BUILD_RUNTIME"],
-        "FEASIBILITY": ["COMPOSED", "TARGET_BUILD_RUNTIME"],
-        "AUTHORIZATION": ["COMPOSED", "TARGET_BUILD_RUNTIME"],
-        "PHYSICAL_REQUEST": ["TARGET_BUILD_RUNTIME", "ENGINE_SPECIFIC"],
-        "ENGINE_ACCEPTED_PENDING": ["TARGET_BUILD_RUNTIME", "ENGINE_SPECIFIC"],
-        "WORLD_STATE_VERIFIED": ["TARGET_BUILD_RUNTIME", "ENGINE_SPECIFIC"],
-        "REASSESS": ["TARGET_BUILD_RUNTIME", "ENGINE_SPECIFIC"]
-      },
-      "allowed_transitions": {
-        "OBSERVE": ["DEMAND"],
-        "DEMAND": ["FEASIBILITY"],
-        "FEASIBILITY": ["AUTHORIZATION"],
-        "AUTHORIZATION": ["PHYSICAL_REQUEST"],
-        "PHYSICAL_REQUEST": ["ENGINE_ACCEPTED_PENDING"],
-        "ENGINE_ACCEPTED_PENDING": ["WORLD_STATE_VERIFIED", "REASSESS"],
-        "WORLD_STATE_VERIFIED": ["REASSESS"],
-        "REASSESS": ["DEMAND", "CLOSE", "RECOVER"]
-      }
+      "version":"1.0","status":"QUALIFICATION_SLICE",
+      "stages":["OBSERVE","DEMAND","FEASIBILITY","AUTHORIZATION","PHYSICAL_REQUEST","ENGINE_ACCEPTED_PENDING","WORLD_STATE_VERIFIED","REASSESS"],
+      "owners":{"OBSERVE":"housing.observation","DEMAND":"housing.demand","FEASIBILITY":"housing.feasibility","AUTHORIZATION":"housing.authorization","PHYSICAL_REQUEST":"housing.build_command","ENGINE_ACCEPTED_PENDING":"housing.lifecycle","WORLD_STATE_VERIFIED":"housing.verification","REASSESS":"housing.reassessment"},
+      "required_evidence":{"OBSERVE":["STATIC_SOURCE","TARGET_BUILD_RUNTIME"],"DEMAND":["COMPOSED","TARGET_BUILD_RUNTIME"],"FEASIBILITY":["COMPOSED","TARGET_BUILD_RUNTIME"],"AUTHORIZATION":["COMPOSED","TARGET_BUILD_RUNTIME"],"PHYSICAL_REQUEST":["TARGET_BUILD_RUNTIME","ENGINE_SPECIFIC"],"ENGINE_ACCEPTED_PENDING":["TARGET_BUILD_RUNTIME","ENGINE_SPECIFIC"],"WORLD_STATE_VERIFIED":["TARGET_BUILD_RUNTIME","ENGINE_SPECIFIC"],"REASSESS":["TARGET_BUILD_RUNTIME","ENGINE_SPECIFIC"]},
+      "allowed_transitions":{"OBSERVE":["DEMAND"],"DEMAND":["FEASIBILITY"],"FEASIBILITY":["AUTHORIZATION"],"AUTHORIZATION":["PHYSICAL_REQUEST"],"PHYSICAL_REQUEST":["ENGINE_ACCEPTED_PENDING"],"ENGINE_ACCEPTED_PENDING":["WORLD_STATE_VERIFIED","REASSESS"],"WORLD_STATE_VERIFIED":["REASSESS"],"REASSESS":["DEMAND","CLOSE","RECOVER"]}
     },
     "age_transition": {
-      "version": "1.0",
-      "stages": ["OBSERVE", "DEMAND", "FEASIBILITY", "AUTHORIZATION", "PHYSICAL_REQUEST", "WORLD_STATE_VERIFIED", "REASSESS"],
-      "owners": {
-        "OBSERVE": "age_transition.observation",
-        "DEMAND": "age_transition.requirement",
-        "FEASIBILITY": "age_transition.feasibility",
-        "AUTHORIZATION": "age_transition.authorization",
-        "PHYSICAL_REQUEST": "age_transition.research_command",
-        "WORLD_STATE_VERIFIED": "age_transition.verification",
-        "REASSESS": "age_transition.reassessment"
-      },
-      "required_evidence": {
-        "OBSERVE": ["STATIC_SOURCE", "TARGET_BUILD_RUNTIME"],
-        "DEMAND": ["COMPOSED", "TARGET_BUILD_RUNTIME"],
-        "FEASIBILITY": ["COMPOSED", "TARGET_BUILD_RUNTIME"],
-        "AUTHORIZATION": ["COMPOSED", "TARGET_BUILD_RUNTIME"],
-        "PHYSICAL_REQUEST": ["TARGET_BUILD_RUNTIME", "ENGINE_SPECIFIC"],
-        "WORLD_STATE_VERIFIED": ["TARGET_BUILD_RUNTIME", "ENGINE_SPECIFIC"],
-        "REASSESS": ["TARGET_BUILD_RUNTIME", "ENGINE_SPECIFIC"]
-      },
-      "allowed_transitions": {
-        "OBSERVE": ["DEMAND"],
-        "DEMAND": ["FEASIBILITY"],
-        "FEASIBILITY": ["AUTHORIZATION"],
-        "AUTHORIZATION": ["PHYSICAL_REQUEST"],
-        "PHYSICAL_REQUEST": ["WORLD_STATE_VERIFIED", "REASSESS"],
-        "WORLD_STATE_VERIFIED": ["REASSESS"],
-        "REASSESS": ["DEMAND", "CLOSE", "RECOVER"]
-      }
+      "version":"1.0","status":"QUALIFICATION_SLICE",
+      "stages":["OBSERVE","DEMAND","FEASIBILITY","AUTHORIZATION","PHYSICAL_REQUEST","WORLD_STATE_VERIFIED","REASSESS"],
+      "owners":{"OBSERVE":"age_transition.observation","DEMAND":"age_transition.requirement","FEASIBILITY":"age_transition.feasibility","AUTHORIZATION":"age_transition.authorization","PHYSICAL_REQUEST":"age_transition.research_command","WORLD_STATE_VERIFIED":"age_transition.verification","REASSESS":"age_transition.reassessment"},
+      "required_evidence":{"OBSERVE":["STATIC_SOURCE","TARGET_BUILD_RUNTIME"],"DEMAND":["COMPOSED","TARGET_BUILD_RUNTIME"],"FEASIBILITY":["COMPOSED","TARGET_BUILD_RUNTIME"],"AUTHORIZATION":["COMPOSED","TARGET_BUILD_RUNTIME"],"PHYSICAL_REQUEST":["TARGET_BUILD_RUNTIME","ENGINE_SPECIFIC"],"WORLD_STATE_VERIFIED":["TARGET_BUILD_RUNTIME","ENGINE_SPECIFIC"],"REASSESS":["TARGET_BUILD_RUNTIME","ENGINE_SPECIFIC"]},
+      "allowed_transitions":{"OBSERVE":["DEMAND"],"DEMAND":["FEASIBILITY"],"FEASIBILITY":["AUTHORIZATION"],"AUTHORIZATION":["PHYSICAL_REQUEST"],"PHYSICAL_REQUEST":["WORLD_STATE_VERIFIED","REASSESS"],"WORLD_STATE_VERIFIED":["REASSESS"],"REASSESS":["DEMAND","CLOSE","RECOVER"]}
     },
     "anti_cavalry": {
-      "version": "1.0",
-      "stages": ["OBSERVE", "CLASSIFY", "DEMAND", "FEASIBILITY", "AUTHORIZATION", "PHYSICAL_REQUEST", "ENGINE_ACCEPTED_PENDING", "WORLD_STATE_VERIFIED", "REASSESS"],
-      "owners": {
-        "OBSERVE": "anti_cavalry.threat_observation",
-        "CLASSIFY": "anti_cavalry.threat_classification",
-        "DEMAND": "anti_cavalry.capability_demand",
-        "FEASIBILITY": "anti_cavalry.feasibility",
-        "AUTHORIZATION": "anti_cavalry.authorization",
-        "PHYSICAL_REQUEST": "anti_cavalry.spearman_command",
-        "ENGINE_ACCEPTED_PENDING": "anti_cavalry.lifecycle",
-        "WORLD_STATE_VERIFIED": "anti_cavalry.capability_verification",
-        "REASSESS": "anti_cavalry.reassessment"
-      },
-      "required_evidence": {
-        "OBSERVE": ["STATIC_SOURCE", "TARGET_BUILD_RUNTIME"],
-        "CLASSIFY": ["COMPOSED", "TARGET_BUILD_RUNTIME"],
-        "DEMAND": ["COMPOSED", "TARGET_BUILD_RUNTIME"],
-        "FEASIBILITY": ["COMPOSED", "TARGET_BUILD_RUNTIME"],
-        "AUTHORIZATION": ["COMPOSED", "TARGET_BUILD_RUNTIME"],
-        "PHYSICAL_REQUEST": ["TARGET_BUILD_RUNTIME", "ENGINE_SPECIFIC"],
-        "ENGINE_ACCEPTED_PENDING": ["TARGET_BUILD_RUNTIME", "ENGINE_SPECIFIC"],
-        "WORLD_STATE_VERIFIED": ["TARGET_BUILD_RUNTIME", "ENGINE_SPECIFIC"],
-        "REASSESS": ["TARGET_BUILD_RUNTIME", "ENGINE_SPECIFIC"]
-      },
-      "allowed_transitions": {
-        "OBSERVE": ["CLASSIFY"],
-        "CLASSIFY": ["DEMAND"],
-        "DEMAND": ["FEASIBILITY"],
-        "FEASIBILITY": ["AUTHORIZATION"],
-        "AUTHORIZATION": ["PHYSICAL_REQUEST"],
-        "PHYSICAL_REQUEST": ["ENGINE_ACCEPTED_PENDING"],
-        "ENGINE_ACCEPTED_PENDING": ["WORLD_STATE_VERIFIED", "REASSESS"],
-        "WORLD_STATE_VERIFIED": ["REASSESS"],
-        "REASSESS": ["DEMAND", "CLASSIFY", "CLOSE", "RECOVER"]
-      }
+      "version":"1.0","status":"QUALIFICATION_SLICE",
+      "stages":["OBSERVE","CLASSIFY","DEMAND","FEASIBILITY","AUTHORIZATION","PHYSICAL_REQUEST","ENGINE_ACCEPTED_PENDING","WORLD_STATE_VERIFIED","REASSESS"],
+      "owners":{"OBSERVE":"anti_cavalry.threat_observation","CLASSIFY":"anti_cavalry.threat_classification","DEMAND":"anti_cavalry.capability_demand","FEASIBILITY":"anti_cavalry.feasibility","AUTHORIZATION":"anti_cavalry.authorization","PHYSICAL_REQUEST":"anti_cavalry.spearman_command","ENGINE_ACCEPTED_PENDING":"anti_cavalry.lifecycle","WORLD_STATE_VERIFIED":"anti_cavalry.capability_verification","REASSESS":"anti_cavalry.reassessment"},
+      "required_evidence":{"OBSERVE":["STATIC_SOURCE","TARGET_BUILD_RUNTIME"],"CLASSIFY":["COMPOSED","TARGET_BUILD_RUNTIME"],"DEMAND":["COMPOSED","TARGET_BUILD_RUNTIME"],"FEASIBILITY":["COMPOSED","TARGET_BUILD_RUNTIME"],"AUTHORIZATION":["COMPOSED","TARGET_BUILD_RUNTIME"],"PHYSICAL_REQUEST":["TARGET_BUILD_RUNTIME","ENGINE_SPECIFIC"],"ENGINE_ACCEPTED_PENDING":["TARGET_BUILD_RUNTIME","ENGINE_SPECIFIC"],"WORLD_STATE_VERIFIED":["TARGET_BUILD_RUNTIME","ENGINE_SPECIFIC"],"REASSESS":["TARGET_BUILD_RUNTIME","ENGINE_SPECIFIC"]},
+      "allowed_transitions":{"OBSERVE":["CLASSIFY"],"CLASSIFY":["DEMAND"],"DEMAND":["FEASIBILITY"],"FEASIBILITY":["AUTHORIZATION"],"AUTHORIZATION":["PHYSICAL_REQUEST"],"PHYSICAL_REQUEST":["ENGINE_ACCEPTED_PENDING"],"ENGINE_ACCEPTED_PENDING":["WORLD_STATE_VERIFIED","REASSESS"],"WORLD_STATE_VERIFIED":["REASSESS"],"REASSESS":["DEMAND","CLASSIFY","CLOSE","RECOVER"]}
     },
     "tactical_micro": {
-      "version": "1.0",
-      "stages": ["OBSERVE", "CLASSIFY", "DEMAND", "FEASIBILITY", "AUTHORIZATION", "PHYSICAL_REQUEST", "WORLD_STATE_VERIFIED", "REASSESS"],
-      "owners": {
-        "OBSERVE": "tactical_micro.world_observation",
-        "CLASSIFY": "tactical_micro.threat_classification",
-        "DEMAND": "tactical_micro.intent",
-        "FEASIBILITY": "tactical_micro.geometry_fallback",
-        "AUTHORIZATION": "tactical_micro.execution_authority",
-        "PHYSICAL_REQUEST": "tactical_micro.command_adapter",
-        "WORLD_STATE_VERIFIED": "tactical_micro.verification",
-        "REASSESS": "tactical_micro.reassessment"
-      },
-      "required_evidence": {
-        "OBSERVE": ["STATIC_SOURCE", "TARGET_BUILD_RUNTIME"],
-        "CLASSIFY": ["COMPOSED", "TARGET_BUILD_RUNTIME"],
-        "DEMAND": ["COMPOSED", "TARGET_BUILD_RUNTIME"],
-        "FEASIBILITY": ["COMPOSED", "TARGET_BUILD_RUNTIME"],
-        "AUTHORIZATION": ["COMPOSED", "TARGET_BUILD_RUNTIME"],
-        "PHYSICAL_REQUEST": ["TARGET_BUILD_RUNTIME", "ENGINE_SPECIFIC"],
-        "WORLD_STATE_VERIFIED": ["TARGET_BUILD_RUNTIME", "ENGINE_SPECIFIC"],
-        "REASSESS": ["TARGET_BUILD_RUNTIME", "ENGINE_SPECIFIC"]
-      },
-      "allowed_transitions": {
-        "OBSERVE": ["CLASSIFY"],
-        "CLASSIFY": ["DEMAND"],
-        "DEMAND": ["FEASIBILITY"],
-        "FEASIBILITY": ["AUTHORIZATION"],
-        "AUTHORIZATION": ["PHYSICAL_REQUEST"],
-        "PHYSICAL_REQUEST": ["WORLD_STATE_VERIFIED", "REASSESS"],
-        "WORLD_STATE_VERIFIED": ["REASSESS"],
-        "REASSESS": ["DEMAND", "CLASSIFY", "CLOSE", "RECOVER"]
-      }
+      "version":"1.0","status":"QUALIFICATION_SLICE",
+      "stages":["OBSERVE","CLASSIFY","DEMAND","FEASIBILITY","AUTHORIZATION","PHYSICAL_REQUEST","WORLD_STATE_VERIFIED","REASSESS"],
+      "owners":{"OBSERVE":"tactical_micro.world_observation","CLASSIFY":"tactical_micro.threat_classification","DEMAND":"tactical_micro.intent","FEASIBILITY":"tactical_micro.geometry_fallback","AUTHORIZATION":"tactical_micro.execution_authority","PHYSICAL_REQUEST":"tactical_micro.command_adapter","WORLD_STATE_VERIFIED":"tactical_micro.verification","REASSESS":"tactical_micro.reassessment"},
+      "required_evidence":{"OBSERVE":["STATIC_SOURCE","TARGET_BUILD_RUNTIME"],"CLASSIFY":["COMPOSED","TARGET_BUILD_RUNTIME"],"DEMAND":["COMPOSED","TARGET_BUILD_RUNTIME"],"FEASIBILITY":["COMPOSED","TARGET_BUILD_RUNTIME"],"AUTHORIZATION":["COMPOSED","TARGET_BUILD_RUNTIME"],"PHYSICAL_REQUEST":["TARGET_BUILD_RUNTIME","ENGINE_SPECIFIC"],"WORLD_STATE_VERIFIED":["TARGET_BUILD_RUNTIME","ENGINE_SPECIFIC"],"REASSESS":["TARGET_BUILD_RUNTIME","ENGINE_SPECIFIC"]},
+      "allowed_transitions":{"OBSERVE":["CLASSIFY"],"CLASSIFY":["DEMAND"],"DEMAND":["FEASIBILITY"],"FEASIBILITY":["AUTHORIZATION"],"AUTHORIZATION":["PHYSICAL_REQUEST"],"PHYSICAL_REQUEST":["WORLD_STATE_VERIFIED","REASSESS"],"WORLD_STATE_VERIFIED":["REASSESS"],"REASSESS":["DEMAND","CLASSIFY","CLOSE","RECOVER"]}
+    },
+    "military_production": {
+      "version":"1.0",
+      "status":"CANDIDATE_BLOCKED",
+      "candidate":true,
+      "qualification_status":"NOT_QUALIFIED",
+      "blockers":["SELECTOR_INITIALIZATION"],
+      "blocker_detail":"AEGIS-military-production-v0.per declares and compares aegis-mp-unit, but does not initialize it. The intended production selector is therefore statically blocked unless an external writer supplies the state.",
+      "qualification_note":"The vertical is structurally present, but must not be promoted or treated as qualified until selector initialization is resolved and target-build runtime evidence demonstrates the complete production lifecycle.",
+      "physical_component":"AEGIS-military-production-v0.per",
+      "stages":["OBSERVE","DEMAND","FEASIBILITY","AUTHORIZATION","PHYSICAL_REQUEST","ENGINE_ACCEPTED_PENDING","WORLD_STATE_VERIFIED","REASSESS"],
+      "owners":{"OBSERVE":"military_production.observation","DEMAND":"military_production.requirement","FEASIBILITY":"military_production.feasibility","AUTHORIZATION":"military_production.authorization","PHYSICAL_REQUEST":"military_production.train_command","ENGINE_ACCEPTED_PENDING":"military_production.lifecycle","WORLD_STATE_VERIFIED":"military_production.verification","REASSESS":"military_production.reassessment"},
+      "required_evidence":{"OBSERVE":["STATIC_SOURCE","TARGET_BUILD_RUNTIME"],"DEMAND":["COMPOSED","TARGET_BUILD_RUNTIME"],"FEASIBILITY":["COMPOSED","TARGET_BUILD_RUNTIME"],"AUTHORIZATION":["COMPOSED","TARGET_BUILD_RUNTIME"],"PHYSICAL_REQUEST":["TARGET_BUILD_RUNTIME","ENGINE_SPECIFIC"],"ENGINE_ACCEPTED_PENDING":["TARGET_BUILD_RUNTIME","ENGINE_SPECIFIC"],"WORLD_STATE_VERIFIED":["TARGET_BUILD_RUNTIME","ENGINE_SPECIFIC"],"REASSESS":["TARGET_BUILD_RUNTIME","ENGINE_SPECIFIC"]},
+      "allowed_transitions":{"OBSERVE":["DEMAND"],"DEMAND":["FEASIBILITY"],"FEASIBILITY":["AUTHORIZATION"],"AUTHORIZATION":["PHYSICAL_REQUEST"],"PHYSICAL_REQUEST":["ENGINE_ACCEPTED_PENDING"],"ENGINE_ACCEPTED_PENDING":["WORLD_STATE_VERIFIED","REASSESS"],"WORLD_STATE_VERIFIED":["REASSESS"],"REASSESS":["DEMAND","CLOSE","RECOVER"]}
     }
   }
 }
