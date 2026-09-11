@@ -29,6 +29,8 @@ OBSERVE → CLASSIFY / RECONCILE → DEMAND / INTENT → FEASIBILITY
 
 These need not be literal `.per` states, but the distinctions cannot be collapsed.
 
+**Normative lifecycle authority:** `docs/AEGIS_CANONICAL_LIFECYCLE_CONTRACT_V0_1.md` defines the cross-slice semantics for preconditions, ownership, authorization, physical action, evidence, postconditions, failure, expiry, idempotency, monotonic evidence, recovery, and reassessment. The machine-readable `schemas/AEGIS-VERTICAL-SLICE-CONTRACTS-1.0.json` remains authoritative for concrete per-slice stages, owners, evidence requirements, and allowed transitions.
+
 ## 3. Universal invariants
 
 1. Observation is not classification.
