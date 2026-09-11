@@ -62,6 +62,7 @@ Rules:
 | 778–779 | WRV | `AEGIS-worker-role-vector-v0.per` | worker-role-vector acknowledgement of worker-task-verification REASSESS | ACTIVE / REASSESSMENT CONSUMER |
 | 780–781 | CS | `AEGIS-civilization-state-v0.per` | civilization-state acknowledgement of age-transition REASSESS | ACTIVE / REASSESSMENT CONSUMER |
 | 782–783 | ST | `AEGIS-scouting-threat-v0.per` | scouting/threat acknowledgement of anti-cavalry REASSESS | ACTIVE / REASSESSMENT CONSUMER |
+| 784–785 | MC | `AEGIS-micro-control-v0.per` | micro-control acknowledgement of tactical-micro REASSESS | ACTIVE / REASSESSMENT CONSUMER |
 
 ## 3. Reassessment boundary rule
 
@@ -163,7 +164,7 @@ Occupied/protected blocks now include:
 - 600–612
 - 620–650
 - 670–743
-- 760–783
+- 760–785
 
 Future lifecycle fields must be allocated outside these occupied blocks and then added to this ledger before source use.
 
