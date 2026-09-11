@@ -10,6 +10,8 @@
 (defconst aegis-mc-attempts 677)
 (defconst aegis-mc-request-id 734)
 (defconst aegis-mc-request-generation 735)
+(defconst aegis-mc-reassess-generation 784)
+(defconst aegis-mc-reassess-valid 785)
 (defconst aegis-mc-stage-idle 0)
 (defconst aegis-mc-stage-search 1)
 (defconst aegis-mc-stage-authorized 2)
@@ -41,6 +43,20 @@
     (set-goal aegis-mc-observed 0)
     (set-goal aegis-mc-failure aegis-mc-failure-none)
     (set-goal aegis-mc-attempts 0)
+    (set-goal aegis-mc-reassess-valid 0)
+)
+
+; Tactical Micro REASSESS is an acknowledgement boundary only. The exact
+; Micro Verification lifecycle generation is recorded once and its publisher
+; token is consumed. REASSESS never creates the next Micro Control generation.
+(defrule
+    (up-compare-goal aegis-mv-reassess-valid == 1)
+    (up-compare-goal aegis-mv-reassess-generation == aegis-mv-generation)
+    (up-compare-goal aegis-mc-reassess-generation != aegis-mv-reassess-generation)
+=>
+    (up-modify-goal aegis-mc-reassess-generation g:= aegis-mv-reassess-generation)
+    (set-goal aegis-mc-reassess-valid 1)
+    (set-goal aegis-mv-reassess-valid 0)
 )
 
 ; Threat recovery has priority over engagement and is represented as intent.
