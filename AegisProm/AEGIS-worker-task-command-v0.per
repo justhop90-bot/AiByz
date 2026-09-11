@@ -54,7 +54,7 @@
     (set-goal aegis-wtc-valid 1)
 )
 
-; A stale or explicitly expired authorization cannot dispatch.
+; A stale authorization fails closed.
 (defrule
     (up-compare-goal aegis-wtc-valid == 1)
     (up-compare-goal aegis-wtc-authorization-valid == 1)
@@ -88,7 +88,6 @@
     (up-target-objects 0 action-default -1 -1)
     (up-modify-goal aegis-wtc-attempts g:+ 1)
     (set-goal aegis-wtc-stage aegis-wtc-stage-issued)
-    ; Physical action consumes the authorization; verification owns the next phase.
     (set-goal aegis-wtc-authorization-valid 0)
 )
 
@@ -104,7 +103,7 @@
     (up-remove-objects search-local object-data-carry >= 1)
     (up-remove-objects search-local object-data-action == actionid-attack)
     (up-remove-objects search-local object-data-order == orderid-build)
-    (up-remove-objects search-local object-data-repair == 0)
+    (up-remove-objects search-local object-data-order == orderid-repair)
     (up-remove-objects search-local object-data-order == orderid-enter)
     (up-find-resource c: gold c: 8)
     (up-clean-search search-remote object-data-distance search-order-asc)
