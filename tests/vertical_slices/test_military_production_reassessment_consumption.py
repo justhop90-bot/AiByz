@@ -86,7 +86,7 @@ def test_namespace_registration_is_unique():
     assert "| 788–792 | MP |" in ns
     assert "| 793–794 | MPA |" in ns
     assert "| 795–805 | MP |" in ns
-    assert "760–805" in ns
+    assert "795–805" in ns
 
 
 def test_no_central_reassessment_controller_introduced():
