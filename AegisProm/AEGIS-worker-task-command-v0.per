@@ -6,6 +6,7 @@
 ; Archaeologist: command issuance is separated from observed outcome.
 ; Byzantine Architect: execution serves the arbitrated demand without embedding strategy.
 ; AI(HD)+Promisory: preserve stock local/remote search then target-objects contract.
+; Canonical lifecycle: request identity and authorization are explicit and must remain current at dispatch.
 
 (defconst aegis-wtc-generation 519)
 (defconst aegis-wtc-valid 520)
@@ -14,6 +15,11 @@
 (defconst aegis-wtc-attempts 523)
 (defconst aegis-wtc-action 524)
 (defconst aegis-wtc-observed-at 525)
+(defconst aegis-wtc-request-id 526)
+(defconst aegis-wtc-authorization-id 527)
+(defconst aegis-wtc-authorization-generation 528)
+(defconst aegis-wtc-authorization-valid 529)
+(defconst aegis-wtc-authorization-expiry 530)
 (defconst aegis-wtc-stage-init 0)
 (defconst aegis-wtc-stage-authorized 1)
 (defconst aegis-wtc-stage-issued 2)
@@ -22,8 +28,10 @@
 (defconst aegis-wtc-action-none 0)
 (defconst aegis-wtc-action-gather 1)
 
-; Admit one command only for a fresh arbitrated generation with a selected worker
-; and a qualified non-food source/service relation.
+; A request is admitted only from a fresh arbitrated/selected generation.
+; The request identity is copied from arbitration; execution never invents a new one.
+; Authorization is valid only for the current request generation and only while
+; the command remains in the authorized state. Leaving that state expires it.
 (defrule
     (up-compare-goal aegis-wts-valid == 1)
     (up-compare-goal aegis-wts-selected == 1)
@@ -38,13 +46,29 @@
     (set-goal aegis-wtc-action aegis-wtc-action-gather)
     (up-modify-goal aegis-wtc-generation g:= aegis-wts-generation)
     (up-modify-goal aegis-wtc-observed-at g:= aegis-wts-observed-at)
+    (up-modify-goal aegis-wtc-request-id g:= aegis-wts-request-id)
+    (up-modify-goal aegis-wtc-authorization-id g:= aegis-wts-request-id)
+    (up-modify-goal aegis-wtc-authorization-generation g:= aegis-wts-generation)
+    (up-modify-goal aegis-wtc-authorization-expiry g:= aegis-wts-generation)
+    (set-goal aegis-wtc-authorization-valid 1)
     (set-goal aegis-wtc-valid 1)
 )
 
-; Wood command: search one eligible villager and one qualified wood source,
-; then apply the stock target-objects command. No jumps are used.
+; A stale or explicitly expired authorization cannot dispatch.
 (defrule
     (up-compare-goal aegis-wtc-valid == 1)
+    (up-compare-goal aegis-wtc-authorization-valid == 1)
+    (up-compare-goal aegis-wtc-authorization-generation != aegis-wtc-generation)
+=>
+    (set-goal aegis-wtc-authorization-valid 0)
+    (set-goal aegis-wtc-stage aegis-wtc-stage-failed)
+    (set-goal aegis-wtc-valid 0)
+)
+
+; Physical dispatch is permitted only while the explicit authorization boundary holds.
+(defrule
+    (up-compare-goal aegis-wtc-valid == 1)
+    (up-compare-goal aegis-wtc-authorization-valid == 1)
     (up-compare-goal aegis-wtc-stage == aegis-wtc-stage-authorized)
     (up-compare-goal aegis-wtc-resource == aegis-wts-resource-wood)
     (up-compare-goal aegis-wtc-attempts < 1)
@@ -64,11 +88,13 @@
     (up-target-objects 0 action-default -1 -1)
     (up-modify-goal aegis-wtc-attempts g:+ 1)
     (set-goal aegis-wtc-stage aegis-wtc-stage-issued)
+    ; Physical action consumes the authorization; verification owns the next phase.
+    (set-goal aegis-wtc-authorization-valid 0)
 )
 
-; Gold command uses the same stock local-worker/remote-resource targeting contract.
 (defrule
     (up-compare-goal aegis-wtc-valid == 1)
+    (up-compare-goal aegis-wtc-authorization-valid == 1)
     (up-compare-goal aegis-wtc-stage == aegis-wtc-stage-authorized)
     (up-compare-goal aegis-wtc-resource == aegis-wts-resource-gold)
     (up-compare-goal aegis-wtc-attempts < 1)
@@ -78,7 +104,7 @@
     (up-remove-objects search-local object-data-carry >= 1)
     (up-remove-objects search-local object-data-action == actionid-attack)
     (up-remove-objects search-local object-data-order == orderid-build)
-    (up-remove-objects search-local object-data-order == orderid-repair)
+    (up-remove-objects search-local object-data-repair == 0)
     (up-remove-objects search-local object-data-order == orderid-enter)
     (up-find-resource c: gold c: 8)
     (up-clean-search search-remote object-data-distance search-order-asc)
@@ -87,11 +113,12 @@
     (up-target-objects 0 action-default -1 -1)
     (up-modify-goal aegis-wtc-attempts g:+ 1)
     (set-goal aegis-wtc-stage aegis-wtc-stage-issued)
+    (set-goal aegis-wtc-authorization-valid 0)
 )
 
-; Stone command.
 (defrule
     (up-compare-goal aegis-wtc-valid == 1)
+    (up-compare-goal aegis-wtc-authorization-valid == 1)
     (up-compare-goal aegis-wtc-stage == aegis-wtc-stage-authorized)
     (up-compare-goal aegis-wtc-resource == aegis-wts-resource-stone)
     (up-compare-goal aegis-wtc-attempts < 1)
@@ -110,6 +137,7 @@
     (up-target-objects 0 action-default -1 -1)
     (up-modify-goal aegis-wtc-attempts g:+ 1)
     (set-goal aegis-wtc-stage aegis-wtc-stage-issued)
+    (set-goal aegis-wtc-authorization-valid 0)
 )
 
 ; No physical command is issued for food until the dedicated food portfolio adapter exists.
@@ -118,6 +146,10 @@
     (up-compare-goal aegis-wtc-stage == aegis-wtc-stage-authorized)
     (up-compare-goal aegis-wtc-resource == aegis-wts-resource-food)
 =>
+    (set-goal aegis-wtc-authorization-valid 0)
     (set-goal aegis-wtc-stage aegis-wtc-stage-failed)
     (set-goal aegis-wtc-valid 0)
 )
+
+; Once a physical command is issued, its authorization is consumed. Verification
+; must use the preserved request identity; it may not authorize a second command.
