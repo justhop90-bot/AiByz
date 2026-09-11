@@ -38,6 +38,8 @@ Rules:
 | 620–629 | CR | `AEGIS-cavalry-response-v0.per` | anti-cavalry lifecycle + request/authorization | ACTIVE |
 | 630–637 | MP | `AEGIS-military-production-v0.per` | military-production candidate lifecycle | ACTIVE / CANDIDATE BLOCKED |
 | 638–641 | CR | `AEGIS-cavalry-response-v0.per` | repaired spearman baseline/observed/world/causal evidence | ACTIVE / REPAIRED |
+| 642–649 | ST | `AEGIS-scouting-threat-v0.per` | repaired threat-observation state | ACTIVE / REPAIRED |
+| 650 | CR | `AEGIS-cavalry-response-v0.per` | repaired anti-cavalry failure state | ACTIVE / REPAIRED |
 | 670–677 | MC | `AEGIS-micro-control-v0.per` | tactical micro control state | ACTIVE |
 | 680–689 | MS | `AEGIS-micro-state-v0.per` | tactical micro force/state observation | ACTIVE |
 | 690–699 | MG | `AEGIS-micro-groups-v0.per` | tactical micro functional groups | ACTIVE |
@@ -59,6 +61,7 @@ Rules:
 | 776–777 | CIV | `AEGIS-civilian-demand-v0.per` | civilian-demand acknowledgement of housing REASSESS | ACTIVE / REASSESSMENT CONSUMER |
 | 778–779 | WRV | `AEGIS-worker-role-vector-v0.per` | worker-role-vector acknowledgement of worker-task-verification REASSESS | ACTIVE / REASSESSMENT CONSUMER |
 | 780–781 | CS | `AEGIS-civilization-state-v0.per` | civilization-state acknowledgement of age-transition REASSESS | ACTIVE / REASSESSMENT CONSUMER |
+| 782–783 | ST | `AEGIS-scouting-threat-v0.per` | scouting/threat acknowledgement of anti-cavalry REASSESS | ACTIVE / REASSESSMENT CONSUMER |
 
 ## 3. Reassessment boundary rule
 
@@ -126,6 +129,28 @@ Two pre-existing omissions in the earlier namespace ledger were corrected during
 
 Semantic ownership and symbol names were preserved in every relocation. These were namespace repairs only.
 
+### 4.4 Scouting/Threat collision
+
+The Anti-Cavalry reassessment audit exposed an additional pre-existing source namespace collision omitted from the earlier ledger:
+
+- Age Transition owned **600–612**.
+- Scouting/Threat owned **610–617**.
+
+The overlapping slots were not safe to leave in source. Scouting/Threat was therefore relocated as a semantic block:
+
+- `aegis-st-generation` **610 → 642**
+- `aegis-st-valid` **611 → 643**
+- `aegis-st-enemy-age` **612 → 644**
+- `aegis-st-cavalry` **613 → 645**
+- `aegis-st-cavalry-archer` **614 → 646**
+- `aegis-st-knight` **615 → 647**
+- `aegis-st-threat` **616 → 648**
+- `aegis-st-confidence` **617 → 649**
+
+All symbol references remain semantic-symbol based; this is a numeric namespace repair, not an architectural change.
+
+The Anti-Cavalry failure field was also found to be referenced without a source `defconst`. It is now explicitly allocated at **650** as `aegis-cr-failure`.
+
 ## 5. Reserved allocation discipline
 
 Occupied/protected blocks now include:
@@ -136,9 +161,9 @@ Occupied/protected blocks now include:
 - 560–566
 - 570–585
 - 600–612
-- 620–641
+- 620–650
 - 670–743
-- 760–781
+- 760–783
 
 Future lifecycle fields must be allocated outside these occupied blocks and then added to this ledger before source use.
 
