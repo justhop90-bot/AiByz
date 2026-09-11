@@ -26,13 +26,13 @@ def _error(code: str, message: str) -> dict[str, str]:
 
 
 def validate_vertical_slice(trace: dict[str, Any], registry: dict[str, Any] | None = None) -> dict[str, Any]:
-    """Validate a trace against the authoritative contract selected by vertical_id.
+    """Validate a trace against the authoritative registry contract.
 
-    The trace is evidence only. It cannot define stages, owners, evidence
-    requirements, or allowed transitions. ``contract_valid`` means the trace
-    conforms to the contract. ``qualified`` additionally requires target-build
-    runtime/engine-specific verification evidence and therefore remains a
-    promotion-level result.
+    ``contract_valid`` means the trace conforms structurally to the selected
+    contract. ``qualified`` is a promotion-level result and additionally
+    requires target-build runtime/engine-specific verification and registry
+    promotion eligibility. A candidate or blocked contract cannot qualify even
+    when a trace is structurally complete.
     """
     registry = registry or load_registry()
     errors: list[dict[str, str]] = []
@@ -45,7 +45,6 @@ def validate_vertical_slice(trace: dict[str, Any], registry: dict[str, Any] | No
     if contract is None:
         return {"qualified": False, "contract_valid": False, "vertical_id": vertical_id, "errors": [_error("VSL-012", f"Unknown vertical_id {vertical_id!r}.")]}
 
-    # Contract authority is external to the trace. Reject attempts to shadow it.
     for field in {"expected_stages", "owners", "required_evidence", "allowed_transitions"}:
         if field in trace:
             errors.append(_error("VSL-013", f"Trace cannot define authoritative contract field {field!r}."))
@@ -61,6 +60,10 @@ def validate_vertical_slice(trace: dict[str, Any], registry: dict[str, Any] | No
     for stage in expected:
         if stage not in stages:
             errors.append(_error("VSL-001", f"Required stage {stage!r} is missing."))
+
+    required_terminal_stage = registry.get("common", {}).get("required_terminal_stage")
+    if required_terminal_stage and (not stages or stages[-1] != required_terminal_stage):
+        errors.append(_error("VSL-028", f"Trace must terminate at required terminal stage {required_terminal_stage!r}."))
 
     transitions = contract["allowed_transitions"]
     for left, right in zip(stages, stages[1:]):
@@ -147,15 +150,27 @@ def validate_vertical_slice(trace: dict[str, Any], registry: dict[str, Any] | No
             errors.append(_error("VSL-010", "Failed outcome received credit."))
 
     contract_valid = not errors
-    qualified = contract_valid and runtime_evidence_seen and any(
-        event.get("stage") == "WORLD_STATE_VERIFIED"
-        and event.get("evidence_type") in {"TARGET_BUILD_RUNTIME", "ENGINE_SPECIFIC"}
-        for event in events
+    promotion_eligible = (
+        contract.get("status") == "QUALIFICATION_SLICE"
+        and contract.get("candidate") is not True
+        and contract.get("qualification_status") != "NOT_QUALIFIED"
+        and not contract.get("blockers")
+    )
+    qualified = (
+        contract_valid
+        and promotion_eligible
+        and runtime_evidence_seen
+        and any(
+            event.get("stage") == "WORLD_STATE_VERIFIED"
+            and event.get("evidence_type") in {"TARGET_BUILD_RUNTIME", "ENGINE_SPECIFIC"}
+            for event in events
+        )
     )
 
     return {
         "qualified": qualified,
         "contract_valid": contract_valid,
+        "promotion_eligible": promotion_eligible,
         "vertical_id": vertical_id,
         "contract_version": contract["version"],
         "errors": errors,
