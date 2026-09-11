@@ -16,22 +16,20 @@
 (defconst aegis-cr-observed-spears 639)
 (defconst aegis-cr-world-evidence 640)
 (defconst aegis-cr-causal-evidence 641)
-
+(defconst aegis-cr-reassess-generation 768)
+(defconst aegis-cr-reassess-valid 769)
 (defconst aegis-cr-stage-idle 0)
 (defconst aegis-cr-stage-authorized 1)
 (defconst aegis-cr-stage-issued 2)
 (defconst aegis-cr-stage-pending 3)
 (defconst aegis-cr-stage-confirmed 4)
 (defconst aegis-cr-stage-failed 5)
-
 (defconst aegis-cr-failure-none 0)
 (defconst aegis-cr-failure-not-feasible 1)
 (defconst aegis-cr-failure-stale-authorization 2)
 (defconst aegis-cr-failure-pending-lost 3)
 (defconst aegis-cr-failure-causality-unproven 4)
 
-; Fresh threat frame creates one capability-demand request.
-; The threat generation is copied as identity; it is never regenerated downstream.
 (defrule
     (up-compare-goal aegis-st-valid == 1)
     (up-compare-goal aegis-cr-generation != aegis-st-generation)
@@ -53,8 +51,6 @@
     (set-goal aegis-cr-failure aegis-cr-failure-none)
 )
 
-; Threat classification -> capability demand. Cavalry threat is a demand for
-; anti-cavalry capability, not permission to issue the physical command.
 (defrule
     (up-compare-goal aegis-cr-valid == 1)
     (up-compare-goal aegis-cr-stage == aegis-cr-stage-idle)
@@ -65,8 +61,6 @@
     (set-goal aegis-cr-authorization-valid 1)
 )
 
-; Authorization expires when the originating threat generation advances.
-; This is explicit supersession, not a fabricated wall-clock timer.
 (defrule
     (up-compare-goal aegis-cr-valid == 1)
     (up-compare-goal aegis-cr-authorization-valid == 1)
@@ -78,8 +72,6 @@
     (set-goal aegis-cr-valid 0)
 )
 
-; Physical production boundary. Feasibility remains separate from authorization.
-; Authorization is consumed at dispatch; one request cannot fire repeatedly.
 (defrule
     (up-compare-goal aegis-cr-valid == 1)
     (up-compare-goal aegis-cr-authorization-valid == 1)
@@ -93,7 +85,6 @@
     (set-goal aegis-cr-authorization-valid 0)
 )
 
-; Feasibility loss before dispatch fails closed.
 (defrule
     (up-compare-goal aegis-cr-valid == 1)
     (up-compare-goal aegis-cr-authorization-valid == 1)
@@ -107,8 +98,6 @@
     (set-goal aegis-cr-valid 0)
 )
 
-; Pending production evidence is preserved as a distinct intermediate state.
-; DE_QUEUE/production admission is not treated as a spawned spearman.
 (defrule
     (up-compare-goal aegis-cr-valid == 1)
     (up-compare-goal aegis-cr-stage == aegis-cr-stage-issued)
@@ -117,8 +106,6 @@
     (set-goal aegis-cr-stage aegis-cr-stage-pending)
 )
 
-; Observe the actual spearman count independently of the production command.
-; Count growth is world-state evidence, not causal proof by itself.
 (defrule
     (up-compare-goal aegis-cr-valid == 1)
     (up-compare-goal aegis-cr-stage == aegis-cr-stage-pending)
@@ -134,8 +121,6 @@
     (set-goal aegis-cr-world-evidence 1)
 )
 
-; Completion is never manufactured from pending state or command issuance.
-; A request-specific causal writer must independently establish the causal bit.
 (defrule
     (up-compare-goal aegis-cr-valid == 1)
     (up-compare-goal aegis-cr-stage == aegis-cr-stage-pending)
@@ -147,7 +132,6 @@
     (set-goal aegis-cr-valid 0)
 )
 
-; Pending production that disappears without world-state growth is failure.
 (defrule
     (up-compare-goal aegis-cr-valid == 1)
     (up-compare-goal aegis-cr-stage == aegis-cr-stage-pending)
@@ -157,4 +141,22 @@
     (set-goal aegis-cr-failure aegis-cr-failure-pending-lost)
     (set-goal aegis-cr-stage aegis-cr-stage-failed)
     (set-goal aegis-cr-valid 0)
+)
+
+; Canonical reassessment boundary. Anti-cavalry publishes the terminal request
+; outcome as a token; the next capability decision remains owned upstream.
+(defrule
+    (up-compare-goal aegis-cr-stage == aegis-cr-stage-confirmed)
+    (up-compare-goal aegis-cr-reassess-generation != aegis-cr-generation)
+=>
+    (up-modify-goal aegis-cr-reassess-generation g:= aegis-cr-generation)
+    (set-goal aegis-cr-reassess-valid 1)
+)
+
+(defrule
+    (up-compare-goal aegis-cr-stage == aegis-cr-stage-failed)
+    (up-compare-goal aegis-cr-reassess-generation != aegis-cr-generation)
+=>
+    (up-modify-goal aegis-cr-reassess-generation g:= aegis-cr-generation)
+    (set-goal aegis-cr-reassess-valid 1)
 )
