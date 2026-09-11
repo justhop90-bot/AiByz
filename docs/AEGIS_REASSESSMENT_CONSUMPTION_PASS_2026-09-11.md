@@ -18,7 +18,7 @@ A REASSESS publication is an event token, not permission to repeat the previous 
 
 ## Distributed ownership
 
-Each vertical retains a local consumer. There is no shared reassessment controller, central event bus, or cross-vertical strategy selector.
+Each vertical retains a local consumer. There is no shared reassessment controller, central event bus, or cross-vertical strategy selector. No module owns all seven reassessment signals.
 
 | Vertical | Publisher | Consumer owner | New-generation gate |
 |---|---|---|---|
