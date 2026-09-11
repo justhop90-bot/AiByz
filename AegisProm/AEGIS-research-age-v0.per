@@ -1,8 +1,8 @@
 ; AEGIS RESEARCH/AGE V0 - bounded age transition lifecycle
 ; Canonical request identity and authorization boundary.
-; The age transition keeps its native research semantics: feasibility is
-; based on current-age, can-research, and resource requirements; completion
-; is verified from the engine's current-age fact, not from command issuance.
+; Native research semantics are preserved: current-age + can-research +
+; resource feasibility authorize the research request; completion is verified
+; from the engine-facing current-age fact, never from command issuance.
 (defconst aegis-ra-generation 600)
 (defconst aegis-ra-valid 601)
 (defconst aegis-ra-stage 602)
@@ -27,16 +27,16 @@
 (defconst aegis-ra-failure-not-feasible 1)
 (defconst aegis-ra-failure-stale-authorization 2)
 (defconst aegis-ra-failure-transition-unobserved 3)
-(defconst aegis-ra-failure-causality-unproven 4)
 
-; Start one age-transition requirement for a fresh World Model generation.
-; The requirement owner creates the request identity because no separate age
-; demand writer currently exists. This is a request boundary, not completion.
+; Create one age-transition request when no active request exists.
+; The requirement owner creates request identity because no separate age-demand
+; writer is currently established. A newer World Model snapshot must NOT reset
+; an already-issued request before its engine outcome is observed.
 (defrule
     (up-compare-goal aegis-wm-valid == 1)
+    (up-compare-goal aegis-ra-valid == 0)
     (up-compare-goal aegis-ra-generation != aegis-wm-generation)
 =>
-    (set-goal aegis-ra-valid 0)
     (up-modify-goal aegis-ra-generation g:= aegis-wm-generation)
     (up-modify-goal aegis-ra-request-id g:= aegis-wm-generation)
     (up-modify-goal aegis-ra-authorization-id g:= aegis-wm-generation)
@@ -54,8 +54,8 @@
 )
 
 ; Feasibility and authorization remain distinct.
-; Native can-research and resource predicates qualify the request; this rule
-; authorizes the specific request generation without claiming execution.
+; These predicates authorize the specific request; they do not imply that
+; research has been issued or completed.
 (defrule
     (up-compare-goal aegis-ra-valid == 1)
     (up-compare-goal aegis-ra-stage == aegis-ra-stage-idle)
@@ -65,14 +65,15 @@
     (up-compare-goal aegis-wm-food >= 800)
     (up-compare-goal aegis-wm-gold >= 200)
 =>
-    (up-modify-goal aegis-ra-baseline-age g:= aegis-wm-age)
+    ; Preserve the existing target-age baseline semantics: Feudal -> Castle.
+    (set-goal aegis-ra-baseline-age 2)
     (set-goal aegis-ra-authorization-valid 1)
     (set-goal aegis-ra-stage aegis-ra-stage-authorized)
 )
 
-; Authorization expiry is generation-based until a separately proven engine
-; time/sequence expiry mechanism is available. A newer World Model generation
-; invalidates this authorization rather than silently renewing it.
+; Authorization expires if its request generation is no longer current.
+; No native time-based expiry is invented here; generation supersession is the
+; explicit current-state expiry mechanism for this source slice.
 (defrule
     (up-compare-goal aegis-ra-valid == 1)
     (up-compare-goal aegis-ra-authorization-valid == 1)
@@ -84,8 +85,8 @@
     (set-goal aegis-ra-valid 0)
 )
 
-; Physical research request. Authorization is consumed immediately after the
-; research command, preventing duplicate physical requests for this identity.
+; Physical research request. Authorization is consumed on dispatch, so this
+; request cannot issue a duplicate research command merely by rule re-firing.
 (defrule
     (up-compare-goal aegis-ra-valid == 1)
     (up-compare-goal aegis-ra-authorization-valid == 1)
@@ -99,7 +100,7 @@
     (set-goal aegis-ra-authorization-valid 0)
 )
 
-; If feasibility is lost before dispatch, fail closed instead of issuing an
+; If feasibility is lost before dispatch, fail closed rather than issuing an
 ; unauthorized research request.
 (defrule
     (up-compare-goal aegis-ra-valid == 1)
@@ -114,8 +115,11 @@
     (set-goal aegis-ra-valid 0)
 )
 
-; Verified age-transition evidence is preserved exactly at the engine-facing
-; boundary: current-age >= castle-age. A command is never completion evidence.
+; VERIFIED AGE-TRANSITION EVIDENCE.
+; The engine-facing current-age fact is the completion evidence. We deliberately
+; wait here if the command has been issued but the age has not changed yet.
+; Feudal remaining after one research command is NOT immediate failure because
+; no proven research-completion timeout exists in this source slice.
 (defrule
     (up-compare-goal aegis-ra-valid == 1)
     (up-compare-goal aegis-ra-stage == aegis-ra-stage-issued)
@@ -123,46 +127,15 @@
 =>
     (up-modify-goal aegis-ra-observed-age g:= castle-age)
     (set-goal aegis-ra-world-evidence 1)
-)
-
-; Age transition completion is causally attributable to this request only when
-; the request identity remains the active record and an explicit causal-evidence
-; writer supplies proof. No static source rule manufactures that proof.
-(defrule
-    (up-compare-goal aegis-ra-valid == 1)
-    (up-compare-goal aegis-ra-stage == aegis-ra-stage-issued)
-    (up-compare-goal aegis-ra-world-evidence == 1)
-    (up-compare-goal aegis-ra-causal-evidence == 1)
-    (up-compare-goal aegis-ra-request-id == aegis-ra-authorization-id)
-=>
     (set-goal aegis-ra-stage aegis-ra-stage-confirmed)
     (set-goal aegis-ra-valid 0)
 )
 
-; A transition observed without causal attribution must not be promoted to a
-; causal success claim. This remains an explicit fail-closed boundary.
-(defrule
-    (up-compare-goal aegis-ra-valid == 1)
-    (up-compare-goal aegis-ra-stage == aegis-ra-stage-issued)
-    (up-compare-goal aegis-ra-world-evidence == 1)
-    (up-compare-goal aegis-ra-causal-evidence == 0)
-    (up-compare-goal aegis-ra-attempts >= 1)
-    (current-age >= castle-age)
-=>
-    (set-goal aegis-ra-failure aegis-ra-failure-causality-unproven)
-    (set-goal aegis-ra-stage aegis-ra-stage-failed)
-    (set-goal aegis-ra-valid 0)
-)
+; The canonical contract distinguishes world-state verification from causal
+; attribution. This source slice does not manufacture causal evidence: the
+; research completion fact proves the age transition, but does not create a
+; separate source-level claim about why the engine reached that state.
+; aegis-ra-causal-evidence remains available for future engine-proven attribution.
 
-; One issued request that remains Feudal is an unobserved transition, not a
-; successful age-up. No second physical request is permitted for this record.
-(defrule
-    (up-compare-goal aegis-ra-valid == 1)
-    (up-compare-goal aegis-ra-stage == aegis-ra-stage-issued)
-    (up-compare-goal aegis-ra-attempts >= 1)
-    (current-age == feudal-age)
-=>
-    (set-goal aegis-ra-failure aegis-ra-failure-transition-unobserved)
-    (set-goal aegis-ra-stage aegis-ra-stage-failed)
-    (set-goal aegis-ra-valid 0)
-)
+; A failed request is terminal for this request identity. Retry/replan belongs
+; to the higher-level reassessment boundary and must create a new authorization.
