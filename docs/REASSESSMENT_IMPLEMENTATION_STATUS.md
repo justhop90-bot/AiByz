@@ -1,8 +1,8 @@
 # REASSESSMENT IMPLEMENTATION STATUS
 
-The seven verticals have generation-keyed local AegisProm REASSESS publication. Downstream consumption is being closed one upstream boundary at a time rather than through a central reassessment controller.
+The seven verticals have generation-keyed local REASSESS publication and downstream consumption at the source-contract level. Downstream consumption is distributed one upstream boundary at a time rather than through a central reassessment controller.
 
-Current downstream consumption implemented at source-contract level:
+## Current downstream consumption implemented
 
 - Villager Production → Civilian Demand
 - Housing → Civilian Demand
@@ -12,12 +12,37 @@ Current downstream consumption implemented at source-contract level:
 - Tactical Micro → Micro Control
 - Military Production candidate → Scouting/Threat
 
-The Anti-Cavalry pass also repaired a previously omitted source namespace collision between Age Transition `600–612` and Scouting/Threat `610–617`. Scouting/Threat now owns `642–649`; Anti-Cavalry failure state is explicitly allocated at `650`; Anti-Cavalry REASSESS acknowledgement uses `782–783`.
+## Cross-slice invariant audit
 
-The Tactical Micro pass uses `784–785` for Micro Control acknowledgement of Micro Verification REASSESS.
+The complete seven-vertical REASSESS chain was audited for:
 
-The Military Production pass uses `786–787` for Scouting/Threat acknowledgement of Military Production REASSESS. This is lifecycle consumption only and does not promote the candidate.
+- generation ownership;
+- exact terminal-generation identity;
+- one-shot publication/consumption;
+- stale-outcome rejection;
+- active-request protection;
+- semantic ownership;
+- namespace separation;
+- strategy/authorization boundary separation;
+- absence of a central reassessment controller.
 
-Qualification boundaries remain independent of reassessment consumption. Military Production remains `CANDIDATE_BLOCKED / NOT_QUALIFIED` because its source selector `aegis-mp-unit` is not initialized. Causal evidence and target-build runtime evidence also remain open.
+One semantic-owner violation was found and repaired in Tactical Micro: Micro Verification had directly cleared the Micro Control-owned `aegis-mc-valid` field. The write was removed from verification, and Micro Control now closes its own lifecycle while consuming the exact MV REASSESS publication.
 
-See `docs/AEGIS_MILITARY_PRODUCTION_REASSESSMENT_CONSUMPTION_PASS_2026-09-11.md` for the Military Production audit boundary.
+See `docs/AEGIS_REASSESSMENT_CROSS_SLICE_INVARIANT_AUDIT_2026-09-11.md`.
+
+## Qualification boundaries remain unchanged
+
+Completion of REASSESS consumption does not qualify or promote a vertical.
+
+Remaining independent gates include:
+
+- causal verification gaps;
+- target-build runtime evidence;
+- military-production selector initialization;
+- tactical command-to-world-effect qualification;
+- authoritative engine-age observation;
+- runtime validation of the distributed reassessment chain.
+
+Military Production remains `CANDIDATE_BLOCKED` / `NOT_QUALIFIED`.
+
+Static source-contract tests are evidence of source structure only and do not constitute target-build runtime qualification.
