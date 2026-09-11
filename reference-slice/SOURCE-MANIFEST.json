@@ -1,0 +1,18 @@
+{
+  "target": {
+    "build": "101.103.48987.0",
+    "steam_build_id": "24094652",
+    "update": "#180059"
+  },
+  "vertical": "civilian-production-loop",
+  "runtime_root": "resources/_common/ai/AEGIS-BYZ.per",
+  "loaded_modules": [
+    "AegisProm/AEGIS-civilian-census-v0.per",
+    "AegisProm/AEGIS-civilization-state-v0.per",
+    "AegisProm/AEGIS-civilian-demand-v0.per",
+    "AegisProm/AEGIS-villager-production-v0.per",
+    "AegisProm/AEGIS-civilian-lifecycle-reconciler-v0.per"
+  ],
+  "source_status": "installed-target-runtime-present",
+  "runtime_behavior_status": "unproven"
+}
