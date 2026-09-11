@@ -13,6 +13,8 @@
 (defconst aegis-civ-observed-at 426)
 (defconst aegis-civ-reassess-generation 774)
 (defconst aegis-civ-reassess-valid 775)
+(defconst aegis-civ-housing-reassess-generation 776)
+(defconst aegis-civ-housing-reassess-valid 777)
 
 (defconst aegis-civ-stage-init 0)
 (defconst aegis-civ-stage-derived 1)
@@ -36,6 +38,19 @@
     (set-goal aegis-vr-reassess-valid 0)
 )
 
+; Consume the housing-construction REASSESS publication exactly once.
+; Housing has its own acknowledgement token so a villager lifecycle cannot
+; shadow, consume, or acknowledge a housing lifecycle outcome.
+(defrule
+    (up-compare-goal aegis-hc-reassess-valid == 1)
+    (up-compare-goal aegis-hc-reassess-generation == aegis-hc-generation)
+    (up-compare-goal aegis-civ-housing-reassess-generation != aegis-hc-reassess-generation)
+=>
+    (up-modify-goal aegis-civ-housing-reassess-generation g:= aegis-hc-reassess-generation)
+    (set-goal aegis-civ-housing-reassess-valid 1)
+    (set-goal aegis-hc-reassess-valid 0)
+)
+
 ; Consume only a qualified civilization-state generation that is newer than the
 ; generation already represented by civilian demand. REASSESS cannot manufacture
 ; this generation; only the upstream civilization-state observation can do so.
@@ -50,6 +65,7 @@
     (set-goal aegis-civ-urgency aegis-civ-urgency-normal)
     (set-goal aegis-civ-stage aegis-civ-stage-derived)
     (set-goal aegis-civ-reassess-valid 0)
+    (set-goal aegis-civ-housing-reassess-valid 0)
     (up-modify-goal aegis-civ-demand-generation g:= aegis-cs-generation)
     (up-modify-goal aegis-civ-observed-at g:= aegis-cs-observed-at)
     (set-goal aegis-civ-stage aegis-civ-stage-qualified)
