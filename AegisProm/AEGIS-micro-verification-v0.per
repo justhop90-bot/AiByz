@@ -1,4 +1,6 @@
 ; AEGIS MICRO VERIFICATION V0 - applied/unknown/failed tactical outcomes
+; Verification consumes the same request identity produced by Micro Control.
+; It never upgrades dispatch into success without world-state evidence.
 (defconst aegis-mv-generation 720)
 (defconst aegis-mv-valid 721)
 (defconst aegis-mv-stage 722)
@@ -6,6 +8,10 @@
 (defconst aegis-mv-observed 724)
 (defconst aegis-mv-failure 725)
 (defconst aegis-mv-attempts 726)
+(defconst aegis-mv-request-id 740)
+(defconst aegis-mv-authorization-id 741)
+(defconst aegis-mv-world-evidence 742)
+(defconst aegis-mv-causal-evidence 743)
 (defconst aegis-mv-result-unknown 0)
 (defconst aegis-mv-result-applied 1)
 (defconst aegis-mv-result-partial 2)
@@ -19,9 +25,13 @@
     (up-compare-goal aegis-mv-generation != aegis-mc-generation)
 =>
     (up-modify-goal aegis-mv-generation g:= aegis-mc-generation)
+    (up-modify-goal aegis-mv-request-id g:= aegis-mc-request-id)
+    (up-modify-goal aegis-mv-authorization-id g:= aegis-me-authorization-id)
     (set-goal aegis-mv-valid 1)
     (set-goal aegis-mv-stage aegis-mv-stage-idle)
     (set-goal aegis-mv-result aegis-mv-result-unknown)
+    (set-goal aegis-mv-world-evidence 0)
+    (set-goal aegis-mv-causal-evidence 0)
     (set-goal aegis-mv-failure 0)
     (set-goal aegis-mv-attempts 0)
 )
@@ -31,6 +41,7 @@
     (up-compare-goal aegis-mv-valid == 1)
     (up-compare-goal aegis-mc-stage == aegis-mc-stage-reassess)
     (up-compare-goal aegis-mv-stage == aegis-mv-stage-idle)
+    (up-compare-goal aegis-mv-request-id == aegis-mc-request-id)
 =>
     (set-goal aegis-mv-stage aegis-mv-stage-observing)
     (set-goal aegis-mv-result aegis-mv-result-unknown)
@@ -42,17 +53,22 @@
     (up-compare-goal aegis-mv-stage == aegis-mv-stage-observing)
     (up-compare-goal aegis-mc-intent == aegis-mc-intent-engage)
     (up-compare-goal aegis-ms-friendly >= 1)
+    (up-compare-goal aegis-mv-request-id == aegis-mc-request-id)
 =>
+    (set-goal aegis-mv-world-evidence 1)
     (set-goal aegis-mv-result aegis-mv-result-partial)
     (set-goal aegis-mv-stage aegis-mv-stage-reassess)
+    (set-goal aegis-mc-valid 0)
 )
 
-; No-target and retreat transitions are classified without claiming world success.
+; No-target is a failed observation, not a successful tactical outcome.
 (defrule
     (up-compare-goal aegis-mv-valid == 1)
     (up-compare-goal aegis-mc-failure == aegis-mc-failure-no-target)
+    (up-compare-goal aegis-mv-request-id == aegis-mc-request-id)
 =>
     (set-goal aegis-mv-failure aegis-mc-failure-no-target)
     (set-goal aegis-mv-result aegis-mv-result-failed)
     (set-goal aegis-mv-stage aegis-mv-stage-reassess)
+    (set-goal aegis-mc-valid 0)
 )
