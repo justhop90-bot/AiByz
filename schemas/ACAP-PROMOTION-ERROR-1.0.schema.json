@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aibyz.org/schema/acap-promotion-error-1.0.json",
+  "title": "ACAP Promotion Validator Error",
+  "description": "Normative machine-readable error object emitted when validating an ACAP-PROMOTION-1.0 record.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "error_id", "error_code", "validation_layer", "severity", "resolution", "message", "target", "evidence_references"],
+  "properties": {
+    "schema_version": {"const": "ACAP-PROMOTION-ERROR-1.0"},
+    "error_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{7,127}$"},
+    "error_code": {"type": "string", "pattern": "^(SCH|SEM|EVD)-[0-9]{3}$"},
+    "validation_layer": {"type": "string", "enum": ["SCHEMA", "SEMANTIC", "CROSS_RECORD_EVIDENCE"]},
+    "severity": {"type": "string", "enum": ["WARNING", "ERROR", "BLOCKING", "CONFLICT"]},
+    "resolution": {"type": "string", "enum": ["REJECT_RECORD", "BLOCK_PROMOTION", "MARK_UNRESOLVED", "MARK_FAILED", "MARK_NOT_APPLICABLE", "NO_ACTION"]},
+    "message": {"type": "string", "minLength": 1, "maxLength": 4096},
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["goal_id", "operation"],
+      "properties": {
+        "goal_id": {"type": "integer", "minimum": 740, "maximum": 759},
+        "operation": {"type": "string", "enum": ["set-goal", "goal", "up-modify-goal", "up-compare-goal"]},
+        "value_range": {"$ref": "#/$defs/valueRange"}
+      }
+    },
+    "promotion_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{7,127}$"},
+    "qualification_run_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{3,127}$"},
+    "evidence_references": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/evidenceReference"}
+    },
+    "location": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["field"],
+      "properties": {
+        "field": {"type": "string", "minLength": 1, "maxLength": 256},
+        "json_pointer": {"type": "string", "pattern": "^(/([^/~]|~[01])*)*$"}
+      }
+    },
+    "observed": {"type": ["string", "number", "integer", "boolean", "null"]},
+    "expected": {"type": ["string", "number", "integer", "boolean", "null"]},
+    "details": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "claimed_range": {"$ref": "#/$defs/valueRange"},
+        "demonstrated_range": {"$ref": "#/$defs/valueRange"},
+        "build_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "build_fingerprint": {"type": "string", "minLength": 1, "maxLength": 256},
+        "conflicting_record_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{3,127}$"}},
+        "validator_rule": {"type": "string", "pattern": "^(SCH|SEM|EVD)-[0-9]{3}$"}
+      }
+    }
+  },
+  "$defs": {
+    "evidenceReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reference_type", "reference_id"],
+      "properties": {
+        "reference_type": {"type": "string", "enum": ["RAW_EVIDENCE_RECORD", "ARTIFACT", "RUNTIME_OBSERVATION", "VALIDATOR_RESULT", "PROMOTION_RECORD"]},
+        "reference_id": {"type": "string", "minLength": 1, "maxLength": 512}
+      }
+    },
+    "valueRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minimum", "maximum"],
+      "properties": {
+        "minimum": {"type": "integer", "minimum": 0, "maximum": 3500},
+        "maximum": {"type": "integer", "minimum": 0, "maximum": 3500}
+      }
+    }
+  },
+  "allOf": [
+    {"if": {"properties": {"error_code": {"pattern": "^SCH-"}}}, "then": {"properties": {"validation_layer": {"const": "SCHEMA"}}}},
+    {"if": {"properties": {"error_code": {"pattern": "^SEM-"}}}, "then": {"properties": {"validation_layer": {"const": "SEMANTIC"}}}},
+    {"if": {"properties": {"error_code": {"pattern": "^EVD-"}}}, "then": {"properties": {"validation_layer": {"const": "CROSS_RECORD_EVIDENCE"}}}},
+    {"if": {"properties": {"severity": {"const": "BLOCKING"}}}, "then": {"properties": {"resolution": {"enum": ["REJECT_RECORD", "BLOCK_PROMOTION", "MARK_UNRESOLVED", "MARK_FAILED", "MARK_NOT_APPLICABLE"]}}},
+    {"if": {"properties": {"severity": {"const": "CONFLICT"}}}, "then": {"properties": {"evidence_references": {"minItems": 2}}}
+  ]
+}
