@@ -59,7 +59,8 @@ def valid_trace(vertical_id, generation=1):
         elif stage == "WORLD_STATE_VERIFIED":
             event["request_id"] = request_id
             event["world_state_evidence"] = True
-            event["causal_evidence"] = causal_payload(vertical_id, generation, request_id)
+            if vertical_id in CAUSAL:
+                event["causal_evidence"] = causal_payload(vertical_id, generation, request_id)
         elif stage == "REASSESS":
             event["reassessment_published"] = True
             event["reassessment_generation"] = generation
