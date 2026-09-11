@@ -43,7 +43,7 @@ def valid_trace(vertical_id, generation=1):
 
 
 class TestAuthoritativeVerticalSliceContracts(unittest.TestCase):
-    def test_registry_contains_exactly_six_bounded_verticals(self):
+    def test_registry_contains_six_qualification_slices_and_one_candidate(self):
         self.assertEqual(set(SLICES), {
             "worker_economy",
             "villager_production",
@@ -51,7 +51,28 @@ class TestAuthoritativeVerticalSliceContracts(unittest.TestCase):
             "age_transition",
             "anti_cavalry",
             "tactical_micro",
+            "military_production",
         })
+        qualification_slices = {name for name, contract in SLICES.items() if contract.get("status") == "QUALIFICATION_SLICE"}
+        candidates = {name for name, contract in SLICES.items() if contract.get("candidate") is True}
+        self.assertEqual(qualification_slices, {
+            "worker_economy",
+            "villager_production",
+            "housing",
+            "age_transition",
+            "anti_cavalry",
+            "tactical_micro",
+        })
+        self.assertEqual(candidates, {"military_production"})
+
+    def test_military_production_candidate_is_blocked_by_selector_initialization(self):
+        contract = SLICES["military_production"]
+        self.assertTrue(contract["candidate"])
+        self.assertEqual(contract["status"], "CANDIDATE_BLOCKED")
+        self.assertEqual(contract["qualification_status"], "NOT_QUALIFIED")
+        self.assertIn("SELECTOR_INITIALIZATION", contract["blockers"])
+        self.assertIn("aegis-mp-unit", contract["blocker_detail"])
+        self.assertIn("AEGIS-military-production-v0.per", contract["physical_component"])
 
     def test_complete_trace_uses_registry_not_trace_declared_stages(self):
         for vertical_id in SLICES:
