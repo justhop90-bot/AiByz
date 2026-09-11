@@ -1,0 +1,64 @@
+; AEGIS MICRO PHYSICAL ADAPTER V0
+; Isolated physical dispatch boundary.
+; The engage branch rebuilds the search immediately before dispatch so the
+; shared engine search context cannot be clobbered between selection and use.
+
+(defrule
+    (up-compare-goal aegis-mc-valid == 1)
+    (up-compare-goal aegis-mc-stage == aegis-mc-stage-authorized)
+    (up-compare-goal aegis-mc-intent == aegis-mc-intent-engage)
+    (up-compare-goal aegis-mc-target-ready > 0)
+    (up-compare-goal aegis-mc-attempts < 1)
+=>
+    (up-full-reset-search)
+    (up-find-local c: military-class c: 20)
+    (up-remove-objects search-local object-data-action == actionid-attack)
+    (up-remove-objects search-local object-data-order == orderid-attack)
+    (up-remove-objects search-local object-data-order == orderid-build)
+    (up-remove-objects search-local object-data-carry >= 1)
+    (up-clean-search search-local object-data-distance search-order-asc)
+    (up-find-remote c: enemy-class c: 1)
+    (up-remove-objects search-remote object-data-status == status-pending)
+    (up-clean-search search-remote object-data-distance search-order-asc)
+    (up-get-search-state local-total aegis-mc-observed)
+    (up-get-search-state remote-total aegis-mc-target-ready)
+    (up-set-target-object search-local c: 0)
+    (up-set-target-object search-remote c: 0)
+    (up-target-objects 0 action-attack-move -1 -1)
+    (up-modify-goal aegis-mc-attempts g:+ 1)
+    (set-goal aegis-mc-stage aegis-mc-stage-issued)
+)
+
+; Stop is used only for retreat/recovery; it is not completion evidence.
+(defrule
+    (up-compare-goal aegis-mc-valid == 1)
+    (up-compare-goal aegis-mc-stage == aegis-mc-stage-authorized)
+    (up-compare-goal aegis-mc-intent == aegis-mc-intent-retreat)
+    (up-compare-goal aegis-mc-attempts < 1)
+=>
+    (up-target-point 0 action-stop -1 -1)
+    (up-modify-goal aegis-mc-attempts g:+ 1)
+    (set-goal aegis-mc-stage aegis-mc-stage-issued)
+)
+
+; Move is the regroup adapter. The target point is intentionally not invented;
+; this branch only executes when a previously published point is available.
+(defrule
+    (up-compare-goal aegis-mc-valid == 1)
+    (up-compare-goal aegis-mc-stage == aegis-mc-stage-authorized)
+    (up-compare-goal aegis-mc-intent == aegis-mc-intent-regroup)
+    (up-compare-goal aegis-mc-attempts < 1)
+=>
+    (up-target-point position-self-x action-move -1 stance-defensive)
+    (up-modify-goal aegis-mc-attempts g:+ 1)
+    (set-goal aegis-mc-stage aegis-mc-stage-issued)
+)
+
+; Physical completion is deliberately not inferred from dispatch.
+(defrule
+    (up-compare-goal aegis-mc-valid == 1)
+    (up-compare-goal aegis-mc-stage == aegis-mc-stage-issued)
+=>
+    (set-goal aegis-mc-observed 0)
+    (set-goal aegis-mc-stage aegis-mc-stage-reassess)
+)
