@@ -1,0 +1,96 @@
+; AEGIS ECONOMIC DEMAND ARBITRATION V0
+; Final runtime module - loaded by AEGIS-BYZ.per.
+; Target: AoE2DE 101.103.48987.0 / BuildID 24094652
+; Purpose: deterministically select one highest-priority civilian resource demand.
+; This module does not select workers, sources, dropsites, or issue commands.
+
+(defconst aegis-eda-generation 490)
+(defconst aegis-eda-valid 491)
+(defconst aegis-eda-stage 492)
+(defconst aegis-eda-selected-resource 493)
+(defconst aegis-eda-selected-deficit 494)
+(defconst aegis-eda-priority 495)
+(defconst aegis-eda-urgency 496)
+(defconst aegis-eda-observed-at 497)
+(defconst aegis-eda-stage-init 0)
+(defconst aegis-eda-stage-arbitrated 1)
+(defconst aegis-eda-stage-qualified 2)
+(defconst aegis-eda-resource-none 0)
+(defconst aegis-eda-resource-food 1)
+(defconst aegis-eda-resource-wood 2)
+(defconst aegis-eda-resource-gold 3)
+(defconst aegis-eda-resource-stone 4)
+
+(defrule
+    (up-compare-goal aegis-ed-valid == 1)
+    (up-compare-goal aegis-eda-generation != aegis-ed-generation)
+=>
+    (set-goal aegis-eda-valid 0)
+    (set-goal aegis-eda-stage aegis-eda-stage-arbitrated)
+    (set-goal aegis-eda-selected-resource aegis-eda-resource-none)
+    (set-goal aegis-eda-selected-deficit 0)
+    (set-goal aegis-eda-priority aegis-ed-priority-normal)
+    (set-goal aegis-eda-urgency aegis-ed-urgency-normal)
+    (up-modify-goal aegis-eda-generation g:= aegis-ed-generation)
+    (up-modify-goal aegis-eda-observed-at g:= aegis-ed-observed-at)
+)
+
+(defrule
+    (up-compare-goal aegis-eda-stage == aegis-eda-stage-arbitrated)
+    (up-compare-goal aegis-ed-urgency == aegis-ed-urgency-high)
+    (up-compare-goal aegis-ed-gold-demand > 0)
+=>
+    (set-goal aegis-eda-selected-resource aegis-eda-resource-gold)
+    (up-modify-goal aegis-eda-selected-deficit g:= aegis-ed-gold-demand)
+    (set-goal aegis-eda-priority aegis-ed-priority-high)
+)
+
+(defrule
+    (up-compare-goal aegis-eda-stage == aegis-eda-stage-arbitrated)
+    (up-compare-goal aegis-eda-selected-resource == aegis-eda-resource-none)
+    (up-compare-goal aegis-ed-food-demand > 0)
+    (up-compare-goal aegis-ed-food-demand >= aegis-ed-wood-demand)
+    (up-compare-goal aegis-ed-food-demand >= aegis-ed-gold-demand)
+    (up-compare-goal aegis-ed-food-demand >= aegis-ed-stone-demand)
+=>
+    (set-goal aegis-eda-selected-resource aegis-eda-resource-food)
+    (up-modify-goal aegis-eda-selected-deficit g:= aegis-ed-food-demand)
+)
+
+(defrule
+    (up-compare-goal aegis-eda-stage == aegis-eda-stage-arbitrated)
+    (up-compare-goal aegis-eda-selected-resource == aegis-eda-resource-none)
+    (up-compare-goal aegis-ed-wood-demand > 0)
+    (up-compare-goal aegis-ed-wood-demand >= aegis-ed-gold-demand)
+    (up-compare-goal aegis-ed-wood-demand >= aegis-ed-stone-demand)
+=>
+    (set-goal aegis-eda-selected-resource aegis-eda-resource-wood)
+    (up-modify-goal aegis-eda-selected-deficit g:= aegis-ed-wood-demand)
+)
+
+(defrule
+    (up-compare-goal aegis-eda-stage == aegis-eda-stage-arbitrated)
+    (up-compare-goal aegis-eda-selected-resource == aegis-eda-resource-none)
+    (up-compare-goal aegis-ed-gold-demand > 0)
+    (up-compare-goal aegis-ed-gold-demand >= aegis-ed-stone-demand)
+=>
+    (set-goal aegis-eda-selected-resource aegis-eda-resource-gold)
+    (up-modify-goal aegis-eda-selected-deficit g:= aegis-ed-gold-demand)
+)
+
+(defrule
+    (up-compare-goal aegis-eda-stage == aegis-eda-stage-arbitrated)
+    (up-compare-goal aegis-eda-selected-resource == aegis-eda-resource-none)
+    (up-compare-goal aegis-ed-stone-demand > 0)
+=>
+    (set-goal aegis-eda-selected-resource aegis-eda-resource-stone)
+    (up-modify-goal aegis-eda-selected-deficit g:= aegis-ed-stone-demand)
+)
+
+(defrule
+    (up-compare-goal aegis-eda-stage == aegis-eda-stage-arbitrated)
+    (up-compare-goal aegis-eda-selected-resource != aegis-eda-resource-none)
+=>
+    (set-goal aegis-eda-stage aegis-eda-stage-qualified)
+    (set-goal aegis-eda-valid 1)
+)
