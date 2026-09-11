@@ -1,0 +1,26 @@
+name: ACAP Validator Tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "tools/acap_validator/**"
+      - "tests/acap/**"
+      - "schemas/ACAP-PROMOTION-ERROR-1.0.schema.json"
+      - "docs/ACAP-PROMOTION-1.0-CROSS-RECORD-SEMANTIC-VALIDATOR-RULES.md"
+  pull_request:
+    branches: [main]
+    paths:
+      - "tools/acap_validator/**"
+      - "tests/acap/**"
+      - "schemas/ACAP-PROMOTION-ERROR-1.0.schema.json"
+      - "docs/ACAP-PROMOTION-1.0-CROSS-RECORD-SEMANTIC-VALIDATOR-RULES.md"
+
+jobs:
+  acap-cross-record:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Test ACAP cross-record validator
+        run: python -m unittest discover -s tests -p 'test_*.py' -v
