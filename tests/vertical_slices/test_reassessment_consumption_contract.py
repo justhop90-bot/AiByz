@@ -73,6 +73,58 @@ def test_publishers_are_idempotent_on_lifecycle_generation():
         assert "g:= aegis-" in publisher
 
 
+def test_civilian_demand_acknowledges_villager_reassess_once():
+    demand = read("AEGIS-civilian-demand-v0.per")
+    assert "aegis-civ-reassess-generation 774" in demand
+    assert "aegis-civ-reassess-valid 775" in demand
+    assert "aegis-vr-reassess-valid == 1" in demand
+    assert "aegis-viv-reassess" not in demand
+    assert "aegis-vr-reassess-generation == aegis-vr-generation" in demand
+    assert "aegis-civ-reassess-generation != aegis-vr-reassess-generation" in demand
+    assert "up-modify-goal aegis-civ-reassess-generation g:= aegis-vr-reassess-generation" in demand
+    assert "set-goal aegis-vr-reassess-valid 0" in demand
+
+
+def test_civilian_demand_new_generation_is_upstream_only():
+    demand = read("AEGIS-civilian-demand-v0.per")
+    assert "aegis-cs-valid == 1" in demand
+    assert "aegis-cs-generation != aegis-civ-demand-generation" in demand
+    # The demand module must not synthesize a generation with g:+ or a reset token.
+    assert "up-modify-goal aegis-civ-demand-generation g:+" not in demand
+    assert "set-goal aegis-civ-demand-generation" not in demand
+
+
+def test_villager_production_cannot_replace_an_active_request():
+    vp = read("AEGIS-villager-production-v0.per")
+    assert "aegis-vp-valid == 0" in vp
+    assert "aegis-vp-generation != aegis-civ-demand-generation" in vp
+    assert "aegis-vp-request-id g:= aegis-civ-demand-generation" in vp
+
+
+def test_villager_production_authorization_is_single_use():
+    vp = read("AEGIS-villager-production-v0.per")
+    assert "aegis-vp-authorization-valid == 1" in vp
+    assert "set-goal aegis-vp-authorization-valid 0" in vp
+    assert "up-train escrow-state c: villager" in vp
+
+
+def test_villager_completion_does_not_promote_pending_without_causal_evidence():
+    vr = read("AEGIS-civilian-lifecycle-reconciler-v0.per")
+    assert "aegis-vr-causal-evidence == 1" in vr
+    assert "set-goal aegis-vr-causal-evidence 0" in vr
+    assert "set-goal aegis-vr-stage aegis-vr-stage-confirmed" in vr
+    # The source contains no writer that establishes causal evidence yet.
+    assert vr.count("aegis-vr-causal-evidence") == 3
+
+
+def test_villager_reassess_publishes_lifecycle_generation():
+    vr = read("AEGIS-civilian-lifecycle-reconciler-v0.per")
+    assert "aegis-vr-reassess-generation 762" in vr
+    assert "aegis-vr-reassess-valid 763" in vr
+    assert "aegis-vr-reassess-generation != aegis-vr-generation" in vr
+    assert "up-modify-goal aegis-vr-reassess-generation g:= aegis-vr-generation" in vr
+
+
 def test_reassess_contract_forbids_direct_strategy_selection():
     doc = (ROOT / "docs" / "AEGIS_REASSESSMENT_CONSUMPTION_PASS_2026-09-11.md").read_text(
         encoding="utf-8"
