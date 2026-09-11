@@ -11,6 +11,8 @@
 (defconst aegis-st-confidence 649)
 (defconst aegis-st-reassess-generation 782)
 (defconst aegis-st-reassess-valid 783)
+(defconst aegis-st-mp-reassess-generation 786)
+(defconst aegis-st-mp-reassess-valid 787)
 (defconst aegis-st-threat-none 0)
 (defconst aegis-st-threat-cavalry 1)
 
@@ -28,6 +30,7 @@
     (set-goal aegis-st-confidence 0)
     (set-goal aegis-st-valid 1)
     (set-goal aegis-st-reassess-valid 0)
+    (set-goal aegis-st-mp-reassess-valid 0)
 )
 
 (defrule
@@ -48,7 +51,7 @@
 )
 
 ; Anti-cavalry REASSESS acknowledgement.
-; Scouting/Threat is the correct downstream owner because it owns the
+; Scouting/Threat is the downstream owner because it owns the
 ; upstream threat-generation boundary consumed by Anti-Cavalry. The consumer
 ; acknowledges only the exact terminal CR lifecycle generation and consumes
 ; the one-shot CR publication token. It does not manufacture a new threat
@@ -63,11 +66,26 @@
     (set-goal aegis-cr-reassess-valid 0)
 )
 
-; A fresh World Model generation invalidates the local acknowledgement state.
+; Military Production is downstream of the same Scouting/Threat generation
+; boundary. Its reassessment event is acknowledged here, but acknowledgement
+; is not a new ST generation and cannot promote the military-production
+; candidate. Only a newer World Model snapshot may advance ST generation.
+(defrule
+    (up-compare-goal aegis-mp-reassess-valid == 1)
+    (up-compare-goal aegis-mp-reassess-generation == aegis-mp-generation)
+    (up-compare-goal aegis-st-mp-reassess-generation != aegis-mp-reassess-generation)
+=>
+    (up-modify-goal aegis-st-mp-reassess-generation g:= aegis-mp-reassess-generation)
+    (set-goal aegis-st-mp-reassess-valid 1)
+    (set-goal aegis-mp-reassess-valid 0)
+)
+
+; A fresh World Model generation invalidates local acknowledgement states.
 ; REASSESS itself never creates the next threat generation.
 (defrule
     (up-compare-goal aegis-st-valid == 1)
     (up-compare-goal aegis-st-generation != aegis-wm-generation)
 =>
     (set-goal aegis-st-reassess-valid 0)
+    (set-goal aegis-st-mp-reassess-valid 0)
 )
