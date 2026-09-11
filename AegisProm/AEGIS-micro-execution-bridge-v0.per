@@ -25,21 +25,22 @@
     (up-modify-goal aegis-me-generation g:= aegis-mg3-epoch)
     (up-modify-goal aegis-me-request-id g:= aegis-mc-request-id)
     (up-modify-goal aegis-me-authorization-id g:= aegis-mg3-epoch)
-    (up-modify-goal aegis-me-authorization-generation g:= aegis-mc-request-generation)
-    (up-modify-goal aegis-me-authorization-expiry g:= aegis-mc-request-generation)
+    (up-modify-goal aegis-me-authorization-generation g:= aegis-mc-generation)
+    (up-modify-goal aegis-me-authorization-expiry g:= aegis-mc-generation)
     (set-goal aegis-me-authorized 0)
     (set-goal aegis-me-purpose aegis-me-purpose-none)
     (set-goal aegis-me-valid 1)
 )
 
-; Authorization expires when the originating request generation is no longer
-; the current tactical generation. No time-based expiry is invented.
+; Authorization expires when the originating Micro Control generation advances.
+; This is explicit supersession, not a fabricated wall-clock timer.
 (defrule
     (up-compare-goal aegis-me-valid == 1)
     (up-compare-goal aegis-me-authorized == 1)
     (up-compare-goal aegis-me-authorization-generation != aegis-mc-generation)
 =>
     (set-goal aegis-me-authorized 0)
+    (set-goal aegis-me-valid 0)
 )
 
 ; Only supported physical commands are authorized here. Pursuit remains a
