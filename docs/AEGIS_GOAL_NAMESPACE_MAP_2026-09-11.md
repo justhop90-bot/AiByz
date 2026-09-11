@@ -2,7 +2,7 @@
 
 **Authority:** `main/AegisProm` source
 **Scope:** shared AegisProm `.per` goal namespace
-**Status:** NORMATIVE / COLLISION REPAIR + REASSESSMENT + AUTHORIZATION + ACAP CAUSAL EVIDENCE
+**Status:** NORMATIVE / COLLISION REPAIR + REASSESSMENT + AUTHORIZATION + ACAP CAUSAL EVIDENCE + PRODUCTION RESERVATION
 
 ## 1. Namespace rule
 
@@ -65,8 +65,45 @@ Rules:
 | 788–792 | MP | `AEGIS-military-production-v0.per` | military-production request + authorization identity/generation/valid/expiry | ACTIVE / CANDIDATE HARDENING |
 | 793–794 | MPA | `AEGIS-micro-physical-adapter-v0.per` | physical-dispatch evidence generation/valid | ACTIVE / OWNERSHIP BOUNDARY |
 | 795–805 | MP | `AEGIS-military-production-v0.per` | ACAP causal evidence + request-bound attribution gate | ACTIVE / CAUSAL BOUNDARY |
+| **806–817** | **PR** | **`AEGIS-production-reservation-authority-v0.per`** | **exclusive production reservation authority for conflicting production resources** | **IMPLEMENTED / QUALIFICATION OPEN** |
 
-## 3. Lifecycle ownership and physical authorization
+## 3. Production Reservation Authority 806–817
+
+The certified block is now implemented as `AEGIS-production-reservation-authority-v0.per`.
+
+The authority owns only exclusive reservation of the current conflicting production resource. It does not own strategy, producer lifecycle, physical production, world verification, causal confirmation, or strategic success.
+
+v0.1 state machine:
+
+```text
+FREE → RESERVED → IN_FLIGHT → RELEASE_PENDING → RELEASED
+```
+
+Conflict behavior is DENIED/DEFERRED without persistent ownership mutation. At most one valid reservation exists for the resource key.
+
+The v0.1 implementation is currently bounded to `AEGIS:spearman-line`, with Military Production and Cavalry Response as the two recognized producers.
+
+Producer physical dispatch now requires:
+
+```text
+current producer authorization
+AND
+matching active reservation
+AND
+matching owner
+AND
+matching request identity
+AND
+matching authorization identity
+AND
+matching authorization generation
+AND
+matching resource/unit identity
+```
+
+The reservation module itself never issues `up-train` and never writes causal evidence.
+
+## 4. Lifecycle ownership and physical authorization
 
 Every consequential physical action must satisfy:
 
@@ -76,6 +113,7 @@ upstream observation/demand
 → request identity
 → feasibility
 → authorization owner
+→ reservation owner when the resource is exclusive
 → physical adapter/action
 → authorization consumed
 → pending/world observation
@@ -86,24 +124,29 @@ upstream observation/demand
 Rules:
 - A lifecycle owner alone mutates its lifecycle state.
 - An authorization owner alone mutates its authorization state.
+- A reservation authority owns only exclusive conflict-resource ownership.
 - A physical adapter may issue the command and publish its own dispatch evidence, but must not mutate another module's lifecycle state.
 - Verification may publish evidence and REASSESS, but must not authorize another physical command.
 - REASSESS acknowledgement cannot manufacture the next upstream generation.
 
-## 4. REASSESS boundary
+## 5. REASSESS boundary
 
 All seven verticals publish one stable lifecycle-generation token per terminal generation. Consumers acknowledge the exact generation once and consume the publication token. REASSESS does not mean success, causal success, authorization, strategy selection, or promotion.
 
-## 5. ACAP causal-attribution boundary
+## 6. ACAP causal-attribution boundary
 
 Military Production now separates `WORLD_OBSERVED` from `CAUSALLY_CONFIRMED`. The count delta establishes only world-state transition. Goal 805 is an explicit input requiring an authoritative assertion that no unresolved alternative producer can explain the observed requested unit. The MP attribution producer consumes that predicate together with request, authorization, dispatch, pending, resolution, generation, and world-transition evidence; it does not manufacture alternative-producer clearance.
 
-## 6. Collision/ownership repairs
+The new reservation authority supplies an exclusive-ownership fact to this attribution boundary. Reservation ownership is evidence about authority, not evidence that the engine completed the request or that the request caused the world transition.
+
+## 7. Collision/ownership repairs
 
 Previously repaired collisions remain preserved, including 550–551, 630–633, Worker Verification/Qualification 546–547 and 555–559, and Scouting/Threat 610–617. Tactical Micro additionally required an ownership repair: the physical adapter no longer writes Micro Control lifecycle state; it publishes dispatch evidence in its own 793–794 boundary, while Micro Control consumes that evidence and advances its own lifecycle.
 
 Housing construction likewise no longer clears `aegis-civ-housing-demand` directly. Civilian Demand owns that policy state and must react through its normal observation/REASSESS boundary.
 
-## 7. Qualification discipline
+## 8. Qualification discipline
 
-Namespace correctness and authorization correctness do not promote a vertical. Military Production remains candidate-blocked because `aegis-mp-unit` is still not initialized in authoritative source and the ACAP causal-attribution boundary still requires independent alternative-producer clearance. Tactical Micro command-to-world-effect qualification and other causal/runtime gates remain open.
+Namespace correctness, authorization correctness, and reservation correctness do not promote a vertical. Military Production remains candidate-blocked because `aegis-mp-unit` is still not initialized in authoritative source and runtime lifecycle/causal evidence remains open.
+
+The `runtime/` tree remains a separate older runtime snapshot. It is not silently mixed with the current `main/AegisProm` ACAP implementation. Runtime synchronization is a separate promotion gate.
