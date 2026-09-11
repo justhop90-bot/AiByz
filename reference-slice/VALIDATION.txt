@@ -1,0 +1,23 @@
+AEGIS Civilian Production Loop — Gate A
+Date: 2026-09-11
+Target: 101.103.48987.0 / BuildID 24094652 / Update #180059
+
+SOURCE/STATIC LOAD INSPECTION: PASS
+- Target AEGIS-BYZ.per exists in installed target AI directory.
+- Root explicitly loads civilian census, civilization state, civilian demand,
+  villager production, and civilian lifecycle reconciler.
+- Runtime hashes captured.
+
+ENGINE RUNTIME QUALIFICATION: BLOCKED
+- Direct AoE2DE_s.exe launch produced a non-responsive game window.
+- No controlled match stimulus was executed.
+- No engine acceptance/pending observation was credited.
+- No villager census transition was credited.
+- No causal attribution was credited.
+
+GATE A: BLOCKED
+S5: NOT QUALIFIED
+S6: BLOCKED
+Production promotion: NOT AUTHORIZED
+
+Static/source evidence must not be interpreted as runtime proof.
