@@ -23,6 +23,8 @@
 (defconst aegis-cs-cavalry 418)
 (defconst aegis-cs-archers 419)
 (defconst aegis-cs-focus-player 420)
+(defconst aegis-cs-age-reassess-generation 780)
+(defconst aegis-cs-age-reassess-valid 781)
 
 (defconst aegis-cs-stage-init 0)
 (defconst aegis-cs-stage-observe 1)
@@ -53,4 +55,29 @@
     (up-modify-goal aegis-cs-observed-at g:= aegis-wm-observed-at)
     (set-goal aegis-cs-valid 1)
     (set-goal aegis-cs-stage aegis-cs-stage-qualified)
+)
+
+; Age-transition REASSESS acknowledgement.
+; Civilization State acknowledges the exact terminal age-transition generation,
+; consumes the one-shot publication token, and records that acknowledgement.
+; It does not advance the World Model or manufacture a new civilization-state
+; generation. The next lifecycle can arise only from a later World Model snapshot.
+(defrule
+    (up-compare-goal aegis-ra-reassess-valid == 1)
+    (up-compare-goal aegis-ra-reassess-generation == aegis-ra-generation)
+    (up-compare-goal aegis-cs-age-reassess-generation != aegis-ra-reassess-generation)
+=>
+    (up-modify-goal aegis-cs-age-reassess-generation g:= aegis-ra-reassess-generation)
+    (set-goal aegis-cs-age-reassess-valid 1)
+    (set-goal aegis-ra-reassess-valid 0)
+)
+
+; A fresh World Model generation supersedes the prior civilization-state frame.
+; Clear the acknowledgement only when that newer observation is actually
+; consumed; REASSESS itself never creates this generation.
+(defrule
+    (up-compare-goal aegis-cs-valid == 1)
+    (up-compare-goal aegis-cs-generation != aegis-wm-generation)
+=>
+    (set-goal aegis-cs-age-reassess-valid 0)
 )
