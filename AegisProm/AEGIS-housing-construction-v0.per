@@ -22,6 +22,8 @@
 (defconst aegis-hc-authorization-expiry 583)
 (defconst aegis-hc-world-evidence 584)
 (defconst aegis-hc-causal-evidence 585)
+(defconst aegis-hc-reassess-generation 764)
+(defconst aegis-hc-reassess-valid 765)
 
 (defconst aegis-hc-stage-init 0)
 (defconst aegis-hc-stage-authorized 1)
@@ -29,16 +31,12 @@
 (defconst aegis-hc-stage-pending 3)
 (defconst aegis-hc-stage-confirmed 4)
 (defconst aegis-hc-stage-failed 5)
-
 (defconst aegis-hc-failure-none 0)
 (defconst aegis-hc-failure-cannot-build 1)
 (defconst aegis-hc-failure-pending-lost 2)
 (defconst aegis-hc-failure-stale-authorization 3)
 (defconst aegis-hc-failure-causality-unproven 4)
 
-; Admit one construction request for a fresh civilian-demand generation.
-; Request identity originates at the demand generation and is never regenerated here.
-; The baseline is captured before any build command is issued.
 (defrule
     (up-compare-goal aegis-civ-stage == aegis-civ-stage-qualified)
     (up-compare-goal aegis-civ-housing-demand == aegis-civ-demand-needed)
@@ -65,8 +63,6 @@
     (set-goal aegis-hc-valid 1)
 )
 
-; Authorization expires when the upstream civilian-demand generation advances.
-; This is explicit supersession, not a fabricated wall-clock timer.
 (defrule
     (up-compare-goal aegis-hc-valid == 1)
     (up-compare-goal aegis-hc-authorization-valid == 1)
@@ -78,8 +74,6 @@
     (set-goal aegis-hc-valid 0)
 )
 
-; Physical authorization: require native build feasibility and a bounded
-; one-command request. can-build is admission evidence, not completion evidence.
 (defrule
     (up-compare-goal aegis-hc-valid == 1)
     (up-compare-goal aegis-hc-authorization-valid == 1)
@@ -93,7 +87,6 @@
     (set-goal aegis-hc-authorization-valid 0)
 )
 
-; Fail closed when native feasibility is unavailable.
 (defrule
     (up-compare-goal aegis-hc-valid == 1)
     (up-compare-goal aegis-hc-authorization-valid == 1)
@@ -107,8 +100,6 @@
     (set-goal aegis-hc-valid 0)
 )
 
-; Pending foundation is an intermediate engine-observable construction state.
-; It preserves the originating request identity.
 (defrule
     (up-compare-goal aegis-hc-valid == 1)
     (up-compare-goal aegis-hc-stage == aegis-hc-stage-issued)
@@ -118,8 +109,6 @@
     (set-goal aegis-hc-stage aegis-hc-stage-pending)
 )
 
-; Observe completed-house state independently of the original command.
-; Observation is evidence of world transition, not yet causal attribution.
 (defrule
     (up-compare-goal aegis-hc-valid == 1)
     (up-compare-goal aegis-hc-stage == aegis-hc-stage-pending)
@@ -127,8 +116,6 @@
     (up-get-fact building-type-count-total house aegis-hc-observed-houses)
 )
 
-; A completed-house increase establishes WORLD_STATE_OBSERVED.
-; It does not by itself establish that this request caused the increase.
 (defrule
     (up-compare-goal aegis-hc-valid == 1)
     (up-compare-goal aegis-hc-stage == aegis-hc-stage-pending)
@@ -137,9 +124,6 @@
     (set-goal aegis-hc-world-evidence 1)
 )
 
-; Causal verification is deliberately explicit. V0 has no independently proven
-; engine fact tying a particular completed house to this request identity.
-; Therefore static count evidence MUST NOT manufacture causal credit.
 (defrule
     (up-compare-goal aegis-hc-valid == 1)
     (up-compare-goal aegis-hc-stage == aegis-hc-stage-pending)
@@ -152,9 +136,6 @@
     (set-goal aegis-hc-valid 0)
 )
 
-; Confirmation is permitted only when both world-state and causal evidence
-; have been independently established. No source rule currently supplies the
-; causal-evidence bit, so this gate intentionally remains closed in V0.
 (defrule
     (up-compare-goal aegis-hc-valid == 1)
     (up-compare-goal aegis-hc-stage == aegis-hc-stage-pending)
@@ -166,8 +147,6 @@
     (set-goal aegis-hc-valid 0)
 )
 
-; A pending foundation disappearing without a completed-house increase is failure.
-; Retry belongs to a later demand/reassessment generation.
 (defrule
     (up-compare-goal aegis-hc-valid == 1)
     (up-compare-goal aegis-hc-stage == aegis-hc-stage-pending)
@@ -177,4 +156,22 @@
     (set-goal aegis-hc-failure aegis-hc-failure-pending-lost)
     (set-goal aegis-hc-stage aegis-hc-stage-failed)
     (set-goal aegis-hc-valid 0)
+)
+
+; Canonical reassessment boundary. Housing publishes a lifecycle token only;
+; it does not own the next housing policy decision.
+(defrule
+    (up-compare-goal aegis-hc-stage == aegis-hc-stage-confirmed)
+    (up-compare-goal aegis-hc-reassess-generation != aegis-hc-generation)
+=>
+    (up-modify-goal aegis-hc-reassess-generation g:= aegis-hc-generation)
+    (set-goal aegis-hc-reassess-valid 1)
+)
+
+(defrule
+    (up-compare-goal aegis-hc-stage == aegis-hc-stage-failed)
+    (up-compare-goal aegis-hc-reassess-generation != aegis-hc-generation)
+=>
+    (up-modify-goal aegis-hc-reassess-generation g:= aegis-hc-generation)
+    (set-goal aegis-hc-reassess-valid 1)
 )
