@@ -1,0 +1,12 @@
+; AEGIS EXECUTION - command authority boundary
+(defconst aegis-execution-generation 395)
+(defconst aegis-execution-valid 396)
+(defconst aegis-execution-stage 397)
+(defrule
+    (up-compare-goal aegis-commitment-valid == 1)
+    (up-compare-goal aegis-execution-generation != aegis-commitment-generation)
+=>
+    (up-modify-goal aegis-execution-generation g:= aegis-commitment-generation)
+    (set-goal aegis-execution-stage aegis-commitment-kind)
+    (set-goal aegis-execution-valid 1)
+)

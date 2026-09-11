@@ -1,0 +1,12 @@
+; AEGIS VERIFICATION - observed world-state gate
+(defconst aegis-verification-generation 398)
+(defconst aegis-verification-valid 399)
+(defconst aegis-verification-observed 400)
+(defrule
+    (up-compare-goal aegis-execution-valid == 1)
+    (up-compare-goal aegis-verification-generation != aegis-execution-generation)
+=>
+    (up-modify-goal aegis-verification-generation g:= aegis-execution-generation)
+    (set-goal aegis-verification-observed 0)
+    (set-goal aegis-verification-valid 1)
+)

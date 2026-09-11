@@ -1,0 +1,88 @@
+; AEGIS MICRO STATE V0 - bounded local force evaluation and tactical state
+(defconst aegis-ms-generation 680)
+(defconst aegis-ms-valid 681)
+(defconst aegis-ms-stage 682)
+(defconst aegis-ms-friendly 683)
+(defconst aegis-ms-enemy 684)
+(defconst aegis-ms-cav-risk 685)
+(defconst aegis-ms-advantage 686)
+(defconst aegis-ms-retreat-risk 687)
+(defconst aegis-ms-state 688)
+(defconst aegis-ms-observed-at 689)
+(defconst aegis-ms-state-approach 0)
+(defconst aegis-ms-state-contact 1)
+(defconst aegis-ms-state-engage 2)
+(defconst aegis-ms-state-favorable 3)
+(defconst aegis-ms-state-unfavorable 4)
+(defconst aegis-ms-state-disengage 5)
+(defconst aegis-ms-state-reform 6)
+(defconst aegis-ms-state-pursuit 7)
+(defconst aegis-ms-state-defensive 8)
+
+(defrule
+    (up-compare-goal aegis-wm-valid == 1)
+    (up-compare-goal aegis-ms-generation != aegis-wm-generation)
+=>
+    (up-modify-goal aegis-ms-generation g:= aegis-wm-generation)
+    (set-goal aegis-ms-valid 1)
+    (set-goal aegis-ms-stage 0)
+    (set-goal aegis-ms-friendly 0)
+    (set-goal aegis-ms-enemy 0)
+    (set-goal aegis-ms-cav-risk 0)
+    (set-goal aegis-ms-advantage 0)
+    (set-goal aegis-ms-retreat-risk 0)
+    (set-goal aegis-ms-state aegis-ms-state-approach)
+    (up-modify-goal aegis-ms-observed-at g:= aegis-wm-observed-at)
+)
+
+; Aggregate local force first. The fixed search budget avoids entity-by-entity evaluation.
+(defrule
+    (up-compare-goal aegis-ms-valid == 1)
+=>
+    (up-full-reset-search)
+    (up-find-local c: military-class c: 20)
+    (up-remove-objects search-local object-data-status == status-pending)
+    (up-clean-search search-local object-data-distance search-order-asc)
+     (up-get-search-state local-total) (up-modify-goal aegis-ms-friendly g:= local-total)
+    (up-find-remote c: enemy-class c: 20)
+    (up-remove-objects search-remote object-data-status == status-pending)
+    (up-clean-search search-remote object-data-distance search-order-asc)
+     (up-get-search-state local-total) (up-modify-goal aegis-ms-enemy g:= local-total)
+    (set-goal aegis-ms-stage 1)
+)
+
+(defrule
+    (up-compare-goal aegis-ms-valid == 1)
+    (up-compare-goal aegis-ms-stage == 1)
+    (up-compare-goal aegis-st-threat == aegis-st-threat-cavalry)
+=>
+    (set-goal aegis-ms-cav-risk 2)
+)
+
+(defrule
+    (up-compare-goal aegis-ms-valid == 1)
+    (up-compare-goal aegis-ms-stage == 1)
+    (up-compare-goal aegis-ms-friendly > aegis-ms-enemy)
+=>
+    (set-goal aegis-ms-advantage 2)
+    (set-goal aegis-ms-state aegis-ms-state-favorable)
+)
+
+(defrule
+    (up-compare-goal aegis-ms-valid == 1)
+    (up-compare-goal aegis-ms-stage == 1)
+    (up-compare-goal aegis-ms-friendly <= aegis-ms-enemy)
+=>
+    (set-goal aegis-ms-advantage 0)
+    (set-goal aegis-ms-retreat-risk 2)
+    (set-goal aegis-ms-state aegis-ms-state-unfavorable)
+)
+
+(defrule
+    (up-compare-goal aegis-ms-valid == 1)
+    (up-compare-goal aegis-ms-stage == 1)
+    (up-compare-goal aegis-ms-friendly >= 1)
+    (up-compare-goal aegis-ms-enemy >= 1)
+=>
+    (set-goal aegis-ms-state aegis-ms-state-contact)
+)

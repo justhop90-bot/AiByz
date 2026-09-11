@@ -1,0 +1,51 @@
+; AEGIS MICRO GEOMETRY V0 - bounded point and distance preparation
+; Point preparation is separate from physical movement dispatch.
+(defconst aegis-mg2-generation 700)
+(defconst aegis-mg2-valid 701)
+(defconst aegis-mg2-target-ready 702)
+(defconst aegis-mg2-fallback-ready 703)
+(defconst aegis-mg2-target-x 704)
+(defconst aegis-mg2-target-y 705)
+(defconst aegis-mg2-distance 706)
+(defconst aegis-mg2-pivot 707)
+(defconst aegis-mg2-stage 708)
+(defconst aegis-mg2-stage-none 0)
+(defconst aegis-mg2-stage-target 1)
+(defconst aegis-mg2-stage-fallback 2)
+
+(defrule
+    (up-compare-goal aegis-mc-valid == 1)
+    (up-compare-goal aegis-mg2-generation != aegis-mc-generation)
+=>
+    (up-modify-goal aegis-mg2-generation g:= aegis-mc-generation)
+    (set-goal aegis-mg2-valid 1)
+    (set-goal aegis-mg2-target-ready 0)
+    (set-goal aegis-mg2-fallback-ready 0)
+    (set-goal aegis-mg2-stage aegis-mg2-stage-none)
+)
+
+; Capture one selected target point. No unlimited candidate enumeration is used.
+(defrule
+    (up-compare-goal aegis-mg2-valid == 1)
+    (up-compare-goal aegis-mc-intent == aegis-mc-intent-engage)
+    (up-compare-goal aegis-mc-target-ready > 0)
+=>
+    (up-set-target-object search-remote c: 0)
+    (up-get-point position-object aegis-mg2-target-x)
+    (set-goal aegis-mg2-target-ready 1)
+    (set-goal aegis-mg2-pivot 1)
+    (set-goal aegis-mg2-stage aegis-mg2-stage-target)
+)
+
+; Fallback is an approximate point derived from the current self position.
+; It is a tactical destination, not a strategic retreat claim.
+(defrule
+    (up-compare-goal aegis-mg2-valid == 1)
+    (or
+        (up-compare-goal aegis-mc-intent == aegis-mc-intent-retreat)
+        (up-compare-goal aegis-mc-intent == aegis-mc-intent-regroup))
+=>
+    (up-get-point position-self aegis-mg2-target-x)
+    (set-goal aegis-mg2-fallback-ready 1)
+    (set-goal aegis-mg2-stage aegis-mg2-stage-fallback)
+)

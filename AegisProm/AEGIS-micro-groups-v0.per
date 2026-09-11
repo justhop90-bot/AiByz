@@ -1,0 +1,55 @@
+; AEGIS MICRO GROUPS V0 - bounded functional battlefield roles
+; Roles are refreshed populations, not undocumented persistent engine groups.
+(defconst aegis-mg-generation 690)
+(defconst aegis-mg-valid 691)
+(defconst aegis-mg-frontline 692)
+(defconst aegis-mg-anticav 693)
+(defconst aegis-mg-ranged 694)
+(defconst aegis-mg-siege 695)
+(defconst aegis-mg-reserve 696)
+(defconst aegis-mg-damaged 697)
+(defconst aegis-mg-screen 698)
+(defconst aegis-mg-pursuit 699)
+
+(defrule
+    (up-compare-goal aegis-ms-valid == 1)
+    (up-compare-goal aegis-mg-generation != aegis-ms-generation)
+=>
+    (up-modify-goal aegis-mg-generation g:= aegis-ms-generation)
+    (up-get-fact unit-type-count-total spearman-line aegis-mg-anticav)
+    (up-get-fact unit-type-count-total archer-line aegis-mg-ranged)
+    (up-get-fact unit-type-count-total mangonel-line aegis-mg-siege)
+    (up-get-fact unit-type-count-total knight-line aegis-mg-frontline)
+    (set-goal aegis-mg-reserve 0)
+    (set-goal aegis-mg-damaged 0)
+    (set-goal aegis-mg-screen 0)
+    (set-goal aegis-mg-pursuit 0)
+    (set-goal aegis-mg-valid 1)
+)
+
+; Anti-cavalry pressure creates a bounded screen role.
+(defrule
+    (up-compare-goal aegis-mg-valid == 1)
+    (up-compare-goal aegis-st-threat == aegis-st-threat-cavalry)
+    (up-compare-goal aegis-mg-anticav >= 1)
+=>
+    (set-goal aegis-mg-screen aegis-mg-anticav)
+)
+
+; Pursuit is allowed only in a favorable local state with force cohesion.
+(defrule
+    (up-compare-goal aegis-mg-valid == 1)
+    (up-compare-goal aegis-ms-state == aegis-ms-state-favorable)
+    (up-compare-goal aegis-ms-advantage >= 2)
+=>
+    (set-goal aegis-mg-pursuit 1)
+)
+
+; Unfavorable state releases pursuit and preserves the reserve.
+(defrule
+    (up-compare-goal aegis-mg-valid == 1)
+    (up-compare-goal aegis-ms-state == aegis-ms-state-unfavorable)
+=>
+    (set-goal aegis-mg-pursuit 0)
+    (set-goal aegis-mg-reserve 1)
+)

@@ -1,0 +1,65 @@
+; AEGIS MICRO CONTROL V0 - intent, lifecycle, and recovery state
+(defconst aegis-mc-generation 670)
+(defconst aegis-mc-valid 671)
+(defconst aegis-mc-stage 672)
+(defconst aegis-mc-intent 673)
+(defconst aegis-mc-target-ready 674)
+(defconst aegis-mc-observed 675)
+(defconst aegis-mc-failure 676)
+(defconst aegis-mc-attempts 677)
+(defconst aegis-mc-stage-idle 0)
+(defconst aegis-mc-stage-search 1)
+(defconst aegis-mc-stage-authorized 2)
+(defconst aegis-mc-stage-issued 3)
+(defconst aegis-mc-stage-reassess 4)
+(defconst aegis-mc-intent-none 0)
+(defconst aegis-mc-intent-engage 1)
+(defconst aegis-mc-intent-retreat 2)
+(defconst aegis-mc-intent-regroup 3)
+(defconst aegis-mc-failure-none 0)
+(defconst aegis-mc-failure-no-target 1)
+(defconst aegis-mc-failure-dispatch 2)
+
+(defrule
+    (up-compare-goal aegis-wm-valid == 1)
+    (up-compare-goal aegis-mc-generation != aegis-wm-generation)
+=>
+    (up-modify-goal aegis-mc-generation g:= aegis-wm-generation)
+    (set-goal aegis-mc-valid 1)
+    (set-goal aegis-mc-stage aegis-mc-stage-idle)
+    (set-goal aegis-mc-intent aegis-mc-intent-none)
+    (set-goal aegis-mc-target-ready 0)
+    (set-goal aegis-mc-observed 0)
+    (set-goal aegis-mc-failure aegis-mc-failure-none)
+    (set-goal aegis-mc-attempts 0)
+)
+
+; Threat recovery has priority over engagement and is represented as intent.
+(defrule
+    (up-compare-goal aegis-mc-valid == 1)
+    (up-compare-goal aegis-tr-retreat == 1)
+=>
+    (set-goal aegis-mc-intent aegis-mc-intent-retreat)
+    (set-goal aegis-mc-stage aegis-mc-stage-authorized)
+)
+
+; Engage only when threat exists and retreat is not authorized.
+(defrule
+    (up-compare-goal aegis-mc-valid == 1)
+    (up-compare-goal aegis-mc-intent == aegis-mc-intent-none)
+    (up-compare-goal aegis-st-threat == aegis-st-threat-cavalry)
+    (up-compare-goal aegis-tr-retreat == 0)
+=>
+    (set-goal aegis-mc-intent aegis-mc-intent-engage)
+    (set-goal aegis-mc-stage aegis-mc-stage-search)
+)
+
+; A clean frame with no active threat becomes a regroup/reassess intent.
+(defrule
+    (up-compare-goal aegis-mc-valid == 1)
+    (up-compare-goal aegis-mc-intent == aegis-mc-intent-none)
+    (up-compare-goal aegis-st-threat == aegis-st-threat-none)
+=>
+    (set-goal aegis-mc-intent aegis-mc-intent-regroup)
+    (set-goal aegis-mc-stage aegis-mc-stage-authorized)
+)

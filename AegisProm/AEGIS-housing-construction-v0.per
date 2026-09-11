@@ -1,0 +1,113 @@
+; AEGIS HOUSING CONSTRUCTION V0
+; Final runtime module - loaded by AEGIS-BYZ.per.
+; Target: AoE2DE 101.103.48987.0 / BuildID 24094652
+; Purpose: bounded civilian housing lifecycle from demand to observation.
+; Construction is execution infrastructure, not strategic policy.
+; Native build issuance is not proof of foundation or completion.
+
+(defconst aegis-hc-generation 570)
+(defconst aegis-hc-valid 571)
+(defconst aegis-hc-stage 572)
+(defconst aegis-hc-baseline-houses 573)
+(defconst aegis-hc-observed-houses 574)
+(defconst aegis-hc-pending 575)
+(defconst aegis-hc-attempts 576)
+(defconst aegis-hc-observed-at 577)
+(defconst aegis-hc-failure 578)
+
+(defconst aegis-hc-stage-init 0)
+(defconst aegis-hc-stage-authorized 1)
+(defconst aegis-hc-stage-issued 2)
+(defconst aegis-hc-stage-pending 3)
+(defconst aegis-hc-stage-confirmed 4)
+(defconst aegis-hc-stage-failed 5)
+
+(defconst aegis-hc-failure-none 0)
+(defconst aegis-hc-failure-cannot-build 1)
+(defconst aegis-hc-failure-pending-lost 2)
+
+; Admit one construction record for a fresh civilian-demand generation.
+; The baseline is captured before any build command is issued.
+(defrule
+    (up-compare-goal aegis-civ-stage == aegis-civ-stage-qualified)
+    (up-compare-goal aegis-civ-housing-demand == aegis-civ-demand-needed)
+    (up-compare-goal aegis-hc-generation != aegis-civ-demand-generation)
+    (up-compare-goal aegis-hc-valid == 0)
+=>
+    (set-goal aegis-hc-stage aegis-hc-stage-authorized)
+    (set-goal aegis-hc-baseline-houses 0)
+    (set-goal aegis-hc-observed-houses 0)
+    (set-goal aegis-hc-pending 0)
+    (set-goal aegis-hc-attempts 0)
+    (set-goal aegis-hc-failure aegis-hc-failure-none)
+    (up-get-fact building-type-count-total house aegis-hc-baseline-houses)
+    (up-modify-goal aegis-hc-generation g:= aegis-civ-demand-generation)
+    (up-modify-goal aegis-hc-observed-at g:= aegis-civ-observed-at)
+    (set-goal aegis-hc-valid 1)
+)
+
+; Authorization is bounded by native feasibility and one command attempt.
+; can-build is an admission predicate, not completion evidence.
+(defrule
+    (up-compare-goal aegis-hc-valid == 1)
+    (up-compare-goal aegis-hc-stage == aegis-hc-stage-authorized)
+    (up-compare-goal aegis-hc-attempts < 1)
+    (can-build house)
+=>
+    (build house)
+    (up-modify-goal aegis-hc-attempts g:+ 1)
+    (set-goal aegis-hc-stage aegis-hc-stage-issued)
+)
+
+; Fail closed when the native authorization predicate is unavailable.
+(defrule
+    (up-compare-goal aegis-hc-valid == 1)
+    (up-compare-goal aegis-hc-stage == aegis-hc-stage-authorized)
+    (up-compare-goal aegis-hc-attempts < 1)
+    (not (can-build house))
+=>
+    (set-goal aegis-hc-failure aegis-hc-failure-cannot-build)
+    (set-goal aegis-hc-stage aegis-hc-stage-failed)
+    (set-goal aegis-hc-valid 0)
+)
+
+; Pending house objects establish an intermediate construction state only.
+(defrule
+    (up-compare-goal aegis-hc-valid == 1)
+    (up-compare-goal aegis-hc-stage == aegis-hc-stage-issued)
+    (up-pending-objects c: house >= 1)
+=>
+    (set-goal aegis-hc-pending 1)
+    (set-goal aegis-hc-stage aegis-hc-stage-pending)
+)
+
+; Confirm completion only from an observed increase in completed house count.
+(defrule
+    (up-compare-goal aegis-hc-valid == 1)
+    (up-compare-goal aegis-hc-stage == aegis-hc-stage-pending)
+=>
+    (up-get-fact building-type-count-total house aegis-hc-observed-houses)
+)
+
+(defrule
+    (up-compare-goal aegis-hc-valid == 1)
+    (up-compare-goal aegis-hc-stage == aegis-hc-stage-pending)
+    (up-compare-goal aegis-hc-observed-houses > aegis-hc-baseline-houses)
+=>
+    (set-goal aegis-hc-stage aegis-hc-stage-confirmed)
+    (set-goal aegis-civ-housing-demand aegis-civ-demand-none)
+    (set-goal aegis-hc-valid 0)
+)
+
+; A pending object disappearing without a completed-house increase is failure.
+; A later demand generation owns retry/replan rather than this record looping.
+(defrule
+    (up-compare-goal aegis-hc-valid == 1)
+    (up-compare-goal aegis-hc-stage == aegis-hc-stage-pending)
+    (up-pending-objects c: house <= 0)
+    (up-compare-goal aegis-hc-observed-houses <= aegis-hc-baseline-houses)
+=>
+    (set-goal aegis-hc-failure aegis-hc-failure-pending-lost)
+    (set-goal aegis-hc-stage aegis-hc-stage-failed)
+    (set-goal aegis-hc-valid 0)
+)

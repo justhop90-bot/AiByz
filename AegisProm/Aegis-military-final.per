@@ -1,0 +1,26 @@
+; AEGIS MILITARY - bounded force readiness service
+(defconst aegis-military-generation 588)
+(defconst aegis-military-valid 589)
+(defconst aegis-military-ready 590)
+(defconst aegis-military-threat 591)
+(defrule
+    (up-compare-goal aegis-wm-valid == 1)
+    (up-compare-goal aegis-military-generation != aegis-wm-generation)
+=>
+    (up-modify-goal aegis-military-generation g:= aegis-wm-generation)
+    (set-goal aegis-military-ready 0)
+    (set-goal aegis-military-threat 0)
+    (set-goal aegis-military-valid 1)
+)
+(defrule
+    (up-compare-goal aegis-military-valid == 1)
+    (up-compare-goal aegis-wm-cavalry > 0)
+=>
+    (set-goal aegis-military-threat 1)
+)
+(defrule
+    (up-compare-goal aegis-military-valid == 1)
+    (up-compare-goal aegis-wm-spear > 2)
+=>
+    (set-goal aegis-military-ready 1)
+)

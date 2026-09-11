@@ -1,0 +1,23 @@
+; AEGIS OBJECTIVES - bounded objective selection
+(defconst aegis-objective-generation 360)
+(defconst aegis-objective-valid 361)
+(defconst aegis-objective-kind 362)
+(defconst aegis-objective-none 0)
+(defconst aegis-objective-continuity 1)
+(defconst aegis-objective-defense 2)
+
+(defrule
+    (up-compare-goal aegis-situation-valid == 1)
+    (up-compare-goal aegis-objective-generation != aegis-situation-generation)
+=>
+    (up-modify-goal aegis-objective-generation g:= aegis-situation-generation)
+    (set-goal aegis-objective-kind aegis-objective-continuity)
+    (set-goal aegis-objective-valid 1)
+)
+
+(defrule
+    (up-compare-goal aegis-objective-valid == 1)
+    (up-compare-goal aegis-situation-state == aegis-situation-threat)
+=>
+    (set-goal aegis-objective-kind aegis-objective-defense)
+)

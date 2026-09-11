@@ -1,0 +1,32 @@
+; AEGIS CAVALRY RESPONSE V0 - bounded defensive production
+(defconst aegis-cr-generation 620)
+(defconst aegis-cr-valid 621)
+(defconst aegis-cr-stage 622)
+(defconst aegis-cr-attempts 623)
+(defconst aegis-cr-baseline 624)
+(defconst aegis-cr-stage-idle 0)
+(defconst aegis-cr-stage-authorized 1)
+(defconst aegis-cr-stage-issued 2)
+(defconst aegis-cr-stage-pending 3)
+(defconst aegis-cr-stage-failed 4)
+(defrule (up-compare-goal aegis-st-valid == 1) (up-compare-goal aegis-cr-generation != aegis-st-generation) =>
+    (up-modify-goal aegis-cr-generation g:= aegis-st-generation)
+    (set-goal aegis-cr-stage aegis-cr-stage-idle)
+    (set-goal aegis-cr-attempts 0)
+    (set-goal aegis-cr-valid 1)
+)
+(defrule (up-compare-goal aegis-cr-valid == 1) (up-compare-goal aegis-st-threat == aegis-st-threat-cavalry) (up-compare-goal aegis-cr-stage == aegis-cr-stage-idle) (can-train spearman-line) =>
+    (set-goal aegis-cr-stage aegis-cr-stage-authorized)
+)
+(defrule (up-compare-goal aegis-cr-valid == 1) (up-compare-goal aegis-cr-stage == aegis-cr-stage-authorized) (up-compare-goal aegis-cr-attempts < 1) (can-train spearman-line) =>
+    (up-train escrow-state c: spearman-line)
+    (up-modify-goal aegis-cr-attempts g:+ 1)
+    (set-goal aegis-cr-stage aegis-cr-stage-issued)
+)
+(defrule (up-compare-goal aegis-cr-valid == 1) (up-compare-goal aegis-cr-stage == aegis-cr-stage-issued) (up-pending-objects c: spearman-line >= 1) =>
+    (set-goal aegis-cr-stage aegis-cr-stage-pending)
+)
+(defrule (up-compare-goal aegis-cr-valid == 1) (up-compare-goal aegis-cr-stage == aegis-cr-stage-issued) (up-compare-goal aegis-cr-attempts >= 1) (up-pending-objects c: spearman-line <= 0) =>
+    (set-goal aegis-cr-stage aegis-cr-stage-failed)
+    (set-goal aegis-cr-valid 0)
+)

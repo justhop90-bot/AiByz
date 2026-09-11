@@ -1,0 +1,58 @@
+; AEGIS MICRO VERIFICATION V0 - applied/unknown/failed tactical outcomes
+(defconst aegis-mv-generation 720)
+(defconst aegis-mv-valid 721)
+(defconst aegis-mv-stage 722)
+(defconst aegis-mv-result 723)
+(defconst aegis-mv-observed 724)
+(defconst aegis-mv-failure 725)
+(defconst aegis-mv-attempts 726)
+(defconst aegis-mv-result-unknown 0)
+(defconst aegis-mv-result-applied 1)
+(defconst aegis-mv-result-partial 2)
+(defconst aegis-mv-result-failed 3)
+(defconst aegis-mv-stage-idle 0)
+(defconst aegis-mv-stage-observing 1)
+(defconst aegis-mv-stage-reassess 2)
+
+(defrule
+    (up-compare-goal aegis-mc-valid == 1)
+    (up-compare-goal aegis-mv-generation != aegis-mc-generation)
+=>
+    (up-modify-goal aegis-mv-generation g:= aegis-mc-generation)
+    (set-goal aegis-mv-valid 1)
+    (set-goal aegis-mv-stage aegis-mv-stage-idle)
+    (set-goal aegis-mv-result aegis-mv-result-unknown)
+    (set-goal aegis-mv-failure 0)
+    (set-goal aegis-mv-attempts 0)
+)
+
+; Dispatch is not success. Observe only the bounded post-dispatch state.
+(defrule
+    (up-compare-goal aegis-mv-valid == 1)
+    (up-compare-goal aegis-mc-stage == aegis-mc-stage-reassess)
+    (up-compare-goal aegis-mv-stage == aegis-mv-stage-idle)
+=>
+    (set-goal aegis-mv-stage aegis-mv-stage-observing)
+    (set-goal aegis-mv-result aegis-mv-result-unknown)
+)
+
+; A nonempty friendly force after an engage dispatch is partial evidence only.
+(defrule
+    (up-compare-goal aegis-mv-valid == 1)
+    (up-compare-goal aegis-mv-stage == aegis-mv-stage-observing)
+    (up-compare-goal aegis-mc-intent == aegis-mc-intent-engage)
+    (up-compare-goal aegis-ms-friendly >= 1)
+=>
+    (set-goal aegis-mv-result aegis-mv-result-partial)
+    (set-goal aegis-mv-stage aegis-mv-stage-reassess)
+)
+
+; No-target and retreat transitions are classified without claiming world success.
+(defrule
+    (up-compare-goal aegis-mv-valid == 1)
+    (up-compare-goal aegis-mc-failure == aegis-mc-failure-no-target)
+=>
+    (set-goal aegis-mv-failure aegis-mc-failure-no-target)
+    (set-goal aegis-mv-result aegis-mv-result-failed)
+    (set-goal aegis-mv-stage aegis-mv-stage-reassess)
+)

@@ -1,0 +1,17 @@
+; AEGIS PLANNING - objective to bounded plan
+(defconst aegis-plan-generation 370)
+(defconst aegis-plan-valid 371)
+(defconst aegis-plan-kind 372)
+(defconst aegis-plan-stage 373)
+(defconst aegis-plan-stage-none 0)
+(defconst aegis-plan-stage-ready 1)
+
+(defrule
+    (up-compare-goal aegis-objective-valid == 1)
+    (up-compare-goal aegis-plan-generation != aegis-objective-generation)
+=>
+    (up-modify-goal aegis-plan-generation g:= aegis-objective-generation)
+    (up-modify-goal aegis-plan-kind g:= aegis-objective-kind)
+    (set-goal aegis-plan-stage aegis-plan-stage-ready)
+    (set-goal aegis-plan-valid 1)
+)

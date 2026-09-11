@@ -1,0 +1,22 @@
+; AEGIS ECONOMY - resource pressure service
+(defconst aegis-economy-generation 583)
+(defconst aegis-economy-valid 584)
+(defconst aegis-economy-food-pressure 585)
+(defconst aegis-economy-wood-pressure 586)
+(defconst aegis-economy-gold-pressure 587)
+(defrule
+    (up-compare-goal aegis-wm-valid == 1)
+    (up-compare-goal aegis-economy-generation != aegis-wm-generation)
+=>
+    (up-modify-goal aegis-economy-generation g:= aegis-wm-generation)
+    (set-goal aegis-economy-food-pressure 0)
+    (set-goal aegis-economy-wood-pressure 0)
+    (set-goal aegis-economy-gold-pressure 0)
+    (set-goal aegis-economy-valid 1)
+)
+(defrule
+    (up-compare-goal aegis-economy-valid == 1)
+    (up-compare-goal aegis-wm-food < 100)
+=>
+    (set-goal aegis-economy-food-pressure 1)
+)

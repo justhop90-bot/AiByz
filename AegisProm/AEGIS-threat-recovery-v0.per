@@ -1,0 +1,65 @@
+; AEGIS THREAT RECOVERY V0 - threat memory and retreat authorization
+(defconst aegis-tr-generation 650)
+(defconst aegis-tr-valid 651)
+(defconst aegis-tr-stage 652)
+(defconst aegis-tr-underattack 653)
+(defconst aegis-tr-enemy-town 654)
+(defconst aegis-tr-retreat 655)
+(defconst aegis-tr-observed-at 656)
+(defconst aegis-tr-stage-idle 0)
+(defconst aegis-tr-stage-threat 1)
+(defconst aegis-tr-stage-retreat 2)
+(defconst aegis-tr-stage-reassess 3)
+
+(defrule
+    (up-compare-goal aegis-wm-valid == 1)
+    (up-compare-goal aegis-tr-generation != aegis-wm-generation)
+=>
+    (up-modify-goal aegis-tr-generation g:= aegis-wm-generation)
+    (set-goal aegis-tr-underattack 0)
+    (set-goal aegis-tr-enemy-town 0)
+    (set-goal aegis-tr-retreat 0)
+    (set-goal aegis-tr-stage aegis-tr-stage-idle)
+    (set-goal aegis-tr-valid 1)
+    (up-modify-goal aegis-tr-observed-at g:= aegis-wm-observed-at)
+)
+
+; Preserve broad under-attack and local enemy presence as separate observations.
+(defrule
+    (up-compare-goal aegis-tr-valid == 1)
+    (underattack)
+=>
+    (set-goal aegis-tr-underattack 1)
+    (set-goal aegis-tr-stage aegis-tr-stage-threat)
+)
+
+(defrule
+    (up-compare-goal aegis-tr-valid == 1)
+    (up-enemy-units-in-town >= 1)
+=>
+    (set-goal aegis-tr-enemy-town 1)
+    (set-goal aegis-tr-stage aegis-tr-stage-threat)
+)
+
+; Retreat is an authorization state consumed by a future military movement service.
+; It is deliberately not equated with a physical movement result.
+(defrule
+    (up-compare-goal aegis-tr-valid == 1)
+    (up-compare-goal aegis-tr-stage == aegis-tr-stage-threat)
+    (or
+        (up-compare-goal aegis-tr-underattack == 1)
+        (up-compare-goal aegis-tr-enemy-town == 1))
+=>
+    (set-goal aegis-tr-retreat 1)
+    (set-goal aegis-tr-stage aegis-tr-stage-retreat)
+)
+
+(defrule
+    (up-compare-goal aegis-tr-valid == 1)
+    (up-compare-goal aegis-tr-stage == aegis-tr-stage-retreat)
+    (not (underattack))
+    (up-enemy-units-in-town <= 0)
+=>
+    (set-goal aegis-tr-retreat 0)
+    (set-goal aegis-tr-stage aegis-tr-stage-reassess)
+)

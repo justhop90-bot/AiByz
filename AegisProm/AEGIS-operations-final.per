@@ -1,0 +1,12 @@
+; AEGIS OPERATIONS - bounded service heartbeat
+(defconst aegis-operations-generation 592)
+(defconst aegis-operations-valid 593)
+(defconst aegis-operations-cycle 594)
+(defrule
+    (up-compare-goal aegis-wm-valid == 1)
+    (up-compare-goal aegis-operations-generation != aegis-wm-generation)
+=>
+    (up-modify-goal aegis-operations-generation g:= aegis-wm-generation)
+    (up-modify-goal aegis-operations-cycle g:+ 1)
+    (set-goal aegis-operations-valid 1)
+)

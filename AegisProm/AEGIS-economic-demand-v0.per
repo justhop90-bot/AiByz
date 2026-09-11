@@ -1,0 +1,62 @@
+; AEGIS ECONOMIC DEMAND V0
+; Final runtime module - loaded by AEGIS-BYZ.per.
+; Target: AoE2DE 101.103.48987.0 / BuildID 24094652
+; Purpose: convert explicit strategic resource pressure into typed worker demand.
+; This module owns demand, not reservations, source selection, or worker commands.
+; Byzantine Architect: Byzantine flexibility is expressed through demand/arbitration.
+; Archaeologist: arithmetic follows stock goal mutation idioms; runtime visibility remains unqualified.
+; AI(HD)+Promisory: preserve explicit food/wood/gold/stone demand rather than static percentages.
+
+(defconst aegis-ed-generation 479)
+(defconst aegis-ed-valid 480)
+(defconst aegis-ed-stage 481)
+(defconst aegis-ed-food-demand 482)
+(defconst aegis-ed-wood-demand 483)
+(defconst aegis-ed-gold-demand 484)
+(defconst aegis-ed-stone-demand 485)
+(defconst aegis-ed-priority 486)
+(defconst aegis-ed-urgency 487)
+(defconst aegis-ed-observed-at 488)
+(defconst aegis-ed-cycle 489)
+
+(defconst aegis-ed-stage-init 0)
+(defconst aegis-ed-stage-derived 1)
+(defconst aegis-ed-stage-qualified 2)
+(defconst aegis-ed-demand-none 0)
+(defconst aegis-ed-demand-needed 1)
+(defconst aegis-ed-priority-normal 1)
+(defconst aegis-ed-priority-high 2)
+(defconst aegis-ed-urgency-normal 1)
+(defconst aegis-ed-urgency-high 2)
+
+; V0 uses the worker-role deficits as demand signals. Demand is expressed
+; in worker-count units; converting worker demand into reservations or
+; resource quantities belongs to later economic arbitration.
+(defrule
+    (up-compare-goal aegis-wrv-valid == 1)
+    (up-compare-goal aegis-ed-generation != aegis-wrv-generation)
+=>
+    (set-goal aegis-ed-valid 0)
+    (set-goal aegis-ed-stage aegis-ed-stage-derived)
+    (up-modify-goal aegis-ed-food-demand g:= aegis-wrv-deficit-food)
+    (up-modify-goal aegis-ed-wood-demand g:= aegis-wrv-deficit-wood)
+    (up-modify-goal aegis-ed-gold-demand g:= aegis-wrv-deficit-gold)
+    (up-modify-goal aegis-ed-stone-demand g:= aegis-wrv-deficit-stone)
+    (set-goal aegis-ed-priority aegis-ed-priority-normal)
+    (set-goal aegis-ed-urgency aegis-ed-urgency-normal)
+    (up-modify-goal aegis-ed-generation g:= aegis-wrv-generation)
+    (up-modify-goal aegis-ed-observed-at g:= aegis-wrv-observed-at)
+    (up-modify-goal aegis-ed-cycle g:+ 1)
+    (set-goal aegis-ed-stage aegis-ed-stage-qualified)
+    (set-goal aegis-ed-valid 1)
+)
+
+; High urgency is reserved for an explicit housing emergency in the current
+; civilian demand service. This is intentionally a narrow V0 bridge.
+(defrule
+    (up-compare-goal aegis-ed-valid == 1)
+    (up-compare-goal aegis-civ-housing-demand == aegis-civ-demand-needed)
+=>
+    (set-goal aegis-ed-priority aegis-ed-priority-high)
+    (set-goal aegis-ed-urgency aegis-ed-urgency-high)
+)

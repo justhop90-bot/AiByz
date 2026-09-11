@@ -1,0 +1,46 @@
+; AEGIS MICRO TARGETING V0 - proven search/filter/target preparation
+; Uses stock search and target-object primitives. It does not dispatch a physical action.
+(defrule
+    (up-compare-goal aegis-mc-valid == 1)
+    (up-compare-goal aegis-mc-stage == aegis-mc-stage-search)
+    (up-compare-goal aegis-mc-intent == aegis-mc-intent-engage)
+=>
+    (up-full-reset-search)
+    (up-find-local c: military-class c: 20)
+    (up-remove-objects search-local object-data-action == actionid-attack)
+    (up-remove-objects search-local object-data-order == orderid-attack)
+    (up-remove-objects search-local object-data-order == orderid-build)
+    (up-remove-objects search-local object-data-carry >= 1)
+    (up-clean-search search-local object-data-distance search-order-asc)
+    (up-find-remote c: enemy-class c: 1)
+    (up-remove-objects search-remote object-data-status == status-pending)
+    (up-clean-search search-remote object-data-distance search-order-asc)
+     (up-get-search-state local-total) (up-modify-goal aegis-mc-observed g:= local-total) (up-modify-goal aegis-mc-target-ready g:= local-total)
+    (set-goal aegis-mc-stage aegis-mc-stage-authorized)
+)
+
+; Retreat/regroup uses the same proven candidate filters but does not decide movement.
+(defrule
+    (up-compare-goal aegis-mc-valid == 1)
+    (up-compare-goal aegis-mc-stage == aegis-mc-stage-authorized)
+    (or
+        (up-compare-goal aegis-mc-intent == aegis-mc-intent-retreat)
+        (up-compare-goal aegis-mc-intent == aegis-mc-intent-regroup))
+=>
+    (up-full-reset-search)
+    (up-find-local c: military-class c: 20)
+    (up-remove-objects search-local object-data-action == actionid-attack)
+    (up-remove-objects search-local object-data-order == orderid-attack)
+    (up-clean-search search-local object-data-distance search-order-asc)
+     (up-get-search-state local-total) (up-modify-goal aegis-mc-observed g:= local-total)
+)
+
+(defrule
+    (up-compare-goal aegis-mc-valid == 1)
+    (up-compare-goal aegis-mc-stage == aegis-mc-stage-authorized)
+    (up-compare-goal aegis-mc-intent == aegis-mc-intent-engage)
+    (up-compare-goal aegis-mc-target-ready <= 0)
+=>
+    (set-goal aegis-mc-failure aegis-mc-failure-no-target)
+    (set-goal aegis-mc-stage aegis-mc-stage-reassess)
+)

@@ -1,0 +1,23 @@
+; AEGIS SITUATION - classify current operational state
+(defconst aegis-situation-generation 350)
+(defconst aegis-situation-valid 351)
+(defconst aegis-situation-state 352)
+(defconst aegis-situation-normal 0)
+(defconst aegis-situation-housing 1)
+(defconst aegis-situation-threat 2)
+
+(defrule
+    (up-compare-goal aegis-belief-valid == 1)
+    (up-compare-goal aegis-situation-generation != aegis-belief-generation)
+=>
+    (up-modify-goal aegis-situation-generation g:= aegis-belief-generation)
+    (set-goal aegis-situation-state aegis-situation-normal)
+    (set-goal aegis-situation-valid 1)
+)
+
+(defrule
+    (up-compare-goal aegis-situation-valid == 1)
+    (up-compare-goal aegis-belief-threat == aegis-belief-military)
+=>
+    (set-goal aegis-situation-state aegis-situation-threat)
+)

@@ -1,0 +1,12 @@
+; AEGIS RECOVERY - close stale verification frames
+(defconst aegis-recovery-generation 580)
+(defconst aegis-recovery-valid 581)
+(defconst aegis-recovery-attempts 582)
+(defrule
+    (up-compare-goal aegis-verification-valid == 1)
+    (up-compare-goal aegis-recovery-generation != aegis-verification-generation)
+=>
+    (up-modify-goal aegis-recovery-generation g:= aegis-verification-generation)
+    (up-modify-goal aegis-recovery-attempts g:+ 1)
+    (set-goal aegis-recovery-valid 1)
+)

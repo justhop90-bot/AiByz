@@ -1,0 +1,13 @@
+; AEGIS CARPENTER - world-model publication monitor
+(defconst aegis-carpenter-sensor-pass 330)
+(defconst aegis-carpenter-runtime-ok 331)
+(defconst aegis-carpenter-generation 332)
+
+(defrule
+    (up-compare-goal aegis-wm-valid == 1)
+    (up-compare-goal aegis-carpenter-generation != aegis-wm-generation)
+=>
+    (up-modify-goal aegis-carpenter-generation g:= aegis-wm-generation)
+    (set-goal aegis-carpenter-sensor-pass 1)
+    (set-goal aegis-carpenter-runtime-ok 1)
+)

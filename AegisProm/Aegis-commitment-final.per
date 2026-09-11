@@ -1,0 +1,12 @@
+; AEGIS COMMITMENT - generation-fenced commitment
+(defconst aegis-commitment-generation 390)
+(defconst aegis-commitment-valid 391)
+(defconst aegis-commitment-kind 392)
+(defrule
+    (up-compare-goal aegis-decision-valid == 1)
+    (up-compare-goal aegis-commitment-generation != aegis-decision-generation)
+=>
+    (up-modify-goal aegis-commitment-generation g:= aegis-decision-generation)
+    (up-modify-goal aegis-commitment-kind g:= aegis-plan-kind)
+    (set-goal aegis-commitment-valid 1)
+)

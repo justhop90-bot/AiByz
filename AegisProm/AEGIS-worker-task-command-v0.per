@@ -1,0 +1,123 @@
+; AEGIS WORKER TASK COMMAND V0
+; Final runtime module - loaded by AEGIS-BYZ.per.
+; Target: AoE2DE 101.103.48987.0 / BuildID 24094652
+; Purpose: issue one bounded resource-task command after candidate and service qualification.
+; This adapter does not claim productivity or verification.
+; Archaeologist: command issuance is separated from observed outcome.
+; Byzantine Architect: execution serves the arbitrated demand without embedding strategy.
+; AI(HD)+Promisory: preserve stock local/remote search then target-objects contract.
+
+(defconst aegis-wtc-generation 519)
+(defconst aegis-wtc-valid 520)
+(defconst aegis-wtc-stage 521)
+(defconst aegis-wtc-resource 522)
+(defconst aegis-wtc-attempts 523)
+(defconst aegis-wtc-action 524)
+(defconst aegis-wtc-observed-at 525)
+(defconst aegis-wtc-stage-init 0)
+(defconst aegis-wtc-stage-authorized 1)
+(defconst aegis-wtc-stage-issued 2)
+(defconst aegis-wtc-stage-waiting 3)
+(defconst aegis-wtc-stage-failed 4)
+(defconst aegis-wtc-action-none 0)
+(defconst aegis-wtc-action-gather 1)
+
+; Admit one command only for a fresh arbitrated generation with a selected worker
+; and a qualified non-food source/service relation.
+(defrule
+    (up-compare-goal aegis-wts-valid == 1)
+    (up-compare-goal aegis-wts-selected == 1)
+    (up-compare-goal aegis-sds-valid == 1)
+    (up-compare-goal aegis-sds-serviceable == 1)
+    (up-compare-goal aegis-wtc-generation != aegis-wts-generation)
+=>
+    (set-goal aegis-wtc-valid 0)
+    (set-goal aegis-wtc-stage aegis-wtc-stage-authorized)
+    (set-goal aegis-wtc-resource aegis-wts-resource)
+    (set-goal aegis-wtc-attempts 0)
+    (set-goal aegis-wtc-action aegis-wtc-action-gather)
+    (up-modify-goal aegis-wtc-generation g:= aegis-wts-generation)
+    (up-modify-goal aegis-wtc-observed-at g:= aegis-wts-observed-at)
+    (set-goal aegis-wtc-valid 1)
+)
+
+; Wood command: search one eligible villager and one qualified wood source,
+; then apply the stock target-objects command. No jumps are used.
+(defrule
+    (up-compare-goal aegis-wtc-valid == 1)
+    (up-compare-goal aegis-wtc-stage == aegis-wtc-stage-authorized)
+    (up-compare-goal aegis-wtc-resource == aegis-wts-resource-wood)
+    (up-compare-goal aegis-wtc-attempts < 1)
+=>
+    (up-full-reset-search)
+    (up-find-local c: villager-class c: 1)
+    (up-remove-objects search-local object-data-carry >= 1)
+    (up-remove-objects search-local object-data-action == actionid-attack)
+    (up-remove-objects search-local object-data-order == orderid-build)
+    (up-remove-objects search-local object-data-order == orderid-repair)
+    (up-remove-objects search-local object-data-order == orderid-enter)
+    (up-find-resource c: wood c: 8)
+    (up-remove-objects search-remote object-data-tasks-count >= 2)
+    (up-clean-search search-remote object-data-distance search-order-asc)
+    (up-set-target-object search-local c: 0)
+    (up-set-target-object search-remote c: 0)
+    (up-target-objects 0 action-default -1 -1)
+    (up-modify-goal aegis-wtc-attempts g:+ 1)
+    (set-goal aegis-wtc-stage aegis-wtc-stage-issued)
+)
+
+; Gold command uses the same stock local-worker/remote-resource targeting contract.
+(defrule
+    (up-compare-goal aegis-wtc-valid == 1)
+    (up-compare-goal aegis-wtc-stage == aegis-wtc-stage-authorized)
+    (up-compare-goal aegis-wtc-resource == aegis-wts-resource-gold)
+    (up-compare-goal aegis-wtc-attempts < 1)
+=>
+    (up-full-reset-search)
+    (up-find-local c: villager-class c: 1)
+    (up-remove-objects search-local object-data-carry >= 1)
+    (up-remove-objects search-local object-data-action == actionid-attack)
+    (up-remove-objects search-local object-data-order == orderid-build)
+    (up-remove-objects search-local object-data-order == orderid-repair)
+    (up-remove-objects search-local object-data-order == orderid-enter)
+    (up-find-resource c: gold c: 8)
+    (up-clean-search search-remote object-data-distance search-order-asc)
+    (up-set-target-object search-local c: 0)
+    (up-set-target-object search-remote c: 0)
+    (up-target-objects 0 action-default -1 -1)
+    (up-modify-goal aegis-wtc-attempts g:+ 1)
+    (set-goal aegis-wtc-stage aegis-wtc-stage-issued)
+)
+
+; Stone command.
+(defrule
+    (up-compare-goal aegis-wtc-valid == 1)
+    (up-compare-goal aegis-wtc-stage == aegis-wtc-stage-authorized)
+    (up-compare-goal aegis-wtc-resource == aegis-wts-resource-stone)
+    (up-compare-goal aegis-wtc-attempts < 1)
+=>
+    (up-full-reset-search)
+    (up-find-local c: villager-class c: 1)
+    (up-remove-objects search-local object-data-carry >= 1)
+    (up-remove-objects search-local object-data-action == actionid-attack)
+    (up-remove-objects search-local object-data-order == orderid-build)
+    (up-remove-objects search-local object-data-order == orderid-repair)
+    (up-remove-objects search-local object-data-order == orderid-enter)
+    (up-find-resource c: stone c: 8)
+    (up-clean-search search-remote object-data-distance search-order-asc)
+    (up-set-target-object search-local c: 0)
+    (up-set-target-object search-remote c: 0)
+    (up-target-objects 0 action-default -1 -1)
+    (up-modify-goal aegis-wtc-attempts g:+ 1)
+    (set-goal aegis-wtc-stage aegis-wtc-stage-issued)
+)
+
+; No physical command is issued for food until the dedicated food portfolio adapter exists.
+(defrule
+    (up-compare-goal aegis-wtc-valid == 1)
+    (up-compare-goal aegis-wtc-stage == aegis-wtc-stage-authorized)
+    (up-compare-goal aegis-wtc-resource == aegis-wts-resource-food)
+=>
+    (set-goal aegis-wtc-stage aegis-wtc-stage-failed)
+    (set-goal aegis-wtc-valid 0)
+)

@@ -1,0 +1,80 @@
+; AEGIS WORKER TARGET SELECTION V0
+; Final runtime module - loaded by AEGIS-BYZ.per.
+; Target: AoE2DE 101.103.48987.0 / BuildID 24094652
+; Purpose: select eligible civilian candidates for one arbitrated economic role.
+; This module selects; it does not choose a resource source and does not issue a task command.
+; Archaeologist: candidate selection follows observed stock search/filter contracts.
+; Byzantine Architect: any eligible villager may be retasked; existing role is not a worker identity.
+; AI(HD)+Promisory: preserve worker protection and interruption-aware filtering.
+
+(defconst aegis-wts-generation 510)
+(defconst aegis-wts-valid 511)
+(defconst aegis-wts-stage 512)
+(defconst aegis-wts-resource 513)
+(defconst aegis-wts-needed 514)
+(defconst aegis-wts-selected 515)
+(defconst aegis-wts-observed-at 516)
+(defconst aegis-wts-cycle 517)
+(defconst aegis-wts-candidates 518)
+(defconst aegis-wts-stage-init 0)
+(defconst aegis-wts-stage-searching 1)
+(defconst aegis-wts-stage-qualified 2)
+(defconst aegis-wts-resource-none 0)
+(defconst aegis-wts-resource-food 1)
+(defconst aegis-wts-resource-wood 2)
+(defconst aegis-wts-resource-gold 3)
+(defconst aegis-wts-resource-stone 4)
+
+(defrule
+    (up-compare-goal aegis-eda-valid == 1)
+    (up-compare-goal aegis-wts-generation != aegis-eda-generation)
+=>
+    (set-goal aegis-wts-valid 0)
+    (set-goal aegis-wts-stage aegis-wts-stage-searching)
+    (set-goal aegis-wts-resource aegis-eda-selected-resource)
+    (up-modify-goal aegis-wts-needed g:= aegis-eda-selected-deficit)
+    (set-goal aegis-wts-selected 0)
+    (set-goal aegis-wts-candidates 0)
+    (up-modify-goal aegis-wts-generation g:= aegis-eda-generation)
+    (up-modify-goal aegis-wts-observed-at g:= aegis-eda-observed-at)
+    (up-modify-goal aegis-wts-cycle g:+ 1)
+    (set-goal aegis-wts-valid 1)
+)
+
+; The candidate population is villager-class, not the current economic role.
+; This permits controlled retasking when arbitration changes priorities.
+; Builders, attack-action workers, and loaded workers are protected in V0.
+(defrule
+    (up-compare-goal aegis-wts-valid == 1)
+    (up-compare-goal aegis-wts-stage == aegis-wts-stage-searching)
+    (up-compare-goal aegis-wts-needed > 0)
+    (unit-type-count villager-class >= 1)
+=>
+    (up-full-reset-search)
+    (up-find-local c: villager-class g: aegis-wts-needed)
+    (up-remove-objects search-local object-data-carry >= 1)
+    (up-remove-objects search-local object-data-action == actionid-attack)
+    (up-remove-objects search-local object-data-order == orderid-build)
+    (up-remove-objects search-local object-data-order == orderid-repair)
+    (up-remove-objects search-local object-data-order == orderid-enter)
+    (up-clean-search search-local object-data-distance search-order-asc)
+    (up-get-search-state local-total)
+    (up-modify-goal aegis-wts-candidates g:= local-total)
+    (set-goal aegis-wts-stage aegis-wts-stage-qualified)
+)
+
+(defrule
+    (up-compare-goal aegis-wts-valid == 1)
+    (up-compare-goal aegis-wts-stage == aegis-wts-stage-qualified)
+    (up-compare-goal aegis-wts-candidates > 0)
+=>
+    (set-goal aegis-wts-selected 1)
+)
+
+(defrule
+    (up-compare-goal aegis-wts-valid == 1)
+    (up-compare-goal aegis-wts-stage == aegis-wts-stage-qualified)
+    (up-compare-goal aegis-wts-candidates <= 0)
+=>
+    (set-goal aegis-wts-selected 0)
+)

@@ -1,0 +1,63 @@
+; AEGIS MICRO GOVERNOR V0 - bounded tactical command lifecycle
+(defconst aegis-mg3-generation 710)
+(defconst aegis-mg3-valid 711)
+(defconst aegis-mg3-command 712)
+(defconst aegis-mg3-epoch 713)
+(defconst aegis-mg3-age 714)
+(defconst aegis-mg3-expected 715)
+(defconst aegis-mg3-reissue 716)
+(defconst aegis-mg3-command-none 0)
+(defconst aegis-mg3-command-engage 1)
+(defconst aegis-mg3-command-disengage 2)
+(defconst aegis-mg3-command-regroup 3)
+(defconst aegis-mg3-command-pursue 4)
+
+(defrule
+    (up-compare-goal aegis-mc-valid == 1)
+    (up-compare-goal aegis-mg3-generation != aegis-mc-generation)
+=>
+    (up-modify-goal aegis-mg3-generation g:= aegis-mc-generation)
+    (up-modify-goal aegis-mg3-epoch g:+ 1)
+    (up-get-fact game-time 0 aegis-mg3-age)
+    (set-goal aegis-mg3-command aegis-mg3-command-none)
+    (set-goal aegis-mg3-expected 0)
+    (set-goal aegis-mg3-reissue 0)
+    (set-goal aegis-mg3-valid 1)
+)
+
+; Do not reissue a command while the current tactical intent remains stable.
+(defrule
+    (up-compare-goal aegis-mg3-valid == 1)
+    (up-compare-goal aegis-mc-intent == aegis-mc-intent-engage)
+    (up-compare-goal aegis-mg3-command == aegis-mg3-command-none)
+=>
+    (set-goal aegis-mg3-command aegis-mg3-command-engage)
+    (set-goal aegis-mg3-expected 1)
+)
+(defrule
+    (up-compare-goal aegis-mg3-valid == 1)
+    (up-compare-goal aegis-mc-intent == aegis-mc-intent-retreat)
+    (up-compare-goal aegis-mg3-command != aegis-mg3-command-disengage)
+=>
+    (set-goal aegis-mg3-command aegis-mg3-command-disengage)
+    (set-goal aegis-mg3-expected 1)
+    (set-goal aegis-mg3-reissue 1)
+)
+(defrule
+    (up-compare-goal aegis-mg3-valid == 1)
+    (up-compare-goal aegis-mc-intent == aegis-mc-intent-regroup)
+    (up-compare-goal aegis-mg3-command != aegis-mg3-command-regroup)
+=>
+    (set-goal aegis-mg3-command aegis-mg3-command-regroup)
+    (set-goal aegis-mg3-expected 1)
+    (set-goal aegis-mg3-reissue 1)
+)
+(defrule
+    (up-compare-goal aegis-mg3-valid == 1)
+    (up-compare-goal aegis-mg-pursuit == 1)
+    (up-compare-goal aegis-mg3-command != aegis-mg3-command-pursue)
+=>
+    (set-goal aegis-mg3-command aegis-mg3-command-pursue)
+    (set-goal aegis-mg3-expected 1)
+    (set-goal aegis-mg3-reissue 1)
+)

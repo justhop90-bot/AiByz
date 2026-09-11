@@ -1,0 +1,12 @@
+; AEGIS DECISION - commit only valid plans
+(defconst aegis-decision-generation 380)
+(defconst aegis-decision-valid 381)
+(defconst aegis-decision-approve 382)
+(defrule
+    (up-compare-goal aegis-plan-valid == 1)
+    (up-compare-goal aegis-decision-generation != aegis-plan-generation)
+=>
+    (up-modify-goal aegis-decision-generation g:= aegis-plan-generation)
+    (set-goal aegis-decision-approve 1)
+    (set-goal aegis-decision-valid 1)
+)

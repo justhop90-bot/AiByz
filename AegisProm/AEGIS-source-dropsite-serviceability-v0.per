@@ -1,0 +1,129 @@
+; AEGIS SOURCE/DROPSITE SERVICEABILITY V0
+; Final runtime module - loaded by AEGIS-BYZ.per.
+; Target: AoE2DE 101.103.48987.0 / BuildID 24094652
+; Purpose: qualify whether an arbitrated resource demand has a usable source/service relation.
+; No gathering command is issued here.
+; Stock evidence: resource search, task-load filtering, dropsite-min-distance.
+; Exact target-build runtime semantics remain unqualified.
+
+(defconst aegis-sds-generation 499)
+(defconst aegis-sds-valid 500)
+(defconst aegis-sds-stage 501)
+(defconst aegis-sds-resource 502)
+(defconst aegis-sds-source-count 503)
+(defconst aegis-sds-serviceable 504)
+(defconst aegis-sds-failure 505)
+(defconst aegis-sds-observed-at 506)
+(defconst aegis-sds-cycle 507)
+(defconst aegis-sds-stage-init 0)
+(defconst aegis-sds-stage-searching 1)
+(defconst aegis-sds-stage-qualified 2)
+(defconst aegis-sds-resource-none 0)
+(defconst aegis-sds-resource-food 1)
+(defconst aegis-sds-resource-wood 2)
+(defconst aegis-sds-resource-gold 3)
+(defconst aegis-sds-resource-stone 4)
+(defconst aegis-sds-failure-none 0)
+(defconst aegis-sds-failure-no-source 1)
+(defconst aegis-sds-failure-overloaded 2)
+(defconst aegis-sds-failure-dropsite 3)
+
+(defrule
+    (up-compare-goal aegis-eda-valid == 1)
+    (up-compare-goal aegis-sds-generation != aegis-eda-generation)
+=>
+    (set-goal aegis-sds-valid 0)
+    (set-goal aegis-sds-stage aegis-sds-stage-searching)
+    (set-goal aegis-sds-resource aegis-eda-selected-resource)
+    (up-modify-goal aegis-sds-generation g:= aegis-eda-generation)
+    (up-modify-goal aegis-sds-observed-at g:= aegis-eda-observed-at)
+    (up-modify-goal aegis-sds-cycle g:+ 1)
+    (set-goal aegis-sds-source-count 0)
+    (set-goal aegis-sds-serviceable 0)
+    (set-goal aegis-sds-failure aegis-sds-failure-none)
+    (set-goal aegis-sds-valid 1)
+)
+
+; Wood: stock explicitly finds wood resources and rejects remote objects
+; carrying two or more tasks. Serviceability requires at least one source.
+(defrule
+    (up-compare-goal aegis-sds-valid == 1)
+    (up-compare-goal aegis-sds-stage == aegis-sds-stage-searching)
+    (up-compare-goal aegis-sds-resource == aegis-sds-resource-wood)
+=>
+    (up-full-reset-search)
+    (up-find-resource c: wood c: 8)
+    (up-remove-objects search-remote object-data-tasks-count >= 2)
+    (up-get-search-state local-total)
+    (up-modify-goal aegis-sds-source-count g:= local-total)
+    (set-goal aegis-sds-stage aegis-sds-stage-qualified)
+)
+
+(defrule
+    (up-compare-goal aegis-sds-valid == 1)
+    (up-compare-goal aegis-sds-stage == aegis-sds-stage-qualified)
+    (up-compare-goal aegis-sds-resource == aegis-sds-resource-wood)
+    (up-compare-goal aegis-sds-source-count > 0)
+=>
+    (set-goal aegis-sds-serviceable 1)
+    (set-goal aegis-sds-failure aegis-sds-failure-none)
+)
+
+; Gold: source search and delivery-distance qualification are distinct.
+(defrule
+    (up-compare-goal aegis-sds-valid == 1)
+    (up-compare-goal aegis-sds-stage == aegis-sds-stage-searching)
+    (up-compare-goal aegis-sds-resource == aegis-sds-resource-gold)
+    (dropsite-min-distance gold s:<= sn-maximum-gold-drop-distance)
+=>
+    (up-full-reset-search)
+    (up-find-resource c: gold c: 8)
+    (up-get-search-state local-total)
+    (up-modify-goal aegis-sds-source-count g:= local-total)
+    (set-goal aegis-sds-stage aegis-sds-stage-qualified)
+)
+
+(defrule
+    (up-compare-goal aegis-sds-valid == 1)
+    (up-compare-goal aegis-sds-stage == aegis-sds-stage-qualified)
+    (up-compare-goal aegis-sds-resource == aegis-sds-resource-gold)
+    (up-compare-goal aegis-sds-source-count > 0)
+=>
+    (set-goal aegis-sds-serviceable 1)
+    (set-goal aegis-sds-failure aegis-sds-failure-none)
+)
+
+; Stone: source search and delivery-distance qualification are distinct.
+(defrule
+    (up-compare-goal aegis-sds-valid == 1)
+    (up-compare-goal aegis-sds-stage == aegis-sds-stage-searching)
+    (up-compare-goal aegis-sds-resource == aegis-sds-resource-stone)
+    (dropsite-min-distance stone s:<= sn-maximum-stone-drop-distance)
+=>
+    (up-full-reset-search)
+    (up-find-resource c: stone c: 8)
+    (up-get-search-state local-total)
+    (up-modify-goal aegis-sds-source-count g:= local-total)
+    (set-goal aegis-sds-stage aegis-sds-stage-qualified)
+)
+
+(defrule
+    (up-compare-goal aegis-sds-valid == 1)
+    (up-compare-goal aegis-sds-stage == aegis-sds-stage-qualified)
+    (up-compare-goal aegis-sds-resource == aegis-sds-resource-stone)
+    (up-compare-goal aegis-sds-source-count > 0)
+=>
+    (set-goal aegis-sds-serviceable 1)
+    (set-goal aegis-sds-failure aegis-sds-failure-none)
+)
+
+; Food is a portfolio, not one universal resource class. Defer its complete
+; serviceability contract to the dedicated food-source adapter.
+(defrule
+    (up-compare-goal aegis-sds-valid == 1)
+    (up-compare-goal aegis-sds-stage == aegis-sds-stage-searching)
+    (up-compare-goal aegis-sds-resource == aegis-sds-resource-food)
+=>
+    (set-goal aegis-sds-stage aegis-sds-stage-qualified)
+    (set-goal aegis-sds-failure aegis-sds-failure-no-source)
+)

@@ -1,0 +1,86 @@
+; AEGIS VILLAGER PRODUCTION V0
+; Final runtime module - loaded by AEGIS-BYZ.per.
+; Target: AoE2DE 101.103.48987.0 / BuildID 24094652
+; Purpose: turn civilian villager demand into a bounded physical train command.
+; Byzantine Architect pass: production is execution infrastructure, not strategy.
+; Archaeologist constraint: command issuance is not confirmation.
+
+(defconst aegis-vp-generation 427)
+(defconst aegis-vp-valid 428)
+(defconst aegis-vp-stage 429)
+(defconst aegis-vp-action 430)
+(defconst aegis-vp-attempts 431)
+(defconst aegis-vp-observed 432)
+
+(defconst aegis-vp-stage-init 0)
+(defconst aegis-vp-stage-authorized 1)
+(defconst aegis-vp-stage-issued 2)
+(defconst aegis-vp-stage-waiting 3)
+(defconst aegis-vp-stage-failed 4)
+
+(defconst aegis-vp-action-none 0)
+(defconst aegis-vp-action-villager 1)
+
+; Admit only a qualified civilian-demand generation.
+(defrule
+    (up-compare-goal aegis-civ-stage == aegis-civ-stage-qualified)
+    (up-compare-goal aegis-civ-villager-demand == aegis-civ-demand-needed)
+    (up-compare-goal aegis-vp-generation != aegis-civ-demand-generation)
+=>
+    (set-goal aegis-vp-valid 0)
+    (set-goal aegis-vp-stage aegis-vp-stage-authorized)
+    (set-goal aegis-vp-action aegis-vp-action-villager)
+    (set-goal aegis-vp-attempts 0)
+    (set-goal aegis-vp-observed 0)
+    (up-modify-goal aegis-vp-generation g:= aegis-civ-demand-generation)
+    (set-goal aegis-vp-valid 1)
+)
+
+; Physical authorization: require engine affordability and a real TC endpoint.
+; Do not interpret can-train as proof that the command has executed.
+(defrule
+    (up-compare-goal aegis-vp-valid == 1)
+    (up-compare-goal aegis-vp-stage == aegis-vp-stage-authorized)
+    (up-compare-goal aegis-vp-action == aegis-vp-action-villager)
+    (can-train villager)
+    (building-type-count town-center >= 1)
+    (up-compare-goal aegis-vp-attempts < 2)
+=>
+    (up-modify-goal aegis-vp-attempts g:+ 1)
+    (up-train escrow-state c: villager)
+    (set-goal aegis-vp-stage aegis-vp-stage-issued)
+)
+
+; Wait for engine-observable pending state. Pending is evidence of queue admission,
+; not evidence of completed villager production.
+(defrule
+    (up-compare-goal aegis-vp-valid == 1)
+    (up-compare-goal aegis-vp-stage == aegis-vp-stage-issued)
+    (up-pending-objects c: villager >= 1)
+=>
+    (set-goal aegis-vp-stage aegis-vp-stage-waiting)
+    (set-goal aegis-vp-observed 1)
+)
+
+; If no pending object is observed after the bounded command phase, fail closed.
+; A later generation may re-admit the request rather than looping indefinitely.
+(defrule
+    (up-compare-goal aegis-vp-valid == 1)
+    (up-compare-goal aegis-vp-stage == aegis-vp-stage-issued)
+    (up-compare-goal aegis-vp-attempts >= 2)
+    (up-pending-objects c: villager <= 0)
+=>
+    (set-goal aegis-vp-stage aegis-vp-stage-failed)
+    (set-goal aegis-vp-valid 0)
+)
+
+; Once the command is observed in the engine queue, consume the demand.
+; Completion remains a separate census/verification responsibility.
+(defrule
+    (up-compare-goal aegis-vp-valid == 1)
+    (up-compare-goal aegis-vp-stage == aegis-vp-stage-waiting)
+    (up-compare-goal aegis-civ-villager-demand == aegis-civ-demand-needed)
+=>
+    (set-goal aegis-civ-villager-demand aegis-civ-demand-none)
+    (set-goal aegis-vp-valid 0)
+)

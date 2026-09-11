@@ -1,0 +1,51 @@
+; AEGIS MICRO EXECUTION BRIDGE V0 - authority gate for physical dispatch
+(defconst aegis-me-generation 730)
+(defconst aegis-me-valid 731)
+(defconst aegis-me-authorized 732)
+(defconst aegis-me-purpose 733)
+(defconst aegis-me-purpose-none 0)
+(defconst aegis-me-purpose-engage 1)
+(defconst aegis-me-purpose-disengage 2)
+(defconst aegis-me-purpose-regroup 3)
+(defconst aegis-me-purpose-pursue 4)
+
+(defrule
+    (up-compare-goal aegis-mg3-valid == 1)
+    (up-compare-goal aegis-me-generation != aegis-mg3-epoch)
+    (up-compare-goal aegis-execution-valid == 1)
+    (up-compare-goal aegis-decision-valid == 1)
+=>
+    (up-modify-goal aegis-me-generation g:= aegis-mg3-epoch)
+    (set-goal aegis-me-authorized 0)
+    (set-goal aegis-me-purpose aegis-me-purpose-none)
+    (set-goal aegis-me-valid 1)
+)
+
+(defrule
+    (up-compare-goal aegis-me-valid == 1)
+    (up-compare-goal aegis-mg3-command == aegis-mg3-command-engage)
+=>
+    (set-goal aegis-me-purpose aegis-me-purpose-engage)
+    (set-goal aegis-me-authorized 1)
+)
+(defrule
+    (up-compare-goal aegis-me-valid == 1)
+    (up-compare-goal aegis-mg3-command == aegis-mg3-command-disengage)
+=>
+    (set-goal aegis-me-purpose aegis-me-purpose-disengage)
+    (set-goal aegis-me-authorized 1)
+)
+(defrule
+    (up-compare-goal aegis-me-valid == 1)
+    (up-compare-goal aegis-mg3-command == aegis-mg3-command-regroup)
+=>
+    (set-goal aegis-me-purpose aegis-me-purpose-regroup)
+    (set-goal aegis-me-authorized 1)
+)
+(defrule
+    (up-compare-goal aegis-me-valid == 1)
+    (up-compare-goal aegis-mg3-command == aegis-mg3-command-pursue)
+=>
+    (set-goal aegis-me-purpose aegis-me-purpose-pursue)
+    (set-goal aegis-me-authorized 1)
+)

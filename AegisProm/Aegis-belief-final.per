@@ -1,0 +1,26 @@
+; AEGIS BELIEF - bounded confidence state
+(defconst aegis-belief-generation 340)
+(defconst aegis-belief-valid 341)
+(defconst aegis-belief-threat 342)
+(defconst aegis-belief-confidence 343)
+(defconst aegis-belief-unknown 0)
+(defconst aegis-belief-economic 1)
+(defconst aegis-belief-military 2)
+
+(defrule
+    (up-compare-goal aegis-wm-valid == 1)
+    (up-compare-goal aegis-belief-generation != aegis-wm-generation)
+=>
+    (up-modify-goal aegis-belief-generation g:= aegis-wm-generation)
+    (set-goal aegis-belief-threat aegis-belief-unknown)
+    (set-goal aegis-belief-confidence 1)
+    (set-goal aegis-belief-valid 1)
+)
+
+(defrule
+    (up-compare-goal aegis-belief-valid == 1)
+    (up-compare-goal aegis-wm-cavalry > 0)
+=>
+    (set-goal aegis-belief-threat aegis-belief-military)
+    (set-goal aegis-belief-confidence 2)
+)

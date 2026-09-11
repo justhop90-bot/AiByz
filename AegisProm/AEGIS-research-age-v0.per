@@ -1,0 +1,38 @@
+; AEGIS RESEARCH/AGE V0 - bounded age transition lifecycle
+(defconst aegis-ra-generation 600)
+(defconst aegis-ra-valid 601)
+(defconst aegis-ra-stage 602)
+(defconst aegis-ra-attempts 603)
+(defconst aegis-ra-baseline-age 604)
+(defconst aegis-ra-observed-age 605)
+(defconst aegis-ra-stage-idle 0)
+(defconst aegis-ra-stage-authorized 1)
+(defconst aegis-ra-stage-issued 2)
+(defconst aegis-ra-stage-confirmed 3)
+(defconst aegis-ra-stage-failed 4)
+(defrule (up-compare-goal aegis-wm-valid == 1) (up-compare-goal aegis-ra-generation != aegis-wm-generation) =>
+    (up-modify-goal aegis-ra-generation g:= aegis-wm-generation)
+    (set-goal aegis-ra-valid 1)
+    (set-goal aegis-ra-stage aegis-ra-stage-idle)
+    (set-goal aegis-ra-attempts 0)
+    (set-goal aegis-ra-baseline-age 0)
+    (set-goal aegis-ra-observed-age 0)
+)
+(defrule (up-compare-goal aegis-ra-valid == 1) (up-compare-goal aegis-ra-stage == aegis-ra-stage-idle) (current-age == feudal-age) (can-research castle-age) (up-compare-goal aegis-wm-food >= 800) (up-compare-goal aegis-wm-gold >= 200) =>
+    (set-goal aegis-ra-baseline-age 2)
+    (set-goal aegis-ra-stage aegis-ra-stage-authorized)
+)
+(defrule (up-compare-goal aegis-ra-valid == 1) (up-compare-goal aegis-ra-stage == aegis-ra-stage-authorized) (up-compare-goal aegis-ra-attempts < 1) (can-research castle-age) =>
+    (research castle-age)
+    (up-modify-goal aegis-ra-attempts g:+ 1)
+    (set-goal aegis-ra-stage aegis-ra-stage-issued)
+)
+(defrule (up-compare-goal aegis-ra-valid == 1) (up-compare-goal aegis-ra-stage == aegis-ra-stage-issued) (current-age >= castle-age) =>
+    (set-goal aegis-ra-observed-age 3)
+    (set-goal aegis-ra-stage aegis-ra-stage-confirmed)
+    (set-goal aegis-ra-valid 0)
+)
+(defrule (up-compare-goal aegis-ra-valid == 1) (up-compare-goal aegis-ra-stage == aegis-ra-stage-issued) (up-compare-goal aegis-ra-attempts >= 1) (current-age == feudal-age) =>
+    (set-goal aegis-ra-stage aegis-ra-stage-failed)
+    (set-goal aegis-ra-valid 0)
+)

@@ -1,0 +1,123 @@
+; AEGIS WORKER ROLE VECTOR V0
+; Final runtime module - loaded by AEGIS-BYZ.per.
+; Target: AoE2DE 101.103.48987.0 / BuildID 24094652
+; Purpose: reconcile desired civilian role targets against observed engine role counts.
+; This layer derives deficits only. It does not select workers or issue task commands.
+; Byzantine Architect pass: desired roles are strategic/economic policy inputs.
+; Archaeologist constraint: observed role counts come from the worker-role census.
+; AI(HD)+Promisory constraint: preserve explicit deficit/reconciliation semantics.
+
+(defconst aegis-wrv-generation 465)
+(defconst aegis-wrv-valid 466)
+(defconst aegis-wrv-stage 467)
+(defconst aegis-wrv-desired-food 468)
+(defconst aegis-wrv-desired-wood 469)
+(defconst aegis-wrv-desired-gold 470)
+(defconst aegis-wrv-desired-stone 471)
+(defconst aegis-wrv-desired-builder 472)
+(defconst aegis-wrv-deficit-food 473)
+(defconst aegis-wrv-deficit-wood 474)
+(defconst aegis-wrv-deficit-gold 475)
+(defconst aegis-wrv-deficit-stone 476)
+(defconst aegis-wrv-deficit-builder 477)
+(defconst aegis-wrv-observed-at 478)
+
+(defconst aegis-wrv-stage-init 0)
+(defconst aegis-wrv-stage-derived 1)
+(defconst aegis-wrv-stage-qualified 2)
+
+; V0 policy targets. These are intentionally explicit and conservative.
+; They are not a claim about the final Byzantine economy scheduler.
+(defconst aegis-wrv-target-food 0)
+(defconst aegis-wrv-target-wood 0)
+(defconst aegis-wrv-target-gold 0)
+(defconst aegis-wrv-target-stone 0)
+(defconst aegis-wrv-target-builder 0)
+
+; Start a new vector only when a fresh worker-role census exists.
+(defrule
+    (up-compare-goal aegis-wrc-valid == 1)
+    (up-compare-goal aegis-wrv-generation != aegis-wrc-generation)
+=>
+    (set-goal aegis-wrv-valid 0)
+    (set-goal aegis-wrv-stage aegis-wrv-stage-derived)
+    (set-goal aegis-wrv-desired-food aegis-wrv-target-food)
+    (set-goal aegis-wrv-desired-wood aegis-wrv-target-wood)
+    (set-goal aegis-wrv-desired-gold aegis-wrv-target-gold)
+    (set-goal aegis-wrv-desired-stone aegis-wrv-target-stone)
+    (set-goal aegis-wrv-desired-builder aegis-wrv-target-builder)
+    (set-goal aegis-wrv-deficit-food 0)
+    (set-goal aegis-wrv-deficit-wood 0)
+    (set-goal aegis-wrv-deficit-gold 0)
+    (set-goal aegis-wrv-deficit-stone 0)
+    (set-goal aegis-wrv-deficit-builder 0)
+    (up-modify-goal aegis-wrv-generation g:= aegis-wrc-generation)
+    (up-modify-goal aegis-wrv-observed-at g:= aegis-wrc-observed-at)
+    (set-goal aegis-wrv-valid 1)
+)
+
+; Compute positive deficits only. Surplus is represented by zero here;
+; preemption and worker selection belong to the downstream scheduler.
+(defrule
+    (up-compare-goal aegis-wrv-valid == 1)
+    (up-compare-goal aegis-wrv-stage == aegis-wrv-stage-derived)
+=>
+    (up-modify-goal aegis-wrv-deficit-food g:= aegis-wrv-desired-food)
+    (up-modify-goal aegis-wrv-deficit-food g:- aegis-wrc-food)
+    (up-modify-goal aegis-wrv-deficit-wood g:= aegis-wrv-desired-wood)
+    (up-modify-goal aegis-wrv-deficit-wood g:- aegis-wrc-wood)
+    (up-modify-goal aegis-wrv-deficit-gold g:= aegis-wrv-desired-gold)
+    (up-modify-goal aegis-wrv-deficit-gold g:- aegis-wrc-gold)
+    (up-modify-goal aegis-wrv-deficit-stone g:= aegis-wrv-desired-stone)
+    (up-modify-goal aegis-wrv-deficit-stone g:- aegis-wrc-stone)
+    (up-modify-goal aegis-wrv-deficit-builder g:= aegis-wrv-desired-builder)
+    (up-modify-goal aegis-wrv-deficit-builder g:- aegis-wrc-builder)
+)
+
+; Clamp negative deficits to zero after arithmetic reconciliation.
+(defrule
+    (up-compare-goal aegis-wrv-valid == 1)
+    (up-compare-goal aegis-wrv-stage == aegis-wrv-stage-derived)
+    (up-compare-goal aegis-wrv-deficit-food < 0)
+=>
+    (set-goal aegis-wrv-deficit-food 0)
+)
+
+(defrule
+    (up-compare-goal aegis-wrv-valid == 1)
+    (up-compare-goal aegis-wrv-stage == aegis-wrv-stage-derived)
+    (up-compare-goal aegis-wrv-deficit-wood < 0)
+=>
+    (set-goal aegis-wrv-deficit-wood 0)
+)
+
+(defrule
+    (up-compare-goal aegis-wrv-valid == 1)
+    (up-compare-goal aegis-wrv-stage == aegis-wrv-stage-derived)
+    (up-compare-goal aegis-wrv-deficit-gold < 0)
+=>
+    (set-goal aegis-wrv-deficit-gold 0)
+)
+
+(defrule
+    (up-compare-goal aegis-wrv-valid == 1)
+    (up-compare-goal aegis-wrv-stage == aegis-wrv-stage-derived)
+    (up-compare-goal aegis-wrv-deficit-stone < 0)
+=>
+    (set-goal aegis-wrv-deficit-stone 0)
+)
+
+(defrule
+    (up-compare-goal aegis-wrv-valid == 1)
+    (up-compare-goal aegis-wrv-stage == aegis-wrv-stage-derived)
+    (up-compare-goal aegis-wrv-deficit-builder < 0)
+=>
+    (set-goal aegis-wrv-deficit-builder 0)
+)
+
+(defrule
+    (up-compare-goal aegis-wrv-valid == 1)
+    (up-compare-goal aegis-wrv-stage == aegis-wrv-stage-derived)
+=>
+    (set-goal aegis-wrv-stage aegis-wrv-stage-qualified)
+)

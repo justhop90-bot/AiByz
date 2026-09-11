@@ -1,0 +1,56 @@
+; AEGIS CIVILIZATION STATE V0
+; Final runtime module - loaded by AEGIS-BYZ.per.
+; Target: AoE2DE 101.103.48987.0 / BuildID 24094652
+; Purpose: reconcile the Architect-owned World Model into civilization state.
+; The state layer consumes the published World Model, never raw Carpenter data.
+; No same-pass visibility is required: a later pass may consume the snapshot.
+
+(defconst aegis-cs-generation 403)
+(defconst aegis-cs-valid 404)
+(defconst aegis-cs-stage 405)
+(defconst aegis-cs-observed-at 406)
+(defconst aegis-cs-cycle 407)
+(defconst aegis-cs-time 408)
+(defconst aegis-cs-population 409)
+(defconst aegis-cs-population-cap 410)
+(defconst aegis-cs-age 411)
+(defconst aegis-cs-food 412)
+(defconst aegis-cs-wood 413)
+(defconst aegis-cs-gold 414)
+(defconst aegis-cs-spear 415)
+(defconst aegis-cs-camel 416)
+(defconst aegis-cs-skirm 417)
+(defconst aegis-cs-cavalry 418)
+(defconst aegis-cs-archers 419)
+(defconst aegis-cs-focus-player 420)
+
+(defconst aegis-cs-stage-init 0)
+(defconst aegis-cs-stage-observe 1)
+(defconst aegis-cs-stage-qualified 2)
+
+; Consume only a published, valid World Model generation.
+(defrule
+    (up-compare-goal aegis-wm-valid == 1)
+    (up-compare-goal aegis-cs-generation != aegis-wm-generation)
+=>
+    (set-goal aegis-cs-valid 0)
+    (set-goal aegis-cs-stage aegis-cs-stage-observe)
+    (up-modify-goal aegis-cs-time g:= aegis-wm-time)
+    (up-modify-goal aegis-cs-population g:= aegis-wm-population)
+    (up-modify-goal aegis-cs-population-cap g:= aegis-wm-population-cap)
+    (up-modify-goal aegis-cs-age g:= aegis-wm-age)
+    (up-modify-goal aegis-cs-food g:= aegis-wm-food)
+    (up-modify-goal aegis-cs-wood g:= aegis-wm-wood)
+    (up-modify-goal aegis-cs-gold g:= aegis-wm-gold)
+    (up-modify-goal aegis-cs-spear g:= aegis-wm-spear)
+    (up-modify-goal aegis-cs-camel g:= aegis-wm-camel)
+    (up-modify-goal aegis-cs-skirm g:= aegis-wm-skirm)
+    (up-modify-goal aegis-cs-cavalry g:= aegis-wm-cavalry)
+    (up-modify-goal aegis-cs-archers g:= aegis-wm-archers)
+    (up-modify-goal aegis-cs-focus-player g:= aegis-wm-focus-player)
+    (up-modify-goal aegis-cs-generation g:= aegis-wm-generation)
+    (up-modify-goal aegis-cs-cycle g:= aegis-wm-cycle)
+    (up-modify-goal aegis-cs-observed-at g:= aegis-wm-observed-at)
+    (set-goal aegis-cs-valid 1)
+    (set-goal aegis-cs-stage aegis-cs-stage-qualified)
+)
