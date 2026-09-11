@@ -1,26 +1,32 @@
-name: ACAP Validator Tests
+name: ACAP and Vertical Slice Validator Tests
 
 on:
   push:
     branches: [main]
     paths:
       - "tools/acap_validator/**"
+      - "tools/vertical_slice_validator/**"
       - "tests/acap/**"
+      - "tests/vertical_slices/**"
       - "schemas/ACAP-PROMOTION-ERROR-1.0.schema.json"
       - "docs/ACAP-PROMOTION-1.0-CROSS-RECORD-SEMANTIC-VALIDATOR-RULES.md"
+      - "docs/AEGIS_VERTICAL_SLICE_QUALIFICATION_MASTER_2026-09-11.md"
   pull_request:
     branches: [main]
     paths:
       - "tools/acap_validator/**"
+      - "tools/vertical_slice_validator/**"
       - "tests/acap/**"
+      - "tests/vertical_slices/**"
       - "schemas/ACAP-PROMOTION-ERROR-1.0.schema.json"
       - "docs/ACAP-PROMOTION-1.0-CROSS-RECORD-SEMANTIC-VALIDATOR-RULES.md"
+      - "docs/AEGIS_VERTICAL_SLICE_QUALIFICATION_MASTER_2026-09-11.md"
 
 jobs:
-  acap-cross-record:
+  validators:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Test ACAP cross-record validator
+      - name: Run ACAP and vertical-slice tests
         run: python -m unittest discover -s tests -p 'test_*.py' -v
