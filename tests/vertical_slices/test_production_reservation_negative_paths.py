@@ -18,6 +18,12 @@ def rule_containing(content: str, marker: str) -> str:
     return content[start:end]
 
 
+def test_reservation_authority_rules_remain_well_formed():
+    content = read()
+    assert "(defrule" in content
+    assert "\ndefrule" not in content
+
+
 def test_cr_grant_requires_explicit_spearman_unit_binding():
     content = read()
     grant = rule_containing(content, "; ------------------------------ grant: CR")
@@ -29,7 +35,6 @@ def test_wrong_unit_cannot_reach_cr_reservation_state():
     content = read()
     grant = rule_containing(content, "; ------------------------------ grant: CR")
     assert "aegis-cr-unit == aegis-pr-unit-spearman-line" in grant
-    # The grant has no alternative wrong-unit branch that writes RESERVED.
     assert grant.count("set-goal aegis-pr-state aegis-pr-state-reserved") == 1
 
 
@@ -56,8 +61,6 @@ def test_duplicate_request_cannot_claim_a_nonfree_resource():
         grant = rule_containing(content, f"; ------------------------------ grant: {'MP' if producer == 'aegis-mp' else 'CR'}")
         assert "aegis-pr-state == aegis-pr-state-free" in grant
         assert "aegis-pr-valid == 0" in grant
-
-    # A second request cannot be granted while the existing reservation is valid.
     assert content.count("aegis-pr-state == aegis-pr-state-free") >= 2
     assert content.count("aegis-pr-valid == 0") >= 2
 
@@ -74,8 +77,6 @@ def test_release_requires_identity_and_generation_continuity():
 def test_invalid_release_cannot_release_active_reservation():
     content = read()
     release = rule_containing(content, "; ------------------------------- release")
-    # No release rule may transition directly from RESERVED/IN_FLIGHT without
-    # first requiring RELEASE_PENDING and the identity checks above.
     assert "aegis-pr-state == aegis-pr-state-release-pending" in release
     assert "aegis-pr-state == aegis-pr-state-reserved" not in release
     assert "aegis-pr-state == aegis-pr-state-in-flight" not in release
