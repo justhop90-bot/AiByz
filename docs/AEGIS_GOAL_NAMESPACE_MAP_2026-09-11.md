@@ -2,7 +2,7 @@
 
 **Authority:** `main/AegisProm` source
 **Scope:** shared AegisProm `.per` goal namespace
-**Status:** NORMATIVE / COLLISION REPAIR + REASSESSMENT + AUTHORIZATION BASELINE
+**Status:** NORMATIVE / COLLISION REPAIR + REASSESSMENT + AUTHORIZATION + ACAP CAUSAL EVIDENCE
 
 ## 1. Namespace rule
 
@@ -64,6 +64,7 @@ Rules:
 | 786–787 | ST | `AEGIS-scouting-threat-v0.per` | military-production reassessment acknowledgement | ACTIVE / REASSESSMENT CONSUMER |
 | 788–792 | MP | `AEGIS-military-production-v0.per` | military-production request + authorization identity/generation/valid/expiry | ACTIVE / CANDIDATE HARDENING |
 | 793–794 | MPA | `AEGIS-micro-physical-adapter-v0.per` | physical-dispatch evidence generation/valid | ACTIVE / OWNERSHIP BOUNDARY |
+| 795–805 | MP | `AEGIS-military-production-v0.per` | ACAP causal evidence + request-bound attribution gate | ACTIVE / CAUSAL BOUNDARY |
 
 ## 3. Lifecycle ownership and physical authorization
 
@@ -93,12 +94,16 @@ Rules:
 
 All seven verticals publish one stable lifecycle-generation token per terminal generation. Consumers acknowledge the exact generation once and consume the publication token. REASSESS does not mean success, causal success, authorization, strategy selection, or promotion.
 
-## 5. Collision/ownership repairs
+## 5. ACAP causal-attribution boundary
+
+Military Production now separates `WORLD_OBSERVED` from `CAUSALLY_CONFIRMED`. The count delta establishes only world-state transition. Goal 805 is an explicit input requiring an authoritative assertion that no unresolved alternative producer can explain the observed requested unit. The MP attribution producer consumes that predicate together with request, authorization, dispatch, pending, resolution, generation, and world-transition evidence; it does not manufacture alternative-producer clearance.
+
+## 6. Collision/ownership repairs
 
 Previously repaired collisions remain preserved, including 550–551, 630–633, Worker Verification/Qualification 546–547 and 555–559, and Scouting/Threat 610–617. Tactical Micro additionally required an ownership repair: the physical adapter no longer writes Micro Control lifecycle state; it publishes dispatch evidence in its own 793–794 boundary, while Micro Control consumes that evidence and advances its own lifecycle.
 
 Housing construction likewise no longer clears `aegis-civ-housing-demand` directly. Civilian Demand owns that policy state and must react through its normal observation/REASSESS boundary.
 
-## 6. Qualification discipline
+## 7. Qualification discipline
 
-Namespace correctness and authorization correctness do not promote a vertical. Military Production remains candidate-blocked because `aegis-mp-unit` is still not initialized in authoritative source and its count-increase confirmation remains insufficient causal evidence. Tactical Micro command-to-world-effect qualification and other causal/runtime gates remain open.
+Namespace correctness and authorization correctness do not promote a vertical. Military Production remains candidate-blocked because `aegis-mp-unit` is still not initialized in authoritative source and the ACAP causal-attribution boundary still requires independent alternative-producer clearance. Tactical Micro command-to-world-effect qualification and other causal/runtime gates remain open.
