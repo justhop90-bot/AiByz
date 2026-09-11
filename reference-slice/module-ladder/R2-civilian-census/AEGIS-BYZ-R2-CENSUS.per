@@ -1,0 +1,14 @@
+; AEGIS R2 QUALIFICATION ROOT — CIVILIAN CENSUS ONLY
+; Target: AoE2DE 101.103.48987.0 / BuildID 24094652
+; This is a qualification root, NOT the production runtime root.
+; It deliberately excludes all unqualified AEGIS modules.
+; No scenario automation is required.
+
+(load "AegisProm\AEGIS-stock-defaultConstants")
+(load "AegisProm\AEGIS-stock-finalingConstants")
+(load "AegisProm\AEGIS-foundation")
+(load "AegisProm\AEGIS-civilian-census-v0")
+
+; R2 contains no strategy, worker allocation, demand, production,
+; military, micro, construction, research, or recovery service.
+; The only AEGIS behavior under qualification is civilian observation.
