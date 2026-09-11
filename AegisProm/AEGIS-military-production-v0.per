@@ -1,5 +1,6 @@
 ; AEGIS MILITARY PRODUCTION V0 - bounded composition lifecycle
 ; Candidate only: authorization is explicit but qualification/promotion remains blocked.
+; ACAP rule: world-state observation is not causal confirmation.
 (defconst aegis-mp-generation 630)
 (defconst aegis-mp-valid 631)
 (defconst aegis-mp-stage 632)
@@ -8,6 +9,16 @@
 (defconst aegis-mp-baseline 635)
 (defconst aegis-mp-observed 636)
 (defconst aegis-mp-pending 637)
+(defconst aegis-mp-causal-evidence 795)
+(defconst aegis-mp-causal-state 796)
+(defconst aegis-mp-causal-request-id 797)
+(defconst aegis-mp-causal-authorization-id 798)
+(defconst aegis-mp-causal-generation 799)
+(defconst aegis-mp-causal-dispatch-observed 800)
+(defconst aegis-mp-causal-pending-observed 801)
+(defconst aegis-mp-causal-pending-resolved 802)
+(defconst aegis-mp-causal-world-transition 803)
+(defconst aegis-mp-causal-attribution 804)
 (defconst aegis-mp-reassess-generation 772)
 (defconst aegis-mp-reassess-valid 773)
 (defconst aegis-mp-request-id 788)
@@ -19,10 +30,15 @@
 (defconst aegis-mp-stage-authorized 1)
 (defconst aegis-mp-stage-issued 2)
 (defconst aegis-mp-stage-pending 3)
-(defconst aegis-mp-stage-confirmed 4)
-(defconst aegis-mp-stage-failed 5)
+(defconst aegis-mp-stage-world-observed 4)
+(defconst aegis-mp-stage-causally-confirmed 5)
+(defconst aegis-mp-stage-failed 6)
 (defconst aegis-mp-unit-spearman 1)
 (defconst aegis-mp-unit-camel 2)
+(defconst aegis-mp-causal-unknown 0)
+(defconst aegis-mp-causal-pending 1)
+(defconst aegis-mp-causal-confirmed 2)
+(defconst aegis-mp-causal-failed 3)
 
 (defrule
     (up-compare-goal aegis-st-valid == 1)
@@ -39,6 +55,16 @@
     (set-goal aegis-mp-stage aegis-mp-stage-idle)
     (set-goal aegis-mp-attempts 0)
     (set-goal aegis-mp-pending 0)
+    (set-goal aegis-mp-causal-evidence 0)
+    (set-goal aegis-mp-causal-state aegis-mp-causal-unknown)
+    (set-goal aegis-mp-causal-request-id 0)
+    (set-goal aegis-mp-causal-authorization-id 0)
+    (set-goal aegis-mp-causal-generation 0)
+    (set-goal aegis-mp-causal-dispatch-observed 0)
+    (set-goal aegis-mp-causal-pending-observed 0)
+    (set-goal aegis-mp-causal-pending-resolved 0)
+    (set-goal aegis-mp-causal-world-transition 0)
+    (set-goal aegis-mp-causal-attribution 0)
 )
 
 (defrule
@@ -50,12 +76,10 @@
     (up-compare-goal aegis-mp-baseline < 6)
     (can-train spearman-line)
 =>
-    ; Feasibility establishes authorization for this exact request generation.
     (set-goal aegis-mp-stage aegis-mp-stage-authorized)
     (set-goal aegis-mp-authorization-valid 1)
 )
 
-; Authorization expires when the originating Scouting/Threat generation advances.
 (defrule
     (up-compare-goal aegis-mp-valid == 1)
     (up-compare-goal aegis-mp-authorization-valid == 1)
@@ -63,11 +87,12 @@
 =>
     (set-goal aegis-mp-authorization-valid 0)
     (set-goal aegis-mp-stage aegis-mp-stage-failed)
+    (set-goal aegis-mp-causal-state aegis-mp-causal-failed)
     (set-goal aegis-mp-valid 0)
 )
 
 ; Physical production requires the explicit, current authorization boundary.
-; This candidate still cannot qualify merely from count increase.
+; Dispatch proves only that AEGIS issued the authorized production request.
 (defrule
     (up-compare-goal aegis-mp-valid == 1)
     (up-compare-goal aegis-mp-stage == aegis-mp-stage-authorized)
@@ -81,6 +106,11 @@
     (up-modify-goal aegis-mp-attempts g:+ 1)
     (set-goal aegis-mp-stage aegis-mp-stage-issued)
     (set-goal aegis-mp-authorization-valid 0)
+    (up-modify-goal aegis-mp-causal-request-id g:= aegis-mp-request-id)
+    (up-modify-goal aegis-mp-causal-authorization-id g:= aegis-mp-authorization-id)
+    (up-modify-goal aegis-mp-causal-generation g:= aegis-mp-generation)
+    (set-goal aegis-mp-causal-dispatch-observed 1)
+    (set-goal aegis-mp-causal-state aegis-mp-causal-pending)
 )
 
 (defrule
@@ -90,26 +120,66 @@
 =>
     (set-goal aegis-mp-pending 1)
     (set-goal aegis-mp-stage aegis-mp-stage-pending)
+    (set-goal aegis-mp-causal-pending-observed 1)
 )
 
+; Pending disappearance is an observation, not proof of successful spawning.
+; The subsequent count observation supplies the world-state transition.
 (defrule
     (up-compare-goal aegis-mp-valid == 1)
     (up-compare-goal aegis-mp-stage == aegis-mp-stage-pending)
+    (up-pending-objects c: spearman-line <= 0)
 =>
+    (set-goal aegis-mp-causal-pending-resolved 1)
     (up-get-fact unit-type-count-total spearman-line aegis-mp-observed)
+    (set-goal aegis-mp-stage aegis-mp-stage-world-observed)
 )
 
-; NOTE: This remains the known candidate behavior. A count increase is not,
-; by itself, promoted to qualified causal evidence by this reassessment pass.
+; World evidence is deliberately separated from causal confirmation.
 (defrule
     (up-compare-goal aegis-mp-valid == 1)
     (up-compare-goal aegis-mp-stage == aegis-mp-stage-pending)
+    (up-get-fact unit-type-count-total spearman-line aegis-mp-observed)
     (up-compare-goal aegis-mp-observed > aegis-mp-baseline)
 =>
-    (set-goal aegis-mp-stage aegis-mp-stage-confirmed)
+    (set-goal aegis-mp-causal-world-transition 1)
+    (set-goal aegis-mp-stage aegis-mp-stage-world-observed)
+)
+
+; Causal confirmation requires every request-bound attribution predicate.
+; A positive count delta alone can never enter this rule.
+(defrule
+    (up-compare-goal aegis-mp-valid == 1)
+    (up-compare-goal aegis-mp-stage == aegis-mp-stage-world-observed)
+    (up-compare-goal aegis-mp-causal-request-id == aegis-mp-request-id)
+    (up-compare-goal aegis-mp-causal-authorization-id == aegis-mp-authorization-id)
+    (up-compare-goal aegis-mp-causal-generation == aegis-mp-generation)
+    (up-compare-goal aegis-mp-causal-dispatch-observed == 1)
+    (up-compare-goal aegis-mp-causal-pending-observed == 1)
+    (up-compare-goal aegis-mp-causal-pending-resolved == 1)
+    (up-compare-goal aegis-mp-causal-world-transition == 1)
+    (up-compare-goal aegis-mp-causal-attribution == 1)
+=>
+    (set-goal aegis-mp-causal-evidence 1)
+    (set-goal aegis-mp-causal-state aegis-mp-causal-confirmed)
+    (set-goal aegis-mp-stage aegis-mp-stage-causally-confirmed)
     (set-goal aegis-mp-valid 0)
 )
 
+; Attribution remains UNKNOWN unless a separate, request-bound attribution
+; producer proves that the observed unit is attributable to this request.
+; This file intentionally does not manufacture that evidence from count deltas.
+
+(defrule
+    (up-compare-goal aegis-mp-valid == 1)
+    (up-compare-goal aegis-mp-stage == aegis-mp-stage-world-observed)
+    (up-compare-goal aegis-mp-causal-world-transition == 1)
+    (up-compare-goal aegis-mp-causal-attribution == 0)
+=>
+    (set-goal aegis-mp-causal-state aegis-mp-causal-unknown)
+)
+
+; Bounded failure: request issued but no pending production remains.
 (defrule
     (up-compare-goal aegis-mp-valid == 1)
     (up-compare-goal aegis-mp-stage == aegis-mp-stage-issued)
@@ -117,13 +187,13 @@
     (up-pending-objects c: spearman-line <= 0)
 =>
     (set-goal aegis-mp-stage aegis-mp-stage-failed)
+    (set-goal aegis-mp-causal-state aegis-mp-causal-failed)
     (set-goal aegis-mp-valid 0)
 )
 
-; Canonical reassessment boundary. This candidate publishes only its local
-; lifecycle outcome. The registry still controls qualification/promotion.
+; Canonical reassessment boundary. Only confirmed or failed terminal outcomes publish.
 (defrule
-    (up-compare-goal aegis-mp-stage == aegis-mp-stage-confirmed)
+    (up-compare-goal aegis-mp-stage == aegis-mp-stage-causally-confirmed)
     (up-compare-goal aegis-mp-reassess-generation != aegis-mp-generation)
 =>
     (up-modify-goal aegis-mp-reassess-generation g:= aegis-mp-generation)
