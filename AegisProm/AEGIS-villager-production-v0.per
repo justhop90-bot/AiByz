@@ -35,12 +35,14 @@
 (defconst aegis-vp-causal-confirmed 2)
 (defconst aegis-vp-causal-failed 3)
 
-; Admit one fresh civilian-demand request. The request identity originates at
-; civilian demand generation and is copied unchanged into the production record.
+; Admit one fresh civilian-demand request only when no production lifecycle is
+; active. This prevents a newer demand generation from overwriting an issued request.
+; The request identity originates at civilian demand generation and is copied unchanged.
 ; Authorization is created here, at the consequential production boundary.
 (defrule
     (up-compare-goal aegis-civ-stage == aegis-civ-stage-qualified)
     (up-compare-goal aegis-civ-villager-demand == aegis-civ-demand-needed)
+    (up-compare-goal aegis-vp-valid == 0)
     (up-compare-goal aegis-vp-generation != aegis-civ-demand-generation)
 =>
     (set-goal aegis-vp-valid 0)
@@ -59,11 +61,12 @@
     (set-goal aegis-vp-valid 1)
 )
 
-; A request-bound authorization cannot survive a generation mismatch.
+; Authorization expires when the upstream civilian-demand generation advances.
+; This is explicit supersession, not a fabricated wall-clock timer.
 (defrule
     (up-compare-goal aegis-vp-valid == 1)
     (up-compare-goal aegis-vp-authorization-valid == 1)
-    (up-compare-goal aegis-vp-authorization-generation != aegis-vp-generation)
+    (up-compare-goal aegis-vp-authorization-generation != aegis-civ-demand-generation)
 =>
     (set-goal aegis-vp-authorization-valid 0)
     (set-goal aegis-vp-stage aegis-vp-stage-failed)
