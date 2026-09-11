@@ -65,14 +65,12 @@
     (set-goal aegis-hc-valid 1)
 )
 
-; Authorization is current only for this request generation.
-; Generation freshness is the current-state expiry condition until a proven
-; engine-time authorization clock is available. A newer demand generation
-; supersedes the authorization rather than silently renewing it.
+; Authorization expires when the upstream civilian-demand generation advances.
+; This is explicit supersession, not a fabricated wall-clock timer.
 (defrule
     (up-compare-goal aegis-hc-valid == 1)
     (up-compare-goal aegis-hc-authorization-valid == 1)
-    (up-compare-goal aegis-hc-authorization-generation != aegis-hc-generation)
+    (up-compare-goal aegis-hc-authorization-generation != aegis-civ-demand-generation)
 =>
     (set-goal aegis-hc-authorization-valid 0)
     (set-goal aegis-hc-failure aegis-hc-failure-stale-authorization)
