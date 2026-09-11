@@ -26,12 +26,13 @@
 ; Consume the villager-production/lifecycle REASSESS publication exactly once.
 ; The publisher owns publication; civilian demand owns acknowledgement.
 ; Acknowledgement does not increment or otherwise manufacture a generation.
-(defrule
+defrule
     (up-compare-goal aegis-vr-reassess-valid == 1)
     (up-compare-goal aegis-vr-reassess-generation == aegis-vr-generation)
     (up-compare-goal aegis-civ-reassess-generation != aegis-vr-reassess-generation)
 =>
     (up-modify-goal aegis-civ-reassess-generation g:= aegis-vr-reassess-generation)
+    (set-goal aegis-civ-reassess-valid 1)
     (set-goal aegis-vr-reassess-valid 0)
 )
 
@@ -48,6 +49,7 @@
     (set-goal aegis-civ-housing-demand aegis-civ-demand-none)
     (set-goal aegis-civ-urgency aegis-civ-urgency-normal)
     (set-goal aegis-civ-stage aegis-civ-stage-derived)
+    (set-goal aegis-civ-reassess-valid 0)
     (up-modify-goal aegis-civ-demand-generation g:= aegis-cs-generation)
     (up-modify-goal aegis-civ-observed-at g:= aegis-cs-observed-at)
     (set-goal aegis-civ-stage aegis-civ-stage-qualified)
