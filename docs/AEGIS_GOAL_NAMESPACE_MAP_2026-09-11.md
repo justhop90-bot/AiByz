@@ -26,10 +26,13 @@ Rules:
 | 490–497 | EDA | `AEGIS-economic-demand-arbitration-v0.per` | economic arbitration state + request identity | ACTIVE |
 | 510–518 | WTS | `AEGIS-worker-target-selection-v0.per` | worker target-selection state | ACTIVE |
 | 519–530 | WTC | `AEGIS-worker-task-command-v0.per` | worker physical task command + authorization | ACTIVE |
+| 534–545 | WTV | `AEGIS-worker-task-verification-v0.per` | worker task verification state | ACTIVE |
 | 546–549 | WR | `AEGIS-worker-recovery-v0.per` | recovery lifecycle base state | ACTIVE |
 | 550–551 | EDA/WTS | `AEGIS-economic-demand-arbitration-v0.per`, `AEGIS-worker-target-selection-v0.per` | request identities | ACTIVE / EXCLUSIVELY OWNED |
 | 552–554 | WR | `AEGIS-worker-recovery-v0.per` | recovery disposition/observation/cycle | ACTIVE |
 | 555–556 | WR | `AEGIS-worker-recovery-v0.per` | repaired failure + attempt fields | ACTIVE / REPAIRED |
+| 560–561 | WTV | `AEGIS-worker-task-verification-v0.per` | repaired verification request/authorization identity | ACTIVE / REPAIRED |
+| 562–566 | WLQ | `AEGIS-worker-loop-qualification-v0.per` | qualification heartbeat state | CANDIDATE / REPAIRED |
 | 570–585 | HC | `AEGIS-housing-construction-v0.per` | housing lifecycle + request/authorization/evidence | ACTIVE |
 | 600–612 | RA | `AEGIS-research-age-v0.per` | age-transition lifecycle + request/authorization/evidence | ACTIVE |
 | 620–629 | CR | `AEGIS-cavalry-response-v0.per` | anti-cavalry lifecycle + request/authorization | ACTIVE |
@@ -52,8 +55,6 @@ Rules:
 | 768–769 | CR | `AEGIS-cavalry-response-v0.per` | anti-cavalry reassessment generation/valid event | ACTIVE / REASSESSMENT |
 | 770–771 | MV | `AEGIS-micro-verification-v0.per` | tactical-micro reassessment generation/valid event | ACTIVE / REASSESSMENT |
 | 772–773 | MP | `AEGIS-military-production-v0.per` | military-production candidate reassessment generation/valid event | ACTIVE / REASSESSMENT |
-
-**Important:** the ranges above describe numeric goal-slot ownership, not semantic stage values. Stage constants such as `stage-authorized = 1` are ordinary symbolic enum values and are not competing global goal slots.
 
 ## 3. Reassessment boundary rule
 
@@ -109,17 +110,24 @@ Repair:
 - Anti-Cavalry world evidence moved **632 → 640**.
 - Anti-Cavalry causal evidence moved **633 → 641**.
 
-Semantic ownership did not change. Only numeric slots changed.
+### 4.3 Worker Verification / Qualification collisions
+
+Two pre-existing omissions in the earlier namespace ledger were corrected during this pass:
+
+- Worker Task Verification request identity `546` collided with Worker Recovery generation `546`; moved **546 → 560**.
+- Worker Task Verification authorization identity `547` collided with Worker Recovery valid `547`; moved **547 → 561**.
+- Worker Loop Qualification occupied `555–559`, colliding with repaired Worker Recovery `555–556`; moved **555–559 → 562–566**.
+
+Semantic ownership and symbol names were preserved in every relocation. These were namespace repairs only.
 
 ## 5. Reserved allocation discipline
 
-The repaired slots **555–556** and **638–641**, plus reassessment slots **760–773**, are occupied and must not be reused.
-
-Protected occupied ranges include:
+Occupied/protected blocks now include:
 
 - 490–497
 - 510–530
-- 546–556
+- 534–556
+- 560–566
 - 570–585
 - 600–612
 - 620–641
