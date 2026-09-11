@@ -98,7 +98,7 @@
 
 ; Physical production requires producer authorization AND exclusive
 ; reservation authority. Reservation does not execute production itself.
-defrule
+(defrule
     (up-compare-goal aegis-mp-valid == 1)
     (up-compare-goal aegis-mp-stage == aegis-mp-stage-authorized)
     (up-compare-goal aegis-mp-authorization-valid == 1)
