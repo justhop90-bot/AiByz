@@ -248,7 +248,7 @@
 
 ; ------------------------------- release -----------------------------------
 ; Release is identity-checked and idempotent.
-defrule
+(defrule
     (up-compare-goal aegis-pr-valid == 1)
     (up-compare-goal aegis-pr-state == aegis-pr-state-release-pending)
     (up-compare-goal aegis-pr-reservation-id == aegis-pr-request-id)
