@@ -58,7 +58,6 @@
     (set-goal aegis-mv-world-evidence 1)
     (set-goal aegis-mv-result aegis-mv-result-partial)
     (set-goal aegis-mv-stage aegis-mv-stage-reassess)
-    (set-goal aegis-mc-valid 0)
 )
 
 (defrule
@@ -69,7 +68,6 @@
     (set-goal aegis-mv-failure aegis-mc-failure-no-target)
     (set-goal aegis-mv-result aegis-mv-result-failed)
     (set-goal aegis-mv-stage aegis-mv-stage-reassess)
-    (set-goal aegis-mc-valid 0)
 )
 
 ; Canonical reassessment boundary. Tactical verification emits one event token
