@@ -12,7 +12,7 @@ def test_military_production_publishes_reassessment():
     text = read("AEGIS-military-production-v0.per")
     assert "(defconst aegis-mp-reassess-generation 772)" in text
     assert "(defconst aegis-mp-reassess-valid 773)" in text
-    assert "aegis-mp-stage == aegis-mp-stage-confirmed" in text
+    assert "aegis-mp-stage == aegis-mp-stage-causally-confirmed" in text
     assert "aegis-mp-stage == aegis-mp-stage-failed" in text
 
 
@@ -83,7 +83,10 @@ def test_namespace_registration_is_unique():
     assert "| 782–783 | ST |" in ns
     assert "| 784–785 | MC |" in ns
     assert "| 786–787 | ST |" in ns
-    assert "760–787" in ns
+    assert "| 788–792 | MP |" in ns
+    assert "| 793–794 | MPA |" in ns
+    assert "| 795–805 | MP |" in ns
+    assert "760–805" in ns
 
 
 def test_no_central_reassessment_controller_introduced():
