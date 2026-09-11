@@ -49,6 +49,8 @@
 ; Tactical Micro REASSESS is an acknowledgement boundary only. The exact
 ; Micro Verification lifecycle generation is recorded once and its publisher
 ; token is consumed. REASSESS never creates the next Micro Control generation.
+; Micro Control owns closure of its own lifecycle, so verification must not
+; write aegis-mc-valid across the semantic ownership boundary.
 (defrule
     (up-compare-goal aegis-mv-reassess-valid == 1)
     (up-compare-goal aegis-mv-reassess-generation == aegis-mv-generation)
@@ -56,6 +58,7 @@
 =>
     (up-modify-goal aegis-mc-reassess-generation g:= aegis-mv-reassess-generation)
     (set-goal aegis-mc-reassess-valid 1)
+    (set-goal aegis-mc-valid 0)
     (set-goal aegis-mv-reassess-valid 0)
 )
 
