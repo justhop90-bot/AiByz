@@ -8,9 +8,9 @@ The objective is not to copy the historical architecture. It is to recover mecha
 
 ## Source basis
 
-The historical source identifies dedicated state for enemy military level, infantry/archer/cavalry threats, under-attack status, escrow purpose, military spreading, retreat/attack status, forward threats, enemy fortifications, target selection, and victory/threat telemetry. It also uses threat-data and victory-data retrieval, closest-enemy selection, resource-control state, attack timing, military spreading, escrow control, and enemy composition observations. These patterns are visible in the public HD/Promisory source mirror. 
+The historical source identifies dedicated state for enemy military level, infantry/archer/cavalry threats, under-attack status, escrow purpose, military spreading, retreat/attack status, forward threats, enemy fortifications, target selection, and victory/threat telemetry. It also uses threat-data and victory-data retrieval, closest-enemy selection, resource-control state, attack timing, military spreading, escrow control, and enemy composition observations. These patterns are visible in the public HD/Promisory source mirror. citeturn9search0turn11search0
 
-The AoE2 AI Scripting Encyclopedia is the engine-reference authority used to distinguish supported scripting primitives from source vocabulary. It documents the DE/HD/UserPatch shared AI engine and provides the command/fact/strategic-number reference. 
+The AoE2 AI Scripting Encyclopedia is the engine-reference authority used to distinguish supported scripting primitives from source vocabulary. It documents the DE/HD/UserPatch shared AI engine and provides the command/fact/strategic-number reference. citeturn0search6turn4view0
 
 ## Twenty mechanics ported
 
@@ -34,14 +34,28 @@ The AoE2 AI Scripting Encyclopedia is the engine-reference authority used to dis
 | 16 | Escrow-purpose tracking | food/gold escrow is marked for Byzantine UU upgrade intent |
 | 17 | Urgent escrow release | existing `can-research-with-escrow` path releases food/gold for UU upgrade |
 | 18 | Dynamic farm/hunting response | low food increases farm requirement; nearby boar enables Builder hunting parameters |
-| 19 | Emergency housing | population cap condition reasserts `allow-houses` |
+| 19 | Emergency housing | population-cap condition reasserts `allow-houses` |
 | 20 | Naval-enemy awareness | enemy warboat observation increases naval exploration demand |
+
+The historical source also demonstrates the deeper versions of several of these mechanics: multi-band military-level evaluation, explicit threat-state clearing and recomputation, escrow/resource-control switching, attack targeting, and military-spread timing. citeturn13search0turn12search0
 
 ## Ownership
 
 `byzPolicy.per` owns interpretation and policy state. `militaryUnits.per`, `construction.per`, `economy.per`, `technologies.per`, and `militaryBehavior.per` remain execution owners.
 
 No XS was introduced. The new policy state uses strategic-number goals 121–143. Builder scratch goals 501–510 remain untouched.
+
+## Runtime qualification
+
+Installed runtime after the port:
+
+- `byzPolicy.per`: 377 opening parentheses / 377 closing parentheses.
+- `byzPolicy.per`: 68 `defrule` forms / 68 action separators.
+- `AIByzBuild.per`: 1,350 opening parentheses / 1,350 closing parentheses.
+- Policy contains zero references to Builder scratch goals `temporary-goal` through `temporary-goal10`.
+- The runtime backup was created before the port as `byzPolicy.per.pre_hd_prom_upgrade_20260912.bak`.
+
+These are static integrity gates only. They do not establish that every mechanic behaves strategically correctly in a live match.
 
 ## Important qualification boundary
 
