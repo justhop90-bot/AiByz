@@ -1,0 +1,42 @@
+;*********************************************************************************************
+; ByzBot v1.0 - Byzantine policy layer for AiBuilder
+;*********************************************************************************************
+;
+; PURPOSE
+;   Apply Byzantine counter-unit policy through AiBuilder's existing
+;   desired-number-* goals. AiBuilder remains responsible for training.
+;
+; v1.0 SCOPE
+;   - Enemy Archery Range -> increase skirmisher quota.
+;   - Enemy Stable -> increase spearman quota.
+;   - No direct train rules.
+;   - No new goals.
+;   - No scratch goals / temporary registers.
+;   - No attack commands.
+;   - No economic overrides.
+;   - No unqualified enemy unit-count rule.
+;
+; IMPORTANT
+;   The enemy-building predicate below is intentionally a runtime
+;   qualification target. Its presence in this file is not evidence that
+;   any-enemy semantics have already been proven in the AiByz runtime.
+;
+;   The phase system owns the baseline desired-number-* values. ByzBot
+;   writes an override only when the observed condition is true.
+;*********************************************************************************************
+
+; Enemy ranged-production capability -> Byzantine skirmisher response.
+(defrule
+    (players-building-type-count any-enemy archery-range > 0)
+=>
+    (set-goal desired-number-skirmishers 12))
+
+; Enemy cavalry-production capability -> Byzantine spearman response.
+(defrule
+    (players-building-type-count any-enemy stable > 0)
+=>
+    (set-goal desired-number-spearmen 10))
+
+;*********************************************************************************************
+; END ByzBot v1.0
+;*********************************************************************************************
