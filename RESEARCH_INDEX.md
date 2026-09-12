@@ -13,6 +13,7 @@ This is the repository's navigation map. **It is subordinate to `CANONICAL_AUTHO
 7. `04_LAYER3_ARCHITECTURE/PASS94_DETERMINISTIC_ABI_AUDIT_HARNESS_SPEC_2026-09-05.md`
 8. `03_HD_ARCHAEOLOGY/PASS87_END_TO_END_EVIDENCE_GRAPH_2026-09-05.md`
 9. `12_RESEARCH/AI_CAPABILITY_AUDIT_2026-09-12.md`
+10. `12_RESEARCH/VS2_THREAT_TELEMETRY_CLASSIFICATION_PROMOTION_CONTRACT_2026-09-12.md`
 
 ## Repository strata
 
@@ -34,7 +35,7 @@ Experimental infrastructure. Do not assume an experiment is part of the producti
 
 ### `12_RESEARCH/`
 
-External/comparative research and source-material provenance. Comparative optimization research is retained here as planning evidence, not native-machine proof.
+External/comparative research, capability contracts, source-rule ledgers, and vertical-slice promotion records. These are planning and provenance artifacts unless explicitly promoted by canonical authority.
 
 ### `knowledge/`
 
@@ -48,7 +49,7 @@ Governance, handoffs, QC, Layer-1 machine evidence, procedures, and repository s
 
 - **Layer 1:** 89%; frozen for handoff; broad archaeology closed.
 - **Layer 2:** major strategic archaeology closed; targeted evidence only.
-- **Layer 3:** active; symbolic architecture defined; numeric ABI blocked.
+- **Layer 3:** active; VS2 threat telemetry/classification implemented locally with private state and AIBuilder executor preservation.
 - **Layer 4:** blocked until current package/build/ABI clearance.
 
 ## Evidence rules
@@ -69,8 +70,16 @@ Reference replay evidence and the minimal interpreter are retained as validation
 
 Older handoffs, QC passes, PRs, branches, and failed experiments are preserved for provenance. They are not alternate current authority.
 
+## Current vertical-slice gate
+
+**VS2 — Threat Telemetry → Threat Classification** is implemented locally as a read/classify-only slice. It owns only private AEGIS state. It does not alter AIBuilder production, military, scouting, economy, construction, technology, or strategic-number executors.
+
+Promotion gate:
+
+`OBSERVE → CLASSIFY → EXPIRE → REASSESS → CONTEXTUAL RESPONSE AUTHORIZATION → ONLY THEN EXECUTION`
+
 ## Immediate next action
 
-`STOCK AI SNAPSHOT → IMPORT CLOSURE → SYMBOL/REFERENCE INVENTORY → CHANNEL OCCUPANCY → WRITER/READER MATRIX → ENGINE/VALIDATOR JOIN → ABI DECISIONS → ABI FREEZE → FIRST .per VERTICAL SLICE`
+`VS2 CLASSIFICATION → CONTEXTUAL RESPONSE AUTHORIZATION → FEASIBILITY → CONDITIONAL AIBuilder CONSUMER`
 
-Do not reopen broad Layer-1 archaeology, revive scenario-loader testing, make CADE the primary research path, or start `.per` implementation before the ABI gate clears.
+Do not reopen broad Layer-1 archaeology, revive scenario-loader testing, make CADE the primary research path, or bypass the authorization gate by wiring threat telemetry directly into production commands.
