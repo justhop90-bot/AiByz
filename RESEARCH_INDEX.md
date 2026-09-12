@@ -12,6 +12,7 @@ This is the repository's navigation map. **It is subordinate to `CANONICAL_AUTHO
 6. `docs/REPOSITORY_OPERATING_STANDARD_2026-09-05.md`
 7. `04_LAYER3_ARCHITECTURE/PASS94_DETERMINISTIC_ABI_AUDIT_HARNESS_SPEC_2026-09-05.md`
 8. `03_HD_ARCHAEOLOGY/PASS87_END_TO_END_EVIDENCE_GRAPH_2026-09-05.md`
+9. `12_RESEARCH/AI_CAPABILITY_AUDIT_2026-09-12.md`
 
 ## Repository strata
 
@@ -67,8 +68,6 @@ Reference replay evidence and the minimal interpreter are retained as validation
 ## Historical work
 
 Older handoffs, QC passes, PRs, branches, and failed experiments are preserved for provenance. They are not alternate current authority.
-
-See `docs/ARCHIVED_WORK_AND_BRANCHES_2026-09-05.md`.
 
 ## Immediate next action
 
