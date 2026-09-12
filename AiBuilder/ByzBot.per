@@ -38,8 +38,8 @@
 ;   remain part of the observed composition class.
 ;
 ; MILITARY TECHNOLOGY POLICY
-;   All active military-composition branches enable the existing three
-;   AIBuilder military technology channels:
+;   Active military-composition branches enable the existing AIBuilder
+;   military technology channels:
 ;     upgrade-military-lines  -> unit-line upgrades
 ;     upgrade-military-smith  -> blacksmith military upgrades
 ;     upgrade-military-generic -> generic military/siege/other military tech
@@ -62,6 +62,8 @@
 ;   alter militaryUnits.per, construction.per, or technology executors.
 ;   Goal persistence/precedence remains a known engine-semantic boundary;
 ;   this implementation intentionally does not add arbitration machinery.
+;   Rules are deliberately split so the DE 32-element rule limit is not
+;   exceeded by the nested threat classification plus action list.
 ;*********************************************************************************************
 
 ; Policy thresholds: sighted enemy units required to classify a threat.
@@ -70,7 +72,7 @@
 (defconst byz-infantry-threat 6)
 
 ;---------------------------------------------------------------------------------------------
-; CAVALRY-ONLY COMPOSITION + CAPACITY + MILITARY TECHNOLOGY POLICY
+; CAVALRY-ONLY COMPOSITION + CAPACITY
 ;---------------------------------------------------------------------------------------------
 (defrule
     (or
@@ -103,14 +105,42 @@
     (set-goal desired-number-barracks 2)
     (set-goal desired-number-ranges 1)
     (set-goal desired-number-stables 2)
-    (set-goal desired-number-workshops 1)
+    (set-goal desired-number-workshops 1))
+
+; CAVALRY MILITARY TECHNOLOGY SYNCHRONIZATION
+(defrule
+    (or
+        (players-unit-type-count any-enemy knight-line >= byz-cavalry-threat)
+        (or
+            (players-unit-type-count any-enemy scout-cavalry-line >= byz-cavalry-threat)
+            (or
+                (players-unit-type-count any-enemy camel-line >= byz-cavalry-threat)
+                (players-unit-type-count any-enemy battle-elephant-line >= byz-cavalry-threat))))
+    (nor
+        (or
+            (players-unit-type-count any-enemy archer-line >= byz-ranged-threat)
+            (or
+                (players-unit-type-count any-enemy skirmisher-line >= byz-ranged-threat)
+                (or
+                    (players-unit-type-count any-enemy cavalry-archer-line >= byz-ranged-threat)
+                    (players-unit-type-count any-enemy hand-cannoneer >= byz-ranged-threat))))
+        (or
+            (players-unit-type-count any-enemy militia-line >= byz-infantry-threat)
+            (or
+                (players-unit-type-count any-enemy spearman-line >= byz-infantry-threat)
+                (or
+                    (players-unit-type-count any-enemy pikeman-line >= byz-infantry-threat)
+                    (or
+                        (players-unit-type-count any-enemy two-handed-swordsman-line >= byz-infantry-threat)
+                        (players-unit-type-count any-enemy halberdier-line >= byz-infantry-threat)))))
+=>
     (set-goal upgrade-military-lines 1)
     (set-goal upgrade-military-smith 1)
     (set-goal upgrade-military-generic 1)
     (set-goal upgrade-military-villager-requirement 10))
 
 ;---------------------------------------------------------------------------------------------
-; RANGED-ONLY COMPOSITION + CAPACITY + MILITARY TECHNOLOGY POLICY
+; RANGED-ONLY COMPOSITION + CAPACITY
 ;---------------------------------------------------------------------------------------------
 (defrule
     (or
@@ -143,14 +173,42 @@
     (set-goal desired-number-barracks 1)
     (set-goal desired-number-ranges 2)
     (set-goal desired-number-stables 1)
-    (set-goal desired-number-workshops 1)
+    (set-goal desired-number-workshops 1))
+
+; RANGED MILITARY TECHNOLOGY SYNCHRONIZATION
+(defrule
+    (or
+        (players-unit-type-count any-enemy archer-line >= byz-ranged-threat)
+        (or
+            (players-unit-type-count any-enemy skirmisher-line >= byz-ranged-threat)
+            (or
+                (players-unit-type-count any-enemy cavalry-archer-line >= byz-ranged-threat)
+                (players-unit-type-count any-enemy hand-cannoneer >= byz-ranged-threat))))
+    (nor
+        (or
+            (players-unit-type-count any-enemy knight-line >= byz-cavalry-threat)
+            (or
+                (players-unit-type-count any-enemy scout-cavalry-line >= byz-cavalry-threat)
+                (or
+                    (players-unit-type-count any-enemy camel-line >= byz-cavalry-threat)
+                    (players-unit-type-count any-enemy battle-elephant-line >= byz-cavalry-threat))))
+        (or
+            (players-unit-type-count any-enemy militia-line >= byz-infantry-threat)
+            (or
+                (players-unit-type-count any-enemy spearman-line >= byz-infantry-threat)
+                (or
+                    (players-unit-type-count any-enemy pikeman-line >= byz-infantry-threat)
+                    (or
+                        (players-unit-type-count any-enemy two-handed-swordsman-line >= byz-infantry-threat)
+                        (players-unit-type-count any-enemy halberdier-line >= byz-infantry-threat)))))
+=>
     (set-goal upgrade-military-lines 1)
     (set-goal upgrade-military-smith 1)
     (set-goal upgrade-military-generic 1)
     (set-goal upgrade-military-villager-requirement 10))
 
 ;---------------------------------------------------------------------------------------------
-; INFANTRY-ONLY COMPOSITION + CAPACITY + MILITARY TECHNOLOGY POLICY
+; INFANTRY-ONLY COMPOSITION + CAPACITY
 ;---------------------------------------------------------------------------------------------
 (defrule
     (or
@@ -183,67 +241,65 @@
     (set-goal desired-number-barracks 2)
     (set-goal desired-number-ranges 2)
     (set-goal desired-number-stables 1)
-    (set-goal desired-number-workshops 1)
+    (set-goal desired-number-workshops 1))
+
+; INFANTRY MILITARY TECHNOLOGY SYNCHRONIZATION
+(defrule
+    (or
+        (players-unit-type-count any-enemy militia-line >= byz-infantry-threat)
+        (or
+            (players-unit-type-count any-enemy spearman-line >= byz-infantry-threat)
+            (or
+                (players-unit-type-count any-enemy pikeman-line >= byz-infantry-threat)
+                (or
+                    (players-unit-type-count any-enemy two-handed-swordsman-line >= byz-infantry-threat)
+                    (players-unit-type-count any-enemy halberdier-line >= byz-infantry-threat)))))
+    (nor
+        (or
+            (players-unit-type-count any-enemy knight-line >= byz-cavalry-threat)
+            (or
+                (players-unit-type-count any-enemy scout-cavalry-line >= byz-cavalry-threat)
+                (or
+                    (players-unit-type-count any-enemy camel-line >= byz-cavalry-threat)
+                    (players-unit-type-count any-enemy battle-elephant-line >= byz-cavalry-threat))))
+        (or
+            (players-unit-type-count any-enemy archer-line >= byz-ranged-threat)
+            (or
+                (players-unit-type-count any-enemy skirmisher-line >= byz-ranged-threat)
+                (or
+                    (players-unit-type-count any-enemy cavalry-archer-line >= byz-ranged-threat)
+                    (players-unit-type-count any-enemy hand-cannoneer >= byz-ranged-threat))))
+=>
     (set-goal upgrade-military-lines 1)
     (set-goal upgrade-military-smith 1)
     (set-goal upgrade-military-generic 1)
     (set-goal upgrade-military-villager-requirement 10))
 
 ;---------------------------------------------------------------------------------------------
-; MIXED COMPOSITION + CAPACITY + MILITARY TECHNOLOGY POLICY
+; MIXED COMPOSITION POLICY
+;   Three pairwise rules represent the three possible two-class combinations.
+;   If all three classes are present, more than one rule may fire, but all
+;   three write the same mixed composition and technology policy.
+;   Splitting the combinations avoids exceeding the DE 32-element rule limit.
 ;---------------------------------------------------------------------------------------------
+
+; CAVALRY + RANGED
 (defrule
-    (or
-        (and
-            (or
-                (players-unit-type-count any-enemy knight-line >= byz-cavalry-threat)
-                (or
-                    (players-unit-type-count any-enemy scout-cavalry-line >= byz-cavalry-threat)
-                    (or
-                        (players-unit-type-count any-enemy camel-line >= byz-cavalry-threat)
-                        (players-unit-type-count any-enemy battle-elephant-line >= byz-cavalry-threat))))
-            (or
-                (players-unit-type-count any-enemy archer-line >= byz-ranged-threat)
-                (or
-                    (players-unit-type-count any-enemy skirmisher-line >= byz-ranged-threat)
-                    (or
-                        (players-unit-type-count any-enemy cavalry-archer-line >= byz-ranged-threat)
-                        (players-unit-type-count any-enemy hand-cannoneer >= byz-ranged-threat)))))
+    (and
         (or
-            (and
+            (players-unit-type-count any-enemy knight-line >= byz-cavalry-threat)
+            (or
+                (players-unit-type-count any-enemy scout-cavalry-line >= byz-cavalry-threat)
                 (or
-                    (players-unit-type-count any-enemy knight-line >= byz-cavalry-threat)
-                    (or
-                        (players-unit-type-count any-enemy scout-cavalry-line >= byz-cavalry-threat)
-                        (or
-                            (players-unit-type-count any-enemy camel-line >= byz-cavalry-threat)
-                            (players-unit-type-count any-enemy battle-elephant-line >= byz-cavalry-threat))))
+                    (players-unit-type-count any-enemy camel-line >= byz-cavalry-threat)
+                    (players-unit-type-count any-enemy battle-elephant-line >= byz-cavalry-threat))))
+        (or
+            (players-unit-type-count any-enemy archer-line >= byz-ranged-threat)
+            (or
+                (players-unit-type-count any-enemy skirmisher-line >= byz-ranged-threat)
                 (or
-                    (players-unit-type-count any-enemy militia-line >= byz-infantry-threat)
-                    (or
-                        (players-unit-type-count any-enemy spearman-line >= byz-infantry-threat)
-                        (or
-                            (players-unit-type-count any-enemy pikeman-line >= byz-infantry-threat)
-                            (or
-                                (players-unit-type-count any-enemy two-handed-swordsman-line >= byz-infantry-threat)
-                                (players-unit-type-count any-enemy halberdier-line >= byz-infantry-threat)))))
-            (and
-                (or
-                    (players-unit-type-count any-enemy archer-line >= byz-ranged-threat)
-                    (or
-                        (players-unit-type-count any-enemy skirmisher-line >= byz-ranged-threat)
-                        (or
-                            (players-unit-type-count any-enemy cavalry-archer-line >= byz-ranged-threat)
-                            (players-unit-type-count any-enemy hand-cannoneer >= byz-ranged-threat))))
-                (or
-                    (players-unit-type-count any-enemy militia-line >= byz-infantry-threat)
-                    (or
-                        (players-unit-type-count any-enemy spearman-line >= byz-infantry-threat)
-                        (or
-                            (players-unit-type-count any-enemy pikeman-line >= byz-infantry-threat)
-                            (or
-                                (players-unit-type-count any-enemy two-handed-swordsman-line >= byz-infantry-threat)
-                                (players-unit-type-count any-enemy halberdier-line >= byz-infantry-threat))))))))
+                    (players-unit-type-count any-enemy cavalry-archer-line >= byz-ranged-threat)
+                    (players-unit-type-count any-enemy hand-cannoneer >= byz-ranged-threat)))))
 =>
     (set-goal desired-number-spearmen 12)
     (set-goal desired-number-skirmishers 12)
@@ -253,7 +309,133 @@
     (set-goal desired-number-barracks 2)
     (set-goal desired-number-ranges 2)
     (set-goal desired-number-stables 2)
-    (set-goal desired-number-workshops 1)
+    (set-goal desired-number-workshops 1))
+
+(defrule
+    (and
+        (or
+            (players-unit-type-count any-enemy knight-line >= byz-cavalry-threat)
+            (or
+                (players-unit-type-count any-enemy scout-cavalry-line >= byz-cavalry-threat)
+                (or
+                    (players-unit-type-count any-enemy camel-line >= byz-cavalry-threat)
+                    (players-unit-type-count any-enemy battle-elephant-line >= byz-cavalry-threat))))
+        (or
+            (players-unit-type-count any-enemy archer-line >= byz-ranged-threat)
+            (or
+                (players-unit-type-count any-enemy skirmisher-line >= byz-ranged-threat)
+                (or
+                    (players-unit-type-count any-enemy cavalry-archer-line >= byz-ranged-threat)
+                    (players-unit-type-count any-enemy hand-cannoneer >= byz-ranged-threat)))))
+=>
+    (set-goal upgrade-military-lines 1)
+    (set-goal upgrade-military-smith 1)
+    (set-goal upgrade-military-generic 1)
+    (set-goal upgrade-military-villager-requirement 10))
+
+; CAVALRY + INFANTRY
+(defrule
+    (and
+        (or
+            (players-unit-type-count any-enemy knight-line >= byz-cavalry-threat)
+            (or
+                (players-unit-type-count any-enemy scout-cavalry-line >= byz-cavalry-threat)
+                (or
+                    (players-unit-type-count any-enemy camel-line >= byz-cavalry-threat)
+                    (players-unit-type-count any-enemy battle-elephant-line >= byz-cavalry-threat))))
+        (or
+            (players-unit-type-count any-enemy militia-line >= byz-infantry-threat)
+            (or
+                (players-unit-type-count any-enemy spearman-line >= byz-infantry-threat)
+                (or
+                    (players-unit-type-count any-enemy pikeman-line >= byz-infantry-threat)
+                    (or
+                        (players-unit-type-count any-enemy two-handed-swordsman-line >= byz-infantry-threat)
+                        (players-unit-type-count any-enemy halberdier-line >= byz-infantry-threat)))))
+=>
+    (set-goal desired-number-spearmen 12)
+    (set-goal desired-number-skirmishers 12)
+    (set-goal desired-number-archers 8)
+    (set-goal desired-number-camelriders 6)
+    (set-goal desired-number-mangonels 2)
+    (set-goal desired-number-barracks 2)
+    (set-goal desired-number-ranges 2)
+    (set-goal desired-number-stables 2)
+    (set-goal desired-number-workshops 1))
+
+(defrule
+    (and
+        (or
+            (players-unit-type-count any-enemy knight-line >= byz-cavalry-threat)
+            (or
+                (players-unit-type-count any-enemy scout-cavalry-line >= byz-cavalry-threat)
+                (or
+                    (players-unit-type-count any-enemy camel-line >= byz-cavalry-threat)
+                    (players-unit-type-count any-enemy battle-elephant-line >= byz-cavalry-threat))))
+        (or
+            (players-unit-type-count any-enemy militia-line >= byz-infantry-threat)
+            (or
+                (players-unit-type-count any-enemy spearman-line >= byz-infantry-threat)
+                (or
+                    (players-unit-type-count any-enemy pikeman-line >= byz-infantry-threat)
+                    (or
+                        (players-unit-type-count any-enemy two-handed-swordsman-line >= byz-infantry-threat)
+                        (players-unit-type-count any-enemy halberdier-line >= byz-infantry-threat)))))
+=>
+    (set-goal upgrade-military-lines 1)
+    (set-goal upgrade-military-smith 1)
+    (set-goal upgrade-military-generic 1)
+    (set-goal upgrade-military-villager-requirement 10))
+
+; RANGED + INFANTRY
+(defrule
+    (and
+        (or
+            (players-unit-type-count any-enemy archer-line >= byz-ranged-threat)
+            (or
+                (players-unit-type-count any-enemy skirmisher-line >= byz-ranged-threat)
+                (or
+                    (players-unit-type-count any-enemy cavalry-archer-line >= byz-ranged-threat)
+                    (players-unit-type-count any-enemy hand-cannoneer >= byz-ranged-threat)))
+        (or
+            (players-unit-type-count any-enemy militia-line >= byz-infantry-threat)
+            (or
+                (players-unit-type-count any-enemy spearman-line >= byz-infantry-threat)
+                (or
+                    (players-unit-type-count any-enemy pikeman-line >= byz-infantry-threat)
+                    (or
+                        (players-unit-type-count any-enemy two-handed-swordsman-line >= byz-infantry-threat)
+                        (players-unit-type-count any-enemy halberdier-line >= byz-infantry-threat)))))
+=>
+    (set-goal desired-number-spearmen 12)
+    (set-goal desired-number-skirmishers 12)
+    (set-goal desired-number-archers 8)
+    (set-goal desired-number-camelriders 6)
+    (set-goal desired-number-mangonels 2)
+    (set-goal desired-number-barracks 2)
+    (set-goal desired-number-ranges 2)
+    (set-goal desired-number-stables 2)
+    (set-goal desired-number-workshops 1))
+
+(defrule
+    (and
+        (or
+            (players-unit-type-count any-enemy archer-line >= byz-ranged-threat)
+            (or
+                (players-unit-type-count any-enemy skirmisher-line >= byz-ranged-threat)
+                (or
+                    (players-unit-type-count any-enemy cavalry-archer-line >= byz-ranged-threat)
+                    (players-unit-type-count any-enemy hand-cannoneer >= byz-ranged-threat)))
+        (or
+            (players-unit-type-count any-enemy militia-line >= byz-infantry-threat)
+            (or
+                (players-unit-type-count any-enemy spearman-line >= byz-infantry-threat)
+                (or
+                    (players-unit-type-count any-enemy pikeman-line >= byz-infantry-threat)
+                    (or
+                        (players-unit-type-count any-enemy two-handed-swordsman-line >= byz-infantry-threat)
+                        (players-unit-type-count any-enemy halberdier-line >= byz-infantry-threat)))))
+=>
     (set-goal upgrade-military-lines 1)
     (set-goal upgrade-military-smith 1)
     (set-goal upgrade-military-generic 1)
