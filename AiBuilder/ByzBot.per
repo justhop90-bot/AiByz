@@ -1,42 +1,220 @@
 ;*********************************************************************************************
-; ByzBot v1.0 - Byzantine policy layer for AiBuilder
+; ByzBot v1.1 - Byzantine composition policy layer for AiBuilder
 ;*********************************************************************************************
 ;
 ; PURPOSE
-;   Apply Byzantine counter-unit policy through AiBuilder's existing
-;   desired-number-* goals. AiBuilder remains responsible for training.
+;   Convert observed enemy military composition into simultaneous
+;   desired-number-* Goals. AiBuilder remains responsible for production.
 ;
-; v1.0 SCOPE
-;   - Enemy Archery Range -> increase skirmisher quota.
-;   - Enemy Stable -> increase spearman quota.
-;   - No direct train rules.
-;   - No new goals.
+; ARCHITECTURE
+;   Observation -> Byzantine composition policy -> desired Goals
+;   -> existing AiBuilder feasibility/executor rules.
+;
+; v1.1 SCOPE
+;   - Detect cavalry, ranged, and infantry from sighted enemy unit lines.
+;   - Detect mixed threats when at least two threat classes are present.
+;   - Project simultaneous Byzantine composition requirements into the
+;     existing spearman, skirmisher, archer, camel, and mangonel Goals.
+;   - No direct train/build/research commands.
+;   - No new Goals.
 ;   - No scratch goals / temporary registers.
 ;   - No attack commands.
 ;   - No economic overrides.
-;   - No unqualified enemy unit-count rule.
+;
+; EVIDENCE / VISIBILITY
+;   players-unit-type-count is sighted-unit evidence, not omniscient state.
+;   The thresholds below are policy constants, not engine-defined threat
+;   classifications. They deliberately use unit lines so upgraded units
+;   remain part of the observed composition class.
+;
+; COMPOSITION POLICY
+;   Cavalry-only  -> spearmen + camels.
+;   Ranged-only   -> skirmishers + camels.
+;   Infantry-only -> archers + mangonels.
+;   Mixed         -> spearmen + skirmishers + archers + camels + mangonels.
+;
+;   The four policy branches are mutually exclusive by construction:
+;   single-class branches require the other two classes to be absent;
+;   the mixed branch requires at least two classes to be present.
 ;
 ; IMPORTANT
-;   The enemy-building predicate below is intentionally a runtime
-;   qualification target. Its presence in this file is not evidence that
-;   any-enemy semantics have already been proven in the AiByz runtime.
-;
-;   The phase system owns the baseline desired-number-* values. ByzBot
-;   writes an override only when the observed condition is true.
+;   These rules only write existing AIBuilder Goal channels. They do not
+;   alter militaryUnits.per, construction.per, or technology executors.
+;   Goal persistence/precedence remains a known engine-semantic boundary;
+;   this implementation intentionally does not add arbitration machinery.
 ;*********************************************************************************************
 
-; Enemy ranged-production capability -> Byzantine skirmisher response.
-(defrule
-    (players-building-type-count any-enemy archery-range > 0)
-=>
-    (set-goal desired-number-skirmishers 12))
+; Policy thresholds: sighted enemy units required to classify a threat.
+(defconst byz-cavalry-threat 4)
+(defconst byz-ranged-threat 4)
+(defconst byz-infantry-threat 6)
 
-; Enemy cavalry-production capability -> Byzantine spearman response.
+;---------------------------------------------------------------------------------------------
+; CAVALRY-ONLY COMPOSITION
+;   Spearmen form the primary anti-cavalry component; camels provide a
+;   second mobile anti-cavalry component where the existing executor permits.
+;---------------------------------------------------------------------------------------------
 (defrule
-    (players-building-type-count any-enemy stable > 0)
+    (or
+        (players-unit-type-count any-enemy knight-line >= byz-cavalry-threat)
+        (or
+            (players-unit-type-count any-enemy scout-cavalry-line >= byz-cavalry-threat)
+            (or
+                (players-unit-type-count any-enemy camel-line >= byz-cavalry-threat)
+                (players-unit-type-count any-enemy battle-elephant-line >= byz-cavalry-threat))))
+    (nor
+        (or
+            (players-unit-type-count any-enemy archer-line >= byz-ranged-threat)
+            (or
+                (players-unit-type-count any-enemy skirmisher-line >= byz-ranged-threat)
+                (or
+                    (players-unit-type-count any-enemy cavalry-archer-line >= byz-ranged-threat)
+                    (players-unit-type-count any-enemy hand-cannoneer >= byz-ranged-threat))))
+        (or
+            (players-unit-type-count any-enemy militia-line >= byz-infantry-threat)
+            (or
+                (players-unit-type-count any-enemy spearman-line >= byz-infantry-threat)
+                (or
+                    (players-unit-type-count any-enemy pikeman-line >= byz-infantry-threat)
+                    (or
+                        (players-unit-type-count any-enemy two-handed-swordsman-line >= byz-infantry-threat)
+                        (players-unit-type-count any-enemy halberdier-line >= byz-infantry-threat)))))
 =>
-    (set-goal desired-number-spearmen 10))
+    (set-goal desired-number-spearmen 12)
+    (set-goal desired-number-camelriders 6))
+
+;---------------------------------------------------------------------------------------------
+; RANGED-ONLY COMPOSITION
+;   Skirmishers are the primary ranged counter; camels add mobile pressure.
+;---------------------------------------------------------------------------------------------
+(defrule
+    (or
+        (players-unit-type-count any-enemy archer-line >= byz-ranged-threat)
+        (or
+            (players-unit-type-count any-enemy skirmisher-line >= byz-ranged-threat)
+            (or
+                (players-unit-type-count any-enemy cavalry-archer-line >= byz-ranged-threat)
+                (players-unit-type-count any-enemy hand-cannoneer >= byz-ranged-threat))))
+    (nor
+        (or
+            (players-unit-type-count any-enemy knight-line >= byz-cavalry-threat)
+            (or
+                (players-unit-type-count any-enemy scout-cavalry-line >= byz-cavalry-threat)
+                (or
+                    (players-unit-type-count any-enemy camel-line >= byz-cavalry-threat)
+                    (players-unit-type-count any-enemy battle-elephant-line >= byz-cavalry-threat))))
+        (or
+            (players-unit-type-count any-enemy militia-line >= byz-infantry-threat)
+            (or
+                (players-unit-type-count any-enemy spearman-line >= byz-infantry-threat)
+                (or
+                    (players-unit-type-count any-enemy pikeman-line >= byz-infantry-threat)
+                    (or
+                        (players-unit-type-count any-enemy two-handed-swordsman-line >= byz-infantry-threat)
+                        (players-unit-type-count any-enemy halberdier-line >= byz-infantry-threat)))))
+=>
+    (set-goal desired-number-skirmishers 12)
+    (set-goal desired-number-camelriders 4))
+
+;---------------------------------------------------------------------------------------------
+; INFANTRY-ONLY COMPOSITION
+;   Archers provide the ranged infantry counter; mangonels provide the
+;   first siege component against sufficiently dense infantry formations.
+;---------------------------------------------------------------------------------------------
+(defrule
+    (or
+        (players-unit-type-count any-enemy militia-line >= byz-infantry-threat)
+        (or
+            (players-unit-type-count any-enemy spearman-line >= byz-infantry-threat)
+            (or
+                (players-unit-type-count any-enemy pikeman-line >= byz-infantry-threat)
+                (or
+                    (players-unit-type-count any-enemy two-handed-swordsman-line >= byz-infantry-threat)
+                    (players-unit-type-count any-enemy halberdier-line >= byz-infantry-threat)))))
+    (nor
+        (or
+            (players-unit-type-count any-enemy knight-line >= byz-cavalry-threat)
+            (or
+                (players-unit-type-count any-enemy scout-cavalry-line >= byz-cavalry-threat)
+                (or
+                    (players-unit-type-count any-enemy camel-line >= byz-cavalry-threat)
+                    (players-unit-type-count any-enemy battle-elephant-line >= byz-cavalry-threat))))
+        (or
+            (players-unit-type-count any-enemy archer-line >= byz-ranged-threat)
+            (or
+                (players-unit-type-count any-enemy skirmisher-line >= byz-ranged-threat)
+                (or
+                    (players-unit-type-count any-enemy cavalry-archer-line >= byz-ranged-threat)
+                    (players-unit-type-count any-enemy hand-cannoneer >= byz-ranged-threat))))
+=>
+    (set-goal desired-number-archers 12)
+    (set-goal desired-number-mangonels 2))
+
+;---------------------------------------------------------------------------------------------
+; MIXED COMPOSITION
+;   Any two or more threat classes are present. Maintain a simultaneous
+;   five-channel response rather than allowing one counter class to replace
+;   the others.
+;---------------------------------------------------------------------------------------------
+(defrule
+    (or
+        (and
+            (or
+                (players-unit-type-count any-enemy knight-line >= byz-cavalry-threat)
+                (or
+                    (players-unit-type-count any-enemy scout-cavalry-line >= byz-cavalry-threat)
+                    (or
+                        (players-unit-type-count any-enemy camel-line >= byz-cavalry-threat)
+                        (players-unit-type-count any-enemy battle-elephant-line >= byz-cavalry-threat))))
+            (or
+                (players-unit-type-count any-enemy archer-line >= byz-ranged-threat)
+                (or
+                    (players-unit-type-count any-enemy skirmisher-line >= byz-ranged-threat)
+                    (or
+                        (players-unit-type-count any-enemy cavalry-archer-line >= byz-ranged-threat)
+                        (players-unit-type-count any-enemy hand-cannoneer >= byz-ranged-threat)))))
+        (or
+            (and
+                (or
+                    (players-unit-type-count any-enemy knight-line >= byz-cavalry-threat)
+                    (or
+                        (players-unit-type-count any-enemy scout-cavalry-line >= byz-cavalry-threat)
+                        (or
+                            (players-unit-type-count any-enemy camel-line >= byz-cavalry-threat)
+                            (players-unit-type-count any-enemy battle-elephant-line >= byz-cavalry-threat))))
+                (or
+                    (players-unit-type-count any-enemy militia-line >= byz-infantry-threat)
+                    (or
+                        (players-unit-type-count any-enemy spearman-line >= byz-infantry-threat)
+                        (or
+                            (players-unit-type-count any-enemy pikeman-line >= byz-infantry-threat)
+                            (or
+                                (players-unit-type-count any-enemy two-handed-swordsman-line >= byz-infantry-threat)
+                                (players-unit-type-count any-enemy halberdier-line >= byz-infantry-threat)))))
+            (and
+                (or
+                    (players-unit-type-count any-enemy archer-line >= byz-ranged-threat)
+                    (or
+                        (players-unit-type-count any-enemy skirmisher-line >= byz-ranged-threat)
+                        (or
+                            (players-unit-type-count any-enemy cavalry-archer-line >= byz-ranged-threat)
+                            (players-unit-type-count any-enemy hand-cannoneer >= byz-ranged-threat))))
+                (or
+                    (players-unit-type-count any-enemy militia-line >= byz-infantry-threat)
+                    (or
+                        (players-unit-type-count any-enemy spearman-line >= byz-infantry-threat)
+                        (or
+                            (players-unit-type-count any-enemy pikeman-line >= byz-infantry-threat)
+                            (or
+                                (players-unit-type-count any-enemy two-handed-swordsman-line >= byz-infantry-threat)
+                                (players-unit-type-count any-enemy halberdier-line >= byz-infantry-threat))))))))
+=>
+    (set-goal desired-number-spearmen 12)
+    (set-goal desired-number-skirmishers 12)
+    (set-goal desired-number-archers 8)
+    (set-goal desired-number-camelriders 6)
+    (set-goal desired-number-mangonels 2))
 
 ;*********************************************************************************************
-; END ByzBot v1.0
+; END ByzBot v1.1
 ;*********************************************************************************************
