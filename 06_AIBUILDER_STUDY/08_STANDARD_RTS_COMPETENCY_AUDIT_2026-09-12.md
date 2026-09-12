@@ -81,8 +81,9 @@ The next architectural upgrade should therefore not be another pile of static un
 
 Static runtime validation after the hardening pass:
 
-- `byzPolicy.per`: 183 opening parentheses / 183 closing parentheses before the latest additions; revalidation is required after any subsequent edits.
-- Existing engine facts used by the new response include `up-enemy-units-in-town`, `up-enemy-buildings-in-town`, and `up-unit-type-in-town`.
+- `byzPolicy.per`: 196 opening parentheses / 196 closing parentheses.
+- `byzPolicy.per`: 36 `defrule` forms / 36 action separators.
+- New enemy-response facts present: `up-enemy-units-in-town`, `up-enemy-buildings-in-town`, and three `up-unit-type-in-town` conditions.
 - No new Goal or timer allocation was introduced.
 - No XS dependency was introduced.
 
