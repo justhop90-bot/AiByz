@@ -1,24 +1,30 @@
 ;*********************************************************************************************
-; ByzBot v1.2 - Byzantine composition + production-capacity policy for AiBuilder
+; ByzBot v1.3 - Byzantine composition + production-capacity + military-tech policy
 ;*********************************************************************************************
 ;
 ; PURPOSE
 ;   Convert observed enemy military composition into simultaneous
-;   desired-number-* Goals, then scale the production-building Goals
-;   required to sustain that composition. AiBuilder remains responsible
-;   for feasibility, construction, training, and research execution.
+;   desired-number-* Goals, scale the production-building Goals required
+;   to sustain that composition, and synchronize the existing AIBuilder
+;   military-technology policy Goals with the active composition.
+;   AiBuilder remains responsible for feasibility, construction, training,
+;   and research execution.
 ;
 ; ARCHITECTURE
 ;   Observation -> Byzantine composition policy -> desired unit Goals
-;   -> production-capacity Goals -> existing AiBuilder executors.
+;   -> production-capacity Goals + military-policy Goals
+;   -> existing AiBuilder executors.
 ;
-; v1.2 SCOPE
+; v1.3 SCOPE
 ;   - Detect cavalry, ranged, and infantry from sighted enemy unit lines.
 ;   - Detect mixed threats when at least two threat classes are present.
 ;   - Project simultaneous Byzantine composition requirements into the
 ;     existing spearman, skirmisher, archer, camel, and mangonel Goals.
 ;   - Scale existing barracks, range, stable, and workshop Goals from the
 ;     active composition branch.
+;   - Synchronize existing upgrade-military-lines, upgrade-military-smith,
+;     upgrade-military-generic, and upgrade-military-villager-requirement
+;     Goals with an active military composition.
 ;   - No direct train/build/research commands.
 ;   - No new Goals.
 ;   - No scratch goals / temporary registers.
@@ -30,6 +36,15 @@
 ;   The thresholds below are policy constants, not engine-defined threat
 ;   classifications. They deliberately use unit lines so upgraded units
 ;   remain part of the observed composition class.
+;
+; MILITARY TECHNOLOGY POLICY
+;   All active military-composition branches enable the existing three
+;   AIBuilder military technology channels:
+;     upgrade-military-lines  -> unit-line upgrades
+;     upgrade-military-smith  -> blacksmith military upgrades
+;     upgrade-military-generic -> generic military/siege/other military tech
+;   The existing villager requirement remains 10, matching the AIBuilder
+;   phase policy. technologies.per remains the sole research executor.
 ;
 ; COMPOSITION + CAPACITY POLICY
 ;   Cavalry-only  -> 12 spears + 6 camels; 2 barracks + 2 stables.
@@ -55,10 +70,7 @@
 (defconst byz-infantry-threat 6)
 
 ;---------------------------------------------------------------------------------------------
-; CAVALRY-ONLY COMPOSITION + CAPACITY
-;   Spearmen form the primary anti-cavalry component; camels provide a
-;   second mobile anti-cavalry component where the existing executor permits.
-;   Two barracks and two stables provide parallel production channels.
+; CAVALRY-ONLY COMPOSITION + CAPACITY + MILITARY TECHNOLOGY POLICY
 ;---------------------------------------------------------------------------------------------
 (defrule
     (or
@@ -91,13 +103,14 @@
     (set-goal desired-number-barracks 2)
     (set-goal desired-number-ranges 1)
     (set-goal desired-number-stables 2)
-    (set-goal desired-number-workshops 1))
+    (set-goal desired-number-workshops 1)
+    (set-goal upgrade-military-lines 1)
+    (set-goal upgrade-military-smith 1)
+    (set-goal upgrade-military-generic 1)
+    (set-goal upgrade-military-villager-requirement 10))
 
 ;---------------------------------------------------------------------------------------------
-; RANGED-ONLY COMPOSITION + CAPACITY
-;   Skirmishers are the primary ranged counter; camels add mobile pressure.
-;   Two ranges support the dominant ranged response; one stable supports
-;   the mobile component; one barracks preserves the baseline infantry channel.
+; RANGED-ONLY COMPOSITION + CAPACITY + MILITARY TECHNOLOGY POLICY
 ;---------------------------------------------------------------------------------------------
 (defrule
     (or
@@ -130,13 +143,14 @@
     (set-goal desired-number-barracks 1)
     (set-goal desired-number-ranges 2)
     (set-goal desired-number-stables 1)
-    (set-goal desired-number-workshops 1))
+    (set-goal desired-number-workshops 1)
+    (set-goal upgrade-military-lines 1)
+    (set-goal upgrade-military-smith 1)
+    (set-goal upgrade-military-generic 1)
+    (set-goal upgrade-military-villager-requirement 10))
 
 ;---------------------------------------------------------------------------------------------
-; INFANTRY-ONLY COMPOSITION + CAPACITY
-;   Archers provide the ranged infantry counter; mangonels provide the
-;   first siege component against sufficiently dense infantry formations.
-;   Two ranges support the archer channel; one workshop supports siege.
+; INFANTRY-ONLY COMPOSITION + CAPACITY + MILITARY TECHNOLOGY POLICY
 ;---------------------------------------------------------------------------------------------
 (defrule
     (or
@@ -169,13 +183,14 @@
     (set-goal desired-number-barracks 2)
     (set-goal desired-number-ranges 2)
     (set-goal desired-number-stables 1)
-    (set-goal desired-number-workshops 1))
+    (set-goal desired-number-workshops 1)
+    (set-goal upgrade-military-lines 1)
+    (set-goal upgrade-military-smith 1)
+    (set-goal upgrade-military-generic 1)
+    (set-goal upgrade-military-villager-requirement 10))
 
 ;---------------------------------------------------------------------------------------------
-; MIXED COMPOSITION + CAPACITY
-;   Any two or more threat classes are present. Maintain a simultaneous
-;   five-channel response rather than allowing one counter class to replace
-;   the others. Capacity follows the resulting multi-line composition.
+; MIXED COMPOSITION + CAPACITY + MILITARY TECHNOLOGY POLICY
 ;---------------------------------------------------------------------------------------------
 (defrule
     (or
@@ -238,8 +253,12 @@
     (set-goal desired-number-barracks 2)
     (set-goal desired-number-ranges 2)
     (set-goal desired-number-stables 2)
-    (set-goal desired-number-workshops 1))
+    (set-goal desired-number-workshops 1)
+    (set-goal upgrade-military-lines 1)
+    (set-goal upgrade-military-smith 1)
+    (set-goal upgrade-military-generic 1)
+    (set-goal upgrade-military-villager-requirement 10))
 
 ;*********************************************************************************************
-; END ByzBot v1.2
+; END ByzBot v1.3
 ;*********************************************************************************************
