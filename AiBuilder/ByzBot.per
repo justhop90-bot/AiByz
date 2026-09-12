@@ -1,20 +1,24 @@
 ;*********************************************************************************************
-; ByzBot v1.1 - Byzantine composition policy layer for AiBuilder
+; ByzBot v1.2 - Byzantine composition + production-capacity policy for AiBuilder
 ;*********************************************************************************************
 ;
 ; PURPOSE
 ;   Convert observed enemy military composition into simultaneous
-;   desired-number-* Goals. AiBuilder remains responsible for production.
+;   desired-number-* Goals, then scale the production-building Goals
+;   required to sustain that composition. AiBuilder remains responsible
+;   for feasibility, construction, training, and research execution.
 ;
 ; ARCHITECTURE
-;   Observation -> Byzantine composition policy -> desired Goals
-;   -> existing AiBuilder feasibility/executor rules.
+;   Observation -> Byzantine composition policy -> desired unit Goals
+;   -> production-capacity Goals -> existing AiBuilder executors.
 ;
-; v1.1 SCOPE
+; v1.2 SCOPE
 ;   - Detect cavalry, ranged, and infantry from sighted enemy unit lines.
 ;   - Detect mixed threats when at least two threat classes are present.
 ;   - Project simultaneous Byzantine composition requirements into the
 ;     existing spearman, skirmisher, archer, camel, and mangonel Goals.
+;   - Scale existing barracks, range, stable, and workshop Goals from the
+;     active composition branch.
 ;   - No direct train/build/research commands.
 ;   - No new Goals.
 ;   - No scratch goals / temporary registers.
@@ -27,15 +31,16 @@
 ;   classifications. They deliberately use unit lines so upgraded units
 ;   remain part of the observed composition class.
 ;
-; COMPOSITION POLICY
-;   Cavalry-only  -> spearmen + camels.
-;   Ranged-only   -> skirmishers + camels.
-;   Infantry-only -> archers + mangonels.
-;   Mixed         -> spearmen + skirmishers + archers + camels + mangonels.
+; COMPOSITION + CAPACITY POLICY
+;   Cavalry-only  -> 12 spears + 6 camels; 2 barracks + 2 stables.
+;   Ranged-only   -> 12 skirms + 4 camels; 1 barracks + 2 ranges + 1 stable.
+;   Infantry-only -> 12 archers + 2 mangonels; 2 barracks + 2 ranges + 1 workshop.
+;   Mixed         -> 12 spears + 12 skirms + 8 archers + 6 camels + 2 mangonels;
+;                    2 barracks + 2 ranges + 2 stables + 1 workshop.
 ;
-;   The four policy branches are mutually exclusive by construction:
-;   single-class branches require the other two classes to be absent;
-;   the mixed branch requires at least two classes to be present.
+;   Capacity values are deliberate v1 policy constants, not claims about
+;   optimal economy or engine throughput. The purpose is to connect the
+;   composition decision to enough production infrastructure to execute it.
 ;
 ; IMPORTANT
 ;   These rules only write existing AIBuilder Goal channels. They do not
@@ -50,9 +55,10 @@
 (defconst byz-infantry-threat 6)
 
 ;---------------------------------------------------------------------------------------------
-; CAVALRY-ONLY COMPOSITION
+; CAVALRY-ONLY COMPOSITION + CAPACITY
 ;   Spearmen form the primary anti-cavalry component; camels provide a
 ;   second mobile anti-cavalry component where the existing executor permits.
+;   Two barracks and two stables provide parallel production channels.
 ;---------------------------------------------------------------------------------------------
 (defrule
     (or
@@ -81,11 +87,17 @@
                         (players-unit-type-count any-enemy halberdier-line >= byz-infantry-threat)))))
 =>
     (set-goal desired-number-spearmen 12)
-    (set-goal desired-number-camelriders 6))
+    (set-goal desired-number-camelriders 6)
+    (set-goal desired-number-barracks 2)
+    (set-goal desired-number-ranges 1)
+    (set-goal desired-number-stables 2)
+    (set-goal desired-number-workshops 1))
 
 ;---------------------------------------------------------------------------------------------
-; RANGED-ONLY COMPOSITION
+; RANGED-ONLY COMPOSITION + CAPACITY
 ;   Skirmishers are the primary ranged counter; camels add mobile pressure.
+;   Two ranges support the dominant ranged response; one stable supports
+;   the mobile component; one barracks preserves the baseline infantry channel.
 ;---------------------------------------------------------------------------------------------
 (defrule
     (or
@@ -114,12 +126,17 @@
                         (players-unit-type-count any-enemy halberdier-line >= byz-infantry-threat)))))
 =>
     (set-goal desired-number-skirmishers 12)
-    (set-goal desired-number-camelriders 4))
+    (set-goal desired-number-camelriders 4)
+    (set-goal desired-number-barracks 1)
+    (set-goal desired-number-ranges 2)
+    (set-goal desired-number-stables 1)
+    (set-goal desired-number-workshops 1))
 
 ;---------------------------------------------------------------------------------------------
-; INFANTRY-ONLY COMPOSITION
+; INFANTRY-ONLY COMPOSITION + CAPACITY
 ;   Archers provide the ranged infantry counter; mangonels provide the
 ;   first siege component against sufficiently dense infantry formations.
+;   Two ranges support the archer channel; one workshop supports siege.
 ;---------------------------------------------------------------------------------------------
 (defrule
     (or
@@ -148,13 +165,17 @@
                     (players-unit-type-count any-enemy hand-cannoneer >= byz-ranged-threat))))
 =>
     (set-goal desired-number-archers 12)
-    (set-goal desired-number-mangonels 2))
+    (set-goal desired-number-mangonels 2)
+    (set-goal desired-number-barracks 2)
+    (set-goal desired-number-ranges 2)
+    (set-goal desired-number-stables 1)
+    (set-goal desired-number-workshops 1))
 
 ;---------------------------------------------------------------------------------------------
-; MIXED COMPOSITION
+; MIXED COMPOSITION + CAPACITY
 ;   Any two or more threat classes are present. Maintain a simultaneous
 ;   five-channel response rather than allowing one counter class to replace
-;   the others.
+;   the others. Capacity follows the resulting multi-line composition.
 ;---------------------------------------------------------------------------------------------
 (defrule
     (or
@@ -213,8 +234,12 @@
     (set-goal desired-number-skirmishers 12)
     (set-goal desired-number-archers 8)
     (set-goal desired-number-camelriders 6)
-    (set-goal desired-number-mangonels 2))
+    (set-goal desired-number-mangonels 2)
+    (set-goal desired-number-barracks 2)
+    (set-goal desired-number-ranges 2)
+    (set-goal desired-number-stables 2)
+    (set-goal desired-number-workshops 1))
 
 ;*********************************************************************************************
-; END ByzBot v1.1
+; END ByzBot v1.2
 ;*********************************************************************************************
