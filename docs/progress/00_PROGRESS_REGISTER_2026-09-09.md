@@ -37,3 +37,48 @@ Static/documentation gates advanced:
 - Command issued ≠ accepted ≠ pending ≠ created ≠ available ≠ effective.
 - Historical control evidence is not target-build world proof.
 - All new artifacts are candidates / policy / probe designs until live qualification.
+
+## 2026-09-12 — Competency 5.3 candidate staging
+
+The requested **Production / Composition competency 5.3 — Economy Synchronization** was analyzed against AIRef, the AIBuilder economy architecture, the stock HD economy patterns, and the current AEGIS economic-demand/arbitration candidates.
+
+The current authority blocks production `.per` promotion, so the work was staged as a **candidate module only** rather than loaded into the live AI root.
+
+### Candidate artifact
+
+- `implementation/AEGIS-economic-synchronization-v0_1.per`
+- Git commit: `f547e7755eaae834dcfee88b857aa347164a805e`
+
+### Functional contract
+
+```text
+AEGIS economic demand
+        ↓
+AEGIS deterministic arbitration
+        ↓
+existing AIBuilder desired-* gatherer Goals
+        ↓
+economy.per
+        ↓
+native gatherer policy executor
+```
+
+The candidate deliberately introduces **no new Goals, strategic numbers, timers, worker-retasking commands, or direct economy executor**. It maps the already-published `aegis-eda-*` arbitration result into the existing AIBuilder gatherer policy surface.
+
+### Qualification
+
+Local AOE2 AI Parser 0.1.82 lint result:
+
+- finding count: **0**
+- failed: **false**
+- candidate: **NOT LOADED by production root**
+
+The candidate therefore has **static syntax/reference qualification only**. It does not prove numeric ABI clearance, runtime load, gatherer retasking, resource-rate improvement, or strategic effect.
+
+### Deployment boundary
+
+The installed `AIByzBuild\byzpolicy.per` was **not promoted or overwritten**. The live file was locked by the running Desktop Commander Node process during the attempted deployment, and the repository authority independently requires production `.per` to remain gated. A local candidate copy was created and linted; no production-root load change was made.
+
+### Next gate
+
+Before promotion, reconcile this bridge with the existing economic-demand/arbitration ownership matrix and close the applicable R3 numeric ABI and R5 command-lifecycle gates. Do not treat the zero-finding lint result as runtime proof.
