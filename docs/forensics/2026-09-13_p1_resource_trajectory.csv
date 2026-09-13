@@ -1,0 +1,2 @@
+timestamp_ms,timestamp_readable,food,wood,gold,stone,population,population_cap
+# ABSENT: replay parse exposes command stream, not historical resource/population snapshots; no interpolation.
