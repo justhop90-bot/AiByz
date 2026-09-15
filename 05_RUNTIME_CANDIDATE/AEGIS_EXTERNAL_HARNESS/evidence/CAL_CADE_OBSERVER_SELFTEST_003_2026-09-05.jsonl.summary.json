@@ -1,0 +1,7 @@
+{
+  "schema": "AEGIS-CADE-RAW-OBSERVER-v1",
+  "records": 341,
+  "non_null_polls": 77,
+  "bytes": 333169,
+  "sha256": "601c5320d7741a0f20a806ebb3710fc609d508ca55168b71f682e3fb5f83a077"
+}

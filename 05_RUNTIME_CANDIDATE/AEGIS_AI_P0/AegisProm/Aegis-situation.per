@@ -1,0 +1,86 @@
+; AEGIS-BYZ — Situation Analysis
+; AEGIS-Lite vertical slice: WORLD MODEL -> BELIEF -> SITUATION
+; Build target: AoE2DE 101.103.48987.0 / BuildID 24094652
+;   Consumes evaluated Belief Model state.
+;   Produces bounded situation classification.
+;   Does not select objectives, units, buildings, resources, or commands.
+
+(defconst aegis-situation-generation 331)
+(defconst aegis-situation-valid 332)
+(defconst aegis-situation-stage 333)
+(defconst aegis-situation-cavalry-pressure 334)
+(defconst aegis-situation-enemy-state 335)
+(defconst aegis-situation-urgency 336)
+(defconst aegis-situation-observed-at 337)
+(defconst aegis-situation-cycle 338)
+
+(defconst aegis-situation-stage-init 0)
+(defconst aegis-situation-stage-classified 1)
+
+(defconst aegis-situation-cavalry-none 0)
+(defconst aegis-situation-cavalry-light 1)
+(defconst aegis-situation-cavalry-heavy 2)
+
+(defconst aegis-situation-enemy-absent 0)
+(defconst aegis-situation-enemy-present 1)
+
+(defconst aegis-situation-urgency-low 0)
+(defconst aegis-situation-urgency-medium 1)
+(defconst aegis-situation-urgency-high 2)
+
+(defrule
+    (game-time < 10)
+=>
+    (set-goal aegis-situation-generation 0)
+    (set-goal aegis-situation-valid 0)
+    (set-goal aegis-situation-stage aegis-situation-stage-init)
+    (set-goal aegis-situation-cavalry-pressure aegis-situation-cavalry-none)
+    (set-goal aegis-situation-enemy-state aegis-situation-enemy-absent)
+    (set-goal aegis-situation-urgency aegis-situation-urgency-low)
+    (set-goal aegis-situation-observed-at 0)
+    (set-goal aegis-situation-cycle 0)
+)
+
+(defrule
+    (up-compare-goal aegis-belief-stage == aegis-belief-stage-evaluated)
+    (up-compare-goal aegis-belief-generation != aegis-situation-generation)
+=>
+    (set-goal aegis-situation-valid 0)
+    (set-goal aegis-situation-stage aegis-situation-stage-init)
+    (up-modify-goal aegis-situation-generation g:= aegis-belief-generation)
+    (up-modify-goal aegis-situation-cavalry-pressure g:= aegis-belief-cavalry-level)
+    (up-modify-goal aegis-situation-enemy-state g:= aegis-belief-enemy-present)
+    (up-modify-goal aegis-situation-observed-at g:= aegis-belief-observed-at)
+    (up-modify-goal aegis-situation-cycle g:+ 1)
+)
+
+(defrule
+    (up-compare-goal aegis-situation-generation == aegis-belief-generation)
+    (up-compare-goal aegis-situation-enemy-state == aegis-situation-enemy-present)
+    (up-compare-goal aegis-situation-cavalry-pressure == aegis-situation-cavalry-heavy)
+=>
+    (set-goal aegis-situation-urgency aegis-situation-urgency-high)
+)
+
+(defrule
+    (up-compare-goal aegis-situation-generation == aegis-belief-generation)
+    (up-compare-goal aegis-situation-enemy-state == aegis-situation-enemy-present)
+    (up-compare-goal aegis-situation-cavalry-pressure == aegis-situation-cavalry-light)
+=>
+    (set-goal aegis-situation-urgency aegis-situation-urgency-medium)
+)
+
+(defrule
+    (up-compare-goal aegis-situation-generation == aegis-belief-generation)
+    (up-compare-goal aegis-situation-enemy-state == aegis-situation-enemy-absent)
+=>
+    (set-goal aegis-situation-urgency aegis-situation-urgency-low)
+)
+
+(defrule
+    (up-compare-goal aegis-situation-generation == aegis-belief-generation)
+    (up-compare-goal aegis-situation-observed-at == 1)
+=>
+    (set-goal aegis-situation-stage aegis-situation-stage-classified)
+    (set-goal aegis-situation-valid 1)
+)

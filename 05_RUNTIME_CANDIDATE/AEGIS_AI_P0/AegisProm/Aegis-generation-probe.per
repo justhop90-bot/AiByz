@@ -1,0 +1,29 @@
+; AEGIS-Lite — Generation Propagation Probe
+; EXPERIMENTAL / NOT LOADED BY THE CURRENT ENTRYPOINT
+; Purpose: observe internal generation propagation without changing AEGIS state.
+; This probe is instrumentation, not a production module.
+;
+; Test target:
+;   WORLD MODEL -> BELIEF -> SITUATION -> OBJECTIVE -> PLANNING
+;   -> DECISION -> COMMITMENT
+;
+; Evidence rule:
+;   A matching generation is an observed state relationship, not proof that
+;   the corresponding semantic payload is correct.
+
+(defconst aegis-probe-last-commitment-generation 379)
+(defconst aegis-probe-valid 380)
+
+(defrule
+    (up-compare-goal aegis-commitment-stage == aegis-commitment-stage-authorized)
+    (up-compare-goal aegis-commitment-generation != aegis-probe-last-commitment-generation)
+=>
+    (up-modify-goal aegis-probe-last-commitment-generation g:= aegis-commitment-generation)
+    (set-goal aegis-probe-valid 1)
+    (up-chat-data-to-self "AEGIS GENPROBE WM=%d Belief=%d Sit=%d Obj=%d Plan=%d Dec=%d Com=%d." g: aegis-wm-generation g: aegis-belief-generation g: aegis-situation-generation g: aegis-objective-generation g: aegis-planning-generation g: aegis-decision-generation g: aegis-commitment-generation)
+    (up-chat-data-to-self "AEGIS GENPROBE valid WM=%d Belief=%d Sit=%d Obj=%d Plan=%d Dec=%d Com=%d." g: aegis-wm-valid g: aegis-belief-valid g: aegis-situation-valid g: aegis-objective-valid g: aegis-planning-valid g: aegis-decision-valid g: aegis-commitment-valid)
+)
+
+; No state-layer mutation is permitted here.
+; No execution command is issued.
+; No semantic success is inferred from generation equality.

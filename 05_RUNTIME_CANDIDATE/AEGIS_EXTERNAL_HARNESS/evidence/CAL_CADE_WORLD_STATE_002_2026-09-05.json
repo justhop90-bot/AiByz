@@ -1,0 +1,352 @@
+{
+  "captureStartedAt": "2026-09-06T00:30:34.406Z",
+  "captureEndedAt": "2026-09-06T00:30:45.040Z",
+  "messagePolls": 24,
+  "loopStates": [
+    {
+      "wallTime": 1788654634512,
+      "loopCount": 13175,
+      "applyPatchId": 4375,
+      "worldTime": 219947,
+      "lookaheadApplyPatchId": 4425,
+      "lookaheadWorldTime": 222443,
+      "rendererWorldTime": 219947,
+      "lastLoopNumberPatchesApplied": 1,
+      "patchStreamSearchableRange": [
+        222391,
+        223288
+      ],
+      "sourceType": "grpc"
+    },
+    {
+      "wallTime": 1788654636019,
+      "loopCount": 13308,
+      "applyPatchId": 4426,
+      "worldTime": 222495,
+      "lookaheadApplyPatchId": 4476,
+      "lookaheadWorldTime": 224991,
+      "rendererWorldTime": 222443,
+      "lastLoopNumberPatchesApplied": 1,
+      "patchStreamSearchableRange": [
+        224939,
+        225849
+      ],
+      "sourceType": "grpc"
+    },
+    {
+      "wallTime": 1788654636752,
+      "loopCount": 13372,
+      "applyPatchId": 4451,
+      "worldTime": 223743,
+      "lookaheadApplyPatchId": 4501,
+      "lookaheadWorldTime": 226239,
+      "rendererWorldTime": 223743,
+      "lastLoopNumberPatchesApplied": 1,
+      "patchStreamSearchableRange": [
+        226200,
+        227045
+      ],
+      "sourceType": "grpc"
+    },
+    {
+      "wallTime": 1788654636860,
+      "loopCount": 13379,
+      "applyPatchId": 4454,
+      "worldTime": 223899,
+      "lookaheadApplyPatchId": 4504,
+      "lookaheadWorldTime": 226395,
+      "rendererWorldTime": 223847,
+      "lastLoopNumberPatchesApplied": 1,
+      "patchStreamSearchableRange": [
+        226343,
+        227240
+      ],
+      "sourceType": "grpc"
+    },
+    {
+      "wallTime": 1788654637076,
+      "loopCount": 13399,
+      "applyPatchId": 4462,
+      "worldTime": 224289,
+      "lookaheadApplyPatchId": 4512,
+      "lookaheadWorldTime": 226798,
+      "rendererWorldTime": 224250,
+      "lastLoopNumberPatchesApplied": 1,
+      "patchStreamSearchableRange": [
+        226746,
+        227591
+      ],
+      "sourceType": "grpc"
+    },
+    {
+      "wallTime": 1788654637819,
+      "loopCount": 13464,
+      "applyPatchId": 4486,
+      "worldTime": 225498,
+      "lookaheadApplyPatchId": 4536,
+      "lookaheadWorldTime": 227994,
+      "rendererWorldTime": 225498,
+      "lastLoopNumberPatchesApplied": 0,
+      "patchStreamSearchableRange": [
+        227994,
+        228891
+      ],
+      "sourceType": "grpc"
+    },
+    {
+      "wallTime": 1788654638671,
+      "loopCount": 13541,
+      "applyPatchId": 4516,
+      "worldTime": 226993,
+      "lookaheadApplyPatchId": 4566,
+      "lookaheadWorldTime": 229489,
+      "rendererWorldTime": 226993,
+      "lastLoopNumberPatchesApplied": 1,
+      "patchStreamSearchableRange": [
+        229450,
+        230295
+      ],
+      "sourceType": "grpc"
+    },
+    {
+      "wallTime": 1788654638988,
+      "loopCount": 13566,
+      "applyPatchId": 4526,
+      "worldTime": 227500,
+      "lookaheadApplyPatchId": 4576,
+      "lookaheadWorldTime": 229996,
+      "rendererWorldTime": 227500,
+      "lastLoopNumberPatchesApplied": 1,
+      "patchStreamSearchableRange": [
+        229944,
+        230841
+      ],
+      "sourceType": "grpc"
+    },
+    {
+      "wallTime": 1788654639208,
+      "loopCount": 13591,
+      "applyPatchId": 4533,
+      "worldTime": 227838,
+      "lookaheadApplyPatchId": 4583,
+      "lookaheadWorldTime": 230347,
+      "rendererWorldTime": 227838,
+      "lastLoopNumberPatchesApplied": 0,
+      "patchStreamSearchableRange": [
+        230347,
+        231192
+      ],
+      "sourceType": "grpc"
+    },
+    {
+      "wallTime": 1788654639878,
+      "loopCount": 13651,
+      "applyPatchId": 4556,
+      "worldTime": 228995,
+      "lookaheadApplyPatchId": 4606,
+      "lookaheadWorldTime": 231491,
+      "rendererWorldTime": 228995,
+      "lastLoopNumberPatchesApplied": 0,
+      "patchStreamSearchableRange": [
+        231491,
+        232349
+      ],
+      "sourceType": "grpc"
+    },
+    {
+      "wallTime": 1788654641764,
+      "loopCount": 13798,
+      "applyPatchId": 4619,
+      "worldTime": 232141,
+      "lookaheadApplyPatchId": 4669,
+      "lookaheadWorldTime": 234650,
+      "rendererWorldTime": 232141,
+      "lastLoopNumberPatchesApplied": 0,
+      "patchStreamSearchableRange": [
+        234650,
+        235495
+      ],
+      "sourceType": "grpc"
+    },
+    {
+      "wallTime": 1788654641764,
+      "loopCount": 13799,
+      "applyPatchId": 4620,
+      "worldTime": 232193,
+      "lookaheadApplyPatchId": 4670,
+      "lookaheadWorldTime": 234689,
+      "rendererWorldTime": 232193,
+      "lastLoopNumberPatchesApplied": 1,
+      "patchStreamSearchableRange": [
+        234650,
+        235547
+      ],
+      "sourceType": "grpc"
+    },
+    {
+      "wallTime": 1788654642990,
+      "loopCount": 13916,
+      "applyPatchId": 4661,
+      "worldTime": 234247,
+      "lookaheadApplyPatchId": 4711,
+      "lookaheadWorldTime": 236743,
+      "rendererWorldTime": 234247,
+      "lastLoopNumberPatchesApplied": 0,
+      "patchStreamSearchableRange": [
+        236743,
+        237640
+      ],
+      "sourceType": "grpc"
+    },
+    {
+      "wallTime": 1788654643462,
+      "loopCount": 13954,
+      "applyPatchId": 4678,
+      "worldTime": 235092,
+      "lookaheadApplyPatchId": 4728,
+      "lookaheadWorldTime": 237588,
+      "rendererWorldTime": 235040,
+      "lastLoopNumberPatchesApplied": 1,
+      "patchStreamSearchableRange": [
+        237549,
+        238394
+      ],
+      "sourceType": "grpc"
+    },
+    {
+      "wallTime": 1788654645040,
+      "loopCount": 14106,
+      "applyPatchId": 4731,
+      "worldTime": 237744,
+      "lookaheadApplyPatchId": 4781,
+      "lookaheadWorldTime": 240240,
+      "rendererWorldTime": 237692,
+      "lastLoopNumberPatchesApplied": 1,
+      "patchStreamSearchableRange": [
+        240188,
+        241046
+      ],
+      "sourceType": "grpc"
+    }
+  ],
+  "frames": [
+    {
+      "wallTime": 1788654634406,
+      "frame": 7419,
+      "gameStateId": 4371,
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "wallTime": 1788654634512,
+      "frame": 7424,
+      "gameStateId": 4374,
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "wallTime": 1788654636120,
+      "frame": 7518,
+      "gameStateId": 4429,
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "wallTime": 1788654636237,
+      "frame": 7525,
+      "gameStateId": 4433,
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "wallTime": 1788654636339,
+      "frame": 7531,
+      "gameStateId": 4436,
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "wallTime": 1788654636860,
+      "frame": 7561,
+      "gameStateId": 4453,
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "wallTime": 1788654637076,
+      "frame": 7575,
+      "gameStateId": 4461,
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "wallTime": 1788654637716,
+      "frame": 7613,
+      "gameStateId": 4483,
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "wallTime": 1788654637923,
+      "frame": 7625,
+      "gameStateId": 4490,
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "wallTime": 1788654638671,
+      "frame": 7670,
+      "gameStateId": 4515,
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "wallTime": 1788654640554,
+      "frame": 7773,
+      "gameStateId": 4578,
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "wallTime": 1788654641764,
+      "frame": 7845,
+      "gameStateId": 4619,
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "wallTime": 1788654642990,
+      "frame": 7916,
+      "gameStateId": 4660,
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "wallTime": 1788654642990,
+      "frame": 7917,
+      "gameStateId": 4661,
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "wallTime": 1788654645040,
+      "frame": 8039,
+      "gameStateId": 4730,
+      "width": 1920,
+      "height": 1080
+    }
+  ],
+  "entityStateEvidence": true,
+  "entityEvidenceFields": [
+    "entityId",
+    "ownerId",
+    "masterIdentity",
+    "currentAction",
+    "productionQueue",
+    "constructionProgress",
+    "x",
+    "y",
+    "visibilityMask",
+    "fogFlag"
+  ]
+}

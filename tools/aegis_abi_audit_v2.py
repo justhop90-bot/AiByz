@@ -33,16 +33,14 @@ def main():
     for p in files:
         text=p.read_text(encoding='utf-8',errors='replace'); digest=sha256(p)
         for n,line in enumerate(text.splitlines(),1):
-            m=DEFCONST_RE.search(line)
-            if m:
+            for m in DEFCONST_RE.finditer(line):
                 row={'symbol':m.group(1),'value':m.group(2),'file':p.relative_to(root).as_posix(),'line':n,'sha256':digest}
                 decl.append(row); defs.setdefault(row['symbol'],[]).append(row)
     goal_refs=[]
     for p in files:
         for n,line in enumerate(p.read_text(encoding='utf-8',errors='replace').splitlines(),1):
-            m=GOAL_OP_RE.search(line)
-            if not m: continue
-            goal_refs.append({'op':m.group(1),'operand':m.group(2),'file':p.relative_to(root).as_posix(),'line':n})
+            for m in GOAL_OP_RE.finditer(line):
+                goal_refs.append({'op':m.group(1),'operand':m.group(2),'file':p.relative_to(root).as_posix(),'line':n})
     resolved=[]
     for ref in goal_refs:
         vals=defs.get(ref['operand'],[])

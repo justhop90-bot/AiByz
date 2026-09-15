@@ -1,0 +1,102 @@
+;; AEGIS-Lite — Decision
+;; Layer: DECISION
+;; Purpose: convert a committed plan into a bounded decision state.
+;; Firewall: no execution, no production, no resource spending, no direct commands.
+;;
+;; Upstream:
+;;   Planning -> Decision
+;;
+;; Downstream:
+;;   Decision -> Commitment
+;;
+;; Evidence discipline:
+;;   This module establishes semantic state only.
+;;   Runtime execution/engine semantics remain subject to later qualification.
+
+(defconst aegis-decision-stage-init 0)
+(defconst aegis-decision-stage-decided 1)
+
+(defconst aegis-decision-type-none 0)
+(defconst aegis-decision-type-monitor 1)
+(defconst aegis-decision-type-contain 2)
+
+(defconst aegis-decision-priority-low 25)
+(defconst aegis-decision-priority-medium 60)
+(defconst aegis-decision-priority-high 90)
+
+(defconst aegis-decision-generation 355)
+(defconst aegis-decision-valid 356)
+(defconst aegis-decision-stage 357)
+(defconst aegis-decision-type 358)
+(defconst aegis-decision-priority 359)
+(defconst aegis-decision-urgency 360)
+(defconst aegis-decision-observed-at 361)
+(defconst aegis-decision-cycle 362)
+
+(defrule
+    (game-time < 10)
+=>
+    (set-goal aegis-decision-generation 0)
+    (set-goal aegis-decision-valid 0)
+    (set-goal aegis-decision-stage aegis-decision-stage-init)
+    (set-goal aegis-decision-type aegis-decision-type-none)
+    (set-goal aegis-decision-priority aegis-decision-priority-low)
+    (set-goal aegis-decision-urgency 0)
+    (set-goal aegis-decision-observed-at 0)
+    (set-goal aegis-decision-cycle 0)
+)
+
+(defrule
+    (up-compare-goal aegis-planning-stage == aegis-planning-stage-formed)
+    (up-compare-goal aegis-planning-generation != aegis-decision-generation)
+=>
+    (up-modify-goal aegis-decision-generation g:= aegis-planning-generation)
+    (up-modify-goal aegis-decision-urgency g:= aegis-planning-urgency)
+    (up-modify-goal aegis-decision-observed-at g:= aegis-planning-observed-at)
+    (up-modify-goal aegis-decision-cycle g:= aegis-planning-cycle)
+    (up-modify-goal aegis-decision-type g:= aegis-decision-type-none)
+    (up-modify-goal aegis-decision-priority g:= aegis-decision-priority-low)
+)
+
+(defrule
+    (up-compare-goal aegis-planning-stage == aegis-planning-stage-formed)
+    (up-compare-goal aegis-planning-type == aegis-planning-type-contain)
+    (up-compare-goal aegis-decision-urgency == aegis-situation-urgency-high)
+=>
+    (up-modify-goal aegis-decision-type g:= aegis-decision-type-contain)
+    (up-modify-goal aegis-decision-priority g:= aegis-decision-priority-high)
+)
+
+(defrule
+    (up-compare-goal aegis-planning-stage == aegis-planning-stage-formed)
+    (up-compare-goal aegis-planning-type == aegis-planning-type-contain)
+    (up-compare-goal aegis-decision-urgency == aegis-situation-urgency-medium)
+=>
+    (up-modify-goal aegis-decision-type g:= aegis-decision-type-contain)
+    (up-modify-goal aegis-decision-priority g:= aegis-decision-priority-medium)
+)
+
+(defrule
+    (up-compare-goal aegis-planning-stage == aegis-planning-stage-formed)
+    (up-compare-goal aegis-planning-type == aegis-planning-type-monitor)
+=>
+    (up-modify-goal aegis-decision-type g:= aegis-decision-type-monitor)
+    (up-modify-goal aegis-decision-priority g:= aegis-decision-priority-low)
+)
+
+(defrule
+    (up-compare-goal aegis-decision-generation == aegis-planning-generation)
+    (up-compare-goal aegis-decision-observed-at == aegis-planning-observed-at)
+    (up-compare-goal aegis-decision-type != aegis-decision-type-none)
+=>
+    (up-modify-goal aegis-decision-stage g:= aegis-decision-stage-decided)
+    (up-modify-goal aegis-decision-valid g:= 1)
+)
+
+(defrule
+    (up-compare-goal aegis-decision-stage == aegis-decision-stage-decided)
+    (up-compare-goal aegis-decision-generation == aegis-planning-generation)
+    (up-compare-goal aegis-decision-cycle != aegis-planning-cycle)
+=>
+    (up-modify-goal aegis-decision-cycle g:= aegis-planning-cycle)
+)

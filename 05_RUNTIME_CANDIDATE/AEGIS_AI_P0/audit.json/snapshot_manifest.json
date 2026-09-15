@@ -1,0 +1,16 @@
+{
+  "closure": [
+    {
+      "bytes": 7086,
+      "path": "AEGIS-BYZ.per",
+      "sha256": "c4124247207522e7d8f99282b2ad1fd10c3e3ad0a993d60748d66bc6df26c28a"
+    }
+  ],
+  "declaration_rows": 1,
+  "entrypoint": "AEGIS-BYZ.per",
+  "file_count": 1,
+  "numeric_declarations": 1,
+  "resolved_goal_operands": 0,
+  "resolved_high_goal_operands": 0,
+  "unique_symbols": 1
+}

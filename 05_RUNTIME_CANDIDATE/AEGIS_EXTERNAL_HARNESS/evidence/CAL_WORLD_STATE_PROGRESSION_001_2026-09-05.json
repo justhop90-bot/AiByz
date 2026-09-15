@@ -1,0 +1,66 @@
+﻿{
+    "classification":  {
+                           "world_time_progression":  "PROVEN",
+                           "build_to_realized":  "OPEN",
+                           "apply_patch_generation":  "OPEN",
+                           "entity_state":  "OPEN",
+                           "de_queue_to_created":  "OPEN",
+                           "world_time_units":  "OPEN",
+                           "world_time_equals_replay_sync_units":  "CORRELATED_NOT_PROVEN"
+                       },
+    "build":  {
+                  "exe_version":  "101.103.48987.0",
+                  "exe_sha256":  "6378CA6F1FBD2F230B5B7F2CD048198331848AF70F44B5CD13CEB89420A321A4",
+                  "steam_build_id":  "24094652"
+              },
+    "cade":  {
+                 "version":  "1.25.0"
+             },
+    "schema":  "AEGIS-CAL-WORLD-TIME-v1",
+    "replay":  {
+                   "sha256":  "41ecadba293dfccdac6230ec7e35e4f0d0ef1fff8da13c8012760111800a041d",
+                   "filename":  "MP Replay v101.103.48987.0 @2026.08.31 164318 (1).aoe2record"
+               },
+    "observations":  [
+                         {
+                             "log_time":  "19:51:07.958",
+                             "worldTime":  8502
+                         },
+                         {
+                             "log_time":  "19:52:07.950",
+                             "worldTime":  107653
+                         },
+                         {
+                             "log_time":  "19:53:07.954",
+                             "worldTime":  209053
+                         }
+                     ],
+    "replay_neighbors":  [
+                             {
+                                 "actions":  [
+                                                 8216,
+                                                 8632,
+                                                 8632,
+                                                 8827
+                                             ],
+                                 "worldTime":  8502
+                             },
+                             {
+                                 "actions":  [
+                                                 104910,
+                                                 110591,
+                                                 112021
+                                             ],
+                                 "worldTime":  107653
+                             },
+                             {
+                                 "actions":  [
+                                                 206674,
+                                                 208910,
+                                                 209118,
+                                                 210535
+                                             ],
+                                 "worldTime":  209053
+                             }
+                         ]
+}

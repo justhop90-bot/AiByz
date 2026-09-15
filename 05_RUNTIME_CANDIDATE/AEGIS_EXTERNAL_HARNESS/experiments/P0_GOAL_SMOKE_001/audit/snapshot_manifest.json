@@ -1,0 +1,36 @@
+{
+  "closure": [
+    {
+      "bytes": 601,
+      "path": "AEGIS_P0_GOAL_SMOKE.per",
+      "sha256": "346c6b648083c3e2204f1f114b711e9e4a1a4fcc6302c29b3c324dcb2c3c266f"
+    },
+    {
+      "bytes": 1167270,
+      "path": "AI (HD version).per",
+      "sha256": "b11c74aff57faaa5bb87e96c0ff9fc61867b8c28cb4f27fdb515c2375610ebb1"
+    },
+    {
+      "bytes": 33628,
+      "path": "Promisory/defaultConstants.per",
+      "sha256": "187980fd34f5a5626955b20dd97114dc2212c9e7e86356014a7976dd1ae310ad"
+    },
+    {
+      "bytes": 29232,
+      "path": "Promisory/finaling.per",
+      "sha256": "95e18eb8b765a7f87ea499c25ed944d0e04c9abf932b70d8821ef1154d872e52"
+    },
+    {
+      "bytes": 10515,
+      "path": "Promisory/finalingConstants.per",
+      "sha256": "ce7a804a9855742cf4329c0fa44e603a5d19655951bf8e6bc5cf689264e07455"
+    }
+  ],
+  "declaration_rows": 5262,
+  "entrypoint": "AI (HD version).per",
+  "file_count": 5,
+  "numeric_declarations": 4895,
+  "resolved_goal_operands": 5504,
+  "resolved_high_goal_operands": 7,
+  "unique_symbols": 1482
+}

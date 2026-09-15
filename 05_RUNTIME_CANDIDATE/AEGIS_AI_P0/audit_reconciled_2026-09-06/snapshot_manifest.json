@@ -1,0 +1,22 @@
+{
+  "audited_head": "21fe30f8949f2b8659f61e3b47ed4042afc2f22a",
+  "entrypoint": "AEGIS-BYZ.per",
+  "file_count": 8,
+  "declaration_rows": 156,
+  "numeric_declarations": 156,
+  "unique_symbols": 129,
+  "resolved_goal_operands": 356,
+  "resolved_high_goal_operands": 0,
+  "closure": [
+    {"path":"AEGIS-BYZ.per","bytes":7045,"sha256":"0d5fba100f9fa30a2ce6c925b3cf4aea4064c48a4d0dfcd35a15d1b052ca9df2"},
+    {"path":"AegisProm/AEGIS-BYZ-Engine-Carpenter-P2.per","bytes":11436,"sha256":"667f7c6f36a7537606dd087e52dac7147dec34f7b927852e49d6f2cf0088629a"},
+    {"path":"AegisProm/Aegis-belief.per","bytes":3206,"sha256":"6f27506aa23f5fdadef724d794a52d72dd0ebde6d8ba416470ebc7b44bec4900"},
+    {"path":"AegisProm/Aegis-commitment.per","bytes":3355,"sha256":"280c1e3f99f7e53fce1055806f3c9cb5ddf1c6fb1c78dee3c6a3c2f3d5acf025"},
+    {"path":"AegisProm/Aegis-decision.per","bytes":3978,"sha256":"642dbc991893325574e9ee2757b268d39757079673a4e6b4c5f231c7447ce6a4"},
+    {"path":"AegisProm/Aegis-objectives.per","bytes":3881,"sha256":"38e0dfdce16ba3b7a0e0172559fd1568e5b7c09e5e05c0778f56d0fcba506b48"},
+    {"path":"AegisProm/Aegis-planning.per","bytes":3619,"sha256":"e6113ea519aa47f318db872f596bf9a20aecc9f4c0d0c75de386c1662013bc6c"},
+    {"path":"AegisProm/Aegis-situation.per","bytes":3439,"sha256":"7a2bb09ac17850cb5526ea746ad6c6d3eda5437ae934c3436589e4d0703f71c6"}
+  ],
+  "duplicate_declaration_count": 27,
+  "duplicate_declarations": "All 27 are World Model symbols duplicated between AEGIS-BYZ.per and AegisProm/AEGIS-BYZ-Engine-Carpenter-P2.per."
+}
