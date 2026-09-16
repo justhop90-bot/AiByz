@@ -1,0 +1,209 @@
+; Shadow-Derived Module 01: Resource Logistics & Worker Control v0.1
+; Pure .per implementation.
+; Design rule: preserve Shadow's search/filter/task/observe/reassess idiom,
+; while keeping module-local state and explicit pending/verification phases.
+;
+; Integration contract:
+;   Inputs: gl-sdl-demand, gl-sdl-food-target, gl-sdl-wood-target,
+;           gl-sdl-gold-target, gl-sdl-stone-target.
+;   Outputs: gl-sdl-worker-task, gl-sdl-source-id, gl-sdl-task-state.
+;   Existing executor remains responsible for actual villager commands.
+;
+; State values
+(defconst SDL-IDLE 0)
+(defconst SDL-SEARCH 1)
+(defconst SDL-CANDIDATE 2)
+(defconst SDL-TASKED 3)
+(defconst SDL-PENDING 4)
+(defconst SDL-VERIFY 5)
+(defconst SDL-RECOVER 6)
+
+; Local state
+(defconst gl-sdl-state 630)
+(defconst gl-sdl-worker-id 631)
+(defconst gl-sdl-source-id 632)
+(defconst gl-sdl-source-type 633)
+(defconst gl-sdl-task-state 634)
+(defconst gl-sdl-task-generation 635)
+(defconst gl-sdl-task-time 636)
+(defconst gl-sdl-task-x 637)
+(defconst gl-sdl-task-y 638)
+(defconst gl-sdl-last-worker-count 639)
+(defconst gl-sdl-failure-count 640)
+
+; Demand classes
+(defconst SDL-FOOD 1)
+(defconst SDL-WOOD 2)
+(defconst SDL-GOLD 3)
+(defconst SDL-STONE 4)
+
+; Generic initialization. Disabled after first execution.
+(defrule
+    (goal gl-sdl-state 0)
+    (game-time > 0)
+=>
+    (set-goal gl-sdl-worker-id -1)
+    (set-goal gl-sdl-source-id -1)
+    (set-goal gl-sdl-source-type 0)
+    (set-goal gl-sdl-task-state SDL-IDLE)
+    (set-goal gl-sdl-task-generation 0)
+    (set-goal gl-sdl-task-time 0)
+    (set-goal gl-sdl-failure-count 0)
+    (disable-self)
+)
+
+; -------------------------------------------------------------------------
+; IDLE -> SEARCH
+; Demand is deliberately supplied by the policy/production layer.
+; -------------------------------------------------------------------------
+(defrule
+    (goal gl-sdl-state SDL-IDLE)
+    (goal gl-sdl-demand > 0)
+=>
+    (set-goal gl-sdl-task-generation +1)
+    (set-goal gl-sdl-task-state SDL-SEARCH)
+    (set-goal gl-sdl-state SDL-SEARCH)
+)
+
+; -------------------------------------------------------------------------
+; SEARCH
+; Search only for available villagers. Source selection is performed only
+; after a worker candidate exists; this prevents a source from becoming an
+; implicit worker assignment.
+; -------------------------------------------------------------------------
+(defrule
+    (goal gl-sdl-state SDL-SEARCH)
+=>
+    (up-full-reset-search)
+    (up-set-group search-local c: villager-class)
+    (up-clean-search search-local object-data-distance search-order-asc)
+    (up-remove-objects search-local object-data-action == actionid-build)
+    (up-remove-objects search-local object-data-action == actionid-research)
+    (up-remove-objects search-local object-data-index > 0)
+    (up-get-search-state search-local gl-sdl-last-worker-count)
+    (set-goal gl-sdl-state SDL-CANDIDATE)
+)
+
+; -------------------------------------------------------------------------
+; CANDIDATE
+; Select nearest surviving candidate. This is a Shadow-style compact
+; search-buffer selection, not a new service abstraction.
+; -------------------------------------------------------------------------
+(defrule
+    (goal gl-sdl-state SDL-CANDIDATE)
+    (goal gl-sdl-demand > 0)
+    (goal gl-sdl-last-worker-count > 0)
+=>
+    (up-set-target-object search-local c: 0)
+    (up-get-object-data object-data-id gl-sdl-worker-id)
+    (up-get-object-data object-data-x gl-sdl-task-x)
+    (up-get-object-data object-data-y gl-sdl-task-y)
+    (set-goal gl-sdl-task-state SDL-CANDIDATE)
+    (set-goal gl-sdl-state SDL-TASKED)
+)
+
+; No candidate: enter recovery instead of falsely claiming completion.
+(defrule
+    (goal gl-sdl-state SDL-CANDIDATE)
+    (goal gl-sdl-demand > 0)
+    (goal gl-sdl-last-worker-count <= 0)
+=>
+    (set-goal gl-sdl-failure-count +1)
+    (set-goal gl-sdl-task-state SDL-RECOVER)
+    (set-goal gl-sdl-state SDL-RECOVER)
+)
+
+; -------------------------------------------------------------------------
+; TASKED
+; Publish an explicit worker task for the existing executor. No world-state
+; completion is asserted here.
+; -------------------------------------------------------------------------
+(defrule
+    (goal gl-sdl-state SDL-TASKED)
+    (goal gl-sdl-worker-id >= 0)
+    (goal gl-sdl-demand > 0)
+=>
+    (set-goal gl-sdl-task-time 0)
+    (set-goal gl-sdl-task-state SDL-TASKED)
+    (set-goal gl-sdl-state SDL-PENDING)
+)
+
+; -------------------------------------------------------------------------
+; PENDING -> VERIFY
+; The pending state is intentionally persistent until the verification pass.
+; -------------------------------------------------------------------------
+(defrule
+    (goal gl-sdl-state SDL-PENDING)
+=>
+    (set-goal gl-sdl-task-time +1)
+)
+
+(defrule
+    (goal gl-sdl-state SDL-PENDING)
+    (goal gl-sdl-task-time > 3)
+=>
+    (set-goal gl-sdl-state SDL-VERIFY)
+)
+
+; -------------------------------------------------------------------------
+; VERIFY
+; A valid worker must still exist and have changed away from the previous
+; idle/build condition. If not, recover rather than treating authorization
+; as successful execution.
+; -------------------------------------------------------------------------
+(defrule
+    (goal gl-sdl-state SDL-VERIFY)
+    (goal gl-sdl-worker-id >= 0)
+=>
+    (up-full-reset-search)
+    (up-set-group search-local c: villager-class)
+    (up-clean-search search-local object-data-id search-order-asc)
+    (up-remove-objects search-local object-data-id != g: gl-sdl-worker-id)
+    (up-get-search-state search-local gl-sdl-last-worker-count)
+)
+
+(defrule
+    (goal gl-sdl-state SDL-VERIFY)
+    (goal gl-sdl-last-worker-count > 0)
+=>
+    (set-goal gl-sdl-task-state SDL-IDLE)
+    (set-goal gl-sdl-state SDL-IDLE)
+    (set-goal gl-sdl-failure-count 0)
+)
+
+(defrule
+    (goal gl-sdl-state SDL-VERIFY)
+    (goal gl-sdl-last-worker-count <= 0)
+=>
+    (set-goal gl-sdl-failure-count +1)
+    (set-goal gl-sdl-task-state SDL-RECOVER)
+    (set-goal gl-sdl-state SDL-RECOVER)
+)
+
+; -------------------------------------------------------------------------
+; RECOVER
+; Clear only module-owned state. Demand remains owned by the caller and is
+; therefore never destroyed here.
+; -------------------------------------------------------------------------
+(defrule
+    (goal gl-sdl-state SDL-RECOVER)
+    (goal gl-sdl-failure-count < 3)
+=>
+    (set-goal gl-sdl-worker-id -1)
+    (set-goal gl-sdl-source-id -1)
+    (set-goal gl-sdl-source-type 0)
+    (set-goal gl-sdl-task-state SDL-IDLE)
+    (set-goal gl-sdl-state SDL-IDLE)
+)
+
+; Repeated failure leaves the demand untouched but releases this attempt.
+(defrule
+    (goal gl-sdl-state SDL-RECOVER)
+    (goal gl-sdl-failure-count >= 3)
+=>
+    (set-goal gl-sdl-worker-id -1)
+    (set-goal gl-sdl-source-id -1)
+    (set-goal gl-sdl-source-type 0)
+    (set-goal gl-sdl-task-state SDL-IDLE)
+    (set-goal gl-sdl-state SDL-IDLE)
+)
